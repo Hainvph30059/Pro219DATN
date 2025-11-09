@@ -6,4 +6,15 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="MudBlazor" Version="8.14.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Components\Pages\Common\" />
+    <Folder Include="Constants\" />
+    <Folder Include="wwwroot\Assets\Images\" />
+    <Folder Include="wwwroot\Assets\Icons\" />
+  </ItemGroup>
+
 </Project>
