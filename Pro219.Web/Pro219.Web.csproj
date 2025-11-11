@@ -11,7 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Components\Pages\Common\" />
     <Folder Include="Constants\" />
     <Folder Include="wwwroot\Assets\Images\" />
     <Folder Include="wwwroot\Assets\Icons\" />
