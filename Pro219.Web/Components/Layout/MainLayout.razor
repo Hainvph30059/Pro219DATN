@@ -1,19 +1,32 @@
 ﻿@inherits LayoutComponentBase
+@using Pro219.Web.Components.Common.User
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+@* Required *@
+<MudThemeProvider />
+<MudPopoverProvider />
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+@* Needed for dialogs *@
+<MudDialogProvider />
 
-        <article class="content px-4">
-            @Body
-        </article>
+@* Needed for snackbars *@
+<MudSnackbarProvider />
+
+<div class="relative">
+    <Header />
+
+    <main id="main_container" class="min-h-[calc(100lvh-31.625rem)] mt-20">
+        @Body
     </main>
+
+    <Footer />
+
+    <MudScrollToTop TopOffset="100"
+                    OnScroll="OnScroll"
+                    Selector="#main_container"
+                    VisibleCssClass="visible absolute"
+                    HiddenCssClass="invisible">
+        <MudIcon Icon="@Icons.Material.Filled.ArrowCircleUp" Size="@Size.Large" />
+    </MudScrollToTop>
 </div>
 
 <div id="blazor-error-ui">
@@ -21,3 +34,10 @@
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
+
+@code {
+    private void OnScroll()
+    {
+        
+    }
+}
