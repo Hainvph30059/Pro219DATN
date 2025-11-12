@@ -1,0 +1,46 @@
+﻿@page "/login"
+@layout MainLayout
+
+<PageTitle>@Constant.PageTitleUser | Login</PageTitle>
+
+<section class="mx-auto my-6 w-full max-w-[30rem] rounded-lg border border-gray-200 px-4 py-6">
+    <h1 class="text-xl font-bold uppercase">Đăng Nhập Tài Khoản</h1>
+
+    <p class="mt-1 text-sm font-medium text-[#666666]">Nhập email (hoặc số điện thoại) và mật khẩu của bạn:</p>
+
+    <MudDivider Class="!my-4"/>
+
+    <MudTextField T="string" @bind-Value="_username" Class="w-full" Placeholder="Email/Số điện thoại" Variant="Variant.Outlined" FullWidth="true"></MudTextField>
+    <MudTextField T="string" @bind-Value="_password" Class="mb-2 mt-4 w-full" Placeholder="Mật khẩu" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ShowHidePassword" AdornmentAriaLabel="Show Password" FullWidth="true"></MudTextField>
+
+    <div class="mb-4">
+        <a href="@RouterConst.User.ForgotPassword" class="text-xs font-medium text-[#252a2b]">Quên mật khẩu?</a>
+    </div>
+
+    <MudButton Class="!h-12 w-full rounded-lg !bg-black !text-white" OnClick="OnLogin">Đăng Nhập</MudButton>
+
+    <div class="mt-4 flex items-center gap-2">
+        <span class="text-sm text-[#666666]">Thành viên mới?</span>
+        <a href="@RouterConst.User.SignUp" class="text-sm font-medium text-[#252a2b]">Đăng ký tài khoản</a>
+    </div>
+</section>
+
+@code {
+    private string _username;
+    private string _password;
+    private bool _isPasswordVisible = false;
+
+    InputType PasswordInput => _isPasswordVisible ? InputType.Text : InputType.Password;
+    string PasswordInputIcon => _isPasswordVisible ? Icons.Material.Filled.Visibility : Icons.Material.Filled.VisibilityOff;
+
+    void ShowHidePassword()
+    {
+        _isPasswordVisible = !_isPasswordVisible;
+        StateHasChanged();
+    }
+
+    void OnLogin()
+    {
+        
+    }
+}

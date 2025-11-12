@@ -1,0 +1,39 @@
+﻿@page "/admin/login"
+@layout PublicLayout
+
+<PageTitle>@Constant.PageTitleAdmin | Login</PageTitle>
+
+<section class="flex h-full w-full flex-col items-center justify-center gap-10 bg-[#7e6fff]">
+    <div class="flex w-full max-w-[40rem] flex-col items-center justify-center rounded-lg bg-white p-12 shadow-2xl">
+        <div class="flex h-10 w-40 items-center justify-center">LOGO</div>
+
+        <h2 class="mb-6 mt-2 text-2xl font-bold text-[#252a2b]">Welcome to Adams Store Management</h2>
+
+        <MudTextField T="string" @bind-Value="_username" Variant="Variant.Outlined" Placeholder="Email" FullWidth="true"></MudTextField>
+
+        <MudTextField T="string" @bind-Value="_password" Class="mt-4 w-full" Variant="Variant.Outlined" Placeholder="Password" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ShowHidePassword" AdornmentAriaLabel="Show Password" FullWidth="true"></MudTextField>
+
+        <MudButton Class="mt-6 !h-12 !w-full rounded-lg !bg-[#7e6fff] !text-white" OnClick="OnLogin">Đăng Nhập</MudButton>
+    </div>
+</section>
+
+@code {
+    private string _username;
+    private string _password;
+
+    private bool _isPasswordVisible = false;
+
+    InputType PasswordInput => _isPasswordVisible ? InputType.Text : InputType.Password;
+    string PasswordInputIcon => _isPasswordVisible ? Icons.Material.Filled.Visibility : Icons.Material.Filled.VisibilityOff;
+
+    void ShowHidePassword()
+    {
+        _isPasswordVisible = !_isPasswordVisible;
+        StateHasChanged();
+    }
+
+    void OnLogin()
+    {
+
+    }
+}
