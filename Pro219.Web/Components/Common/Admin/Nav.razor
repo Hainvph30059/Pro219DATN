@@ -1,4 +1,10 @@
-﻿<nav class="relative h-full w-[18.75rem] px-3 py-4 pt-6 shadow-lg">
+﻿<style>
+    .custom-text span {
+        color: #FFFFFF;
+    }
+</style>
+
+<nav class="relative h-full w-[18.75rem] px-3 py-4 pt-6 shadow-lg">
     <div class="mb-4 flex h-12 w-full items-center justify-center border">
         LOGO
     </div>
@@ -7,42 +13,42 @@
 
     <ul class="mt-4">
         <li class="w-full">
-            <button class="flex w-full items-center justify-between rounded-lg p-4 hover:bg-gray-100">
+            <a class="@GetNavLinkClass(@RouterConst.Admin.Home)" href="@RouterConst.Admin.Home">
                 <span class="text-base font-medium text-[#252a2b]">Trang Chủ</span>
 
                 <MudIcon Icon="@Icons.Material.Filled.KeyboardArrowRight" />
-            </button>
+            </a>
         </li>
         <li class="w-full">
-            <button class="flex w-full items-center justify-between rounded-lg p-4 hover:bg-gray-100">
+            <a class="@GetNavLinkClass(@RouterConst.Admin.Product)" href="@RouterConst.Admin.Product">
                 <span class="text-base font-medium text-[#252a2b]">Sản Phẩm</span>
 
                 <MudIcon Icon="@Icons.Material.Filled.KeyboardArrowRight" />
-            </button>
+            </a>
         </li>
         <li class="w-full">
-            <button class="flex w-full items-center justify-between rounded-lg p-4 hover:bg-gray-100">
+            <button class="@GetNavLinkClass(@RouterConst.Admin.Category)" href="@RouterConst.Admin.Category">
                 <span class="text-base font-medium text-[#252a2b]">Loại</span>
 
                 <MudIcon Icon="@Icons.Material.Filled.KeyboardArrowRight" />
             </button>
         </li>
         <li class="w-full">
-            <button class="flex w-full items-center justify-between rounded-lg p-4 hover:bg-gray-100">
+            <button class="@GetNavLinkClass(@RouterConst.Admin.Brand)" href="@RouterConst.Admin.Brand">
                 <span class="text-base font-medium text-[#252a2b]">Thương Hiệu</span>
 
                 <MudIcon Icon="@Icons.Material.Filled.KeyboardArrowRight" />
             </button>
         </li>
         <li class="w-full">
-            <button class="flex w-full items-center justify-between rounded-lg p-4 hover:bg-gray-100">
+            <button class="@GetNavLinkClass(@RouterConst.Admin.Bill)" href="@RouterConst.Admin.Bill">
                 <span class="text-base font-medium text-[#252a2b]">Hóa Đơn</span>
 
                 <MudIcon Icon="@Icons.Material.Filled.KeyboardArrowRight" />
             </button>
         </li>
         <li class="w-full">
-            <button class="flex w-full items-center justify-between rounded-lg p-4 hover:bg-gray-100">
+            <button class="@GetNavLinkClass(@RouterConst.Admin.Statistical)" href="@RouterConst.Admin.Statistical">
                 <span class="text-base font-medium text-[#252a2b]">Thống Kê</span>
 
                 <MudIcon Icon="@Icons.Material.Filled.KeyboardArrowRight" />
@@ -63,7 +69,7 @@
                         <MudAvatar Size="@Size.Small" Color="@Color.Success">B</MudAvatar>
                     </li>
                     <li class="mb-3 mt-2">
-                        <p class="whitespace-nowrap text-sm font-medium text-[#252a2b]">Adams Management</p>
+                        <p class="whitespace-nowrap text-sm font-medium text-[#252a2b]">Adams Store</p>
                     </li>
                     <MudDivider />
                     <li class="mt-3">
@@ -73,6 +79,50 @@
             </div>
         </div>
     </div>
-
-    <div></div>
 </nav>
+
+@code {
+    private string _currentPath;
+
+    protected override void OnInitialized()
+    {
+        string baseUrl = navigation.BaseUri;
+        string fullUrl = navigation.Uri;
+        _currentPath = "/" + fullUrl.Substring(baseUrl.Length).ToLowerInvariant().TrimStart('/');
+
+        navigation.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        string baseUrl = navigation.BaseUri;
+        _currentPath = "/" + e.Location.Substring(baseUrl.Length).ToLowerInvariant().TrimStart('/');
+        StateHasChanged();
+    }
+
+    private string GetNavLinkClass(string targetPath)
+    {
+        string defaultClasses = "flex w-full items-center justify-between rounded-lg p-4 font-medium text-[#252a2b] transition-colors duration-150";
+        string activeClasses = " text-white bg-admin-default custom-text hover:opacity-80";
+        string inactiveClasses = " hover:bg-gray-100";
+
+        if (string.IsNullOrEmpty(targetPath))
+        {
+            if (_currentPath == "")
+            {
+                return defaultClasses + activeClasses;
+            }
+        }
+        else if (_currentPath.StartsWith(targetPath) && _currentPath != "")
+        {
+            return defaultClasses + activeClasses;
+        }
+
+        return defaultClasses + inactiveClasses;
+    }
+
+    public void Dispose()
+    {
+        navigation.LocationChanged -= OnLocationChanged;
+    }
+}
