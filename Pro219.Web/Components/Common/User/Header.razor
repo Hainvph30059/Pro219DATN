@@ -78,9 +78,11 @@
                 </div>
                 
                 <div class="group relative">
-                    <MudAvatar Size="@Size.Medium" Class="cursor-pointer" Color="@Color.Success">B</MudAvatar>
+                    <a href="@RouterConst.User.Login">
+                        <MudAvatar Size="@Size.Medium" Class="cursor-pointer" Color="@Color.Success">B</MudAvatar>
+                    </a>
 
-                    <ul class="absolute right-0 hidden bg-white group-hover:block">
+                    @* <ul class="absolute right-0 hidden bg-white group-hover:block">
                         <li>
                             <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:text-black">Thông tin tài khoản</a>
                         </li>
@@ -94,7 +96,7 @@
                         <li>
                             <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:text-black">Đăng Xuất</a>
                         </li>
-                    </ul>
+                    </ul> *@
                 </div>
 
             <MudBadge Content="@_countCart" Color="Color.Error" Overlap="true" Bordered="true">

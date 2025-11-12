@@ -1,5 +1,4 @@
 ﻿@inherits LayoutComponentBase
-@using Pro219.Web.Components.Common.Admin
 
 @* Required *@
 <MudThemeProvider />
@@ -15,10 +14,6 @@
 
 <PageNotSupport />
 
-<main class="hidden h-screen w-screen overflow-hidden lg:flex">
-    <Nav />
-
-    <section class="max-w-[calc(100lvw-18.75rem)] h-screen w-full overflow-auto bg-gray-50">
-        @Body
-    </section>
-</main>
+<div class="hidden h-screen w-screen lg:block">
+    @Body
+</div>
