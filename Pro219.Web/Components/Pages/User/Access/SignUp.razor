@@ -1,0 +1,46 @@
+﻿@page "/sign-up"
+@layout MainLayout
+
+<PageTitle>@Constant.PageTitleUser | Sign Up</PageTitle>
+
+<section class="mx-auto my-6 w-full max-w-[30rem] rounded-lg border border-gray-200 px-4 py-6">
+    <h1 class="text-xl font-bold uppercase">Đăng Ký Tài Khoản</h1>
+
+    <p class="mt-1 text-sm font-medium text-[#666666]">Nhập thông tin đăng ký:</p>
+
+    <MudDivider Class="!my-4" />
+
+    <MudTextField T="string" @bind-Value="_name" Class="mt-4 w-full" Placeholder="Họ và tên" Variant="Variant.Outlined" FullWidth="true"></MudTextField>
+    <MudTextField T="string" @bind-Value="_email" Class="mt-4 w-full" Placeholder="Email" Variant="Variant.Outlined" FullWidth="true"></MudTextField>
+    <MudTextField T="string" @bind-Value="_phoneNumber" Class="mt-4 w-full" Placeholder="Số điện thoại" Variant="Variant.Outlined" FullWidth="true"></MudTextField>
+    <MudTextField T="string" @bind-Value="_password" Class="mb-4 mt-4 w-full" Placeholder="Mật khẩu" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ShowHidePassword" AdornmentAriaLabel="Show Password" FullWidth="true"></MudTextField>
+
+    <MudButton Class="!h-12 w-full rounded-lg !bg-black !text-white" OnClick="OnLogin">Đăng Ký</MudButton>
+
+    <div class="mt-4 flex items-center gap-2">
+        <span class="text-sm text-[#666666]">Đã có tài khoản?</span>
+        <a href="@RouterConst.User.Login" class="text-sm font-medium text-[#252a2b]">Đăng nhập ngay</a>
+    </div>
+</section>
+
+@code {
+    private string _name;
+    private string _email;
+    private string _phoneNumber;
+    private string _password;
+    private bool _isPasswordVisible = false;
+
+    InputType PasswordInput => _isPasswordVisible ? InputType.Text : InputType.Password;
+    string PasswordInputIcon => _isPasswordVisible ? Icons.Material.Filled.Visibility : Icons.Material.Filled.VisibilityOff;
+
+    void ShowHidePassword()
+    {
+        _isPasswordVisible = !_isPasswordVisible;
+        StateHasChanged();
+    }
+
+    void OnLogin()
+    {
+
+    }
+}
