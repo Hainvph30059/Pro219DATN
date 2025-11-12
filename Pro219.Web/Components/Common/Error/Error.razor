@@ -1,0 +1,47 @@
+﻿@page "/error/{statusCode:int}"
+@layout PublicLayout
+
+@if (_isNotFound)
+{
+    <NotFound />
+} 
+else if (_isAccessDenined)
+{
+    <AccessDenined />
+}
+else if (_isInternalError)
+{
+    <InternalError />
+} else
+{
+    <OtherError />
+}
+
+@code {
+    [Parameter]
+    public int StatusCode { get; set; }
+
+    private bool _isNotFound;
+    private bool _isAccessDenined;
+    private bool _isInternalError;
+    private bool _isOther;
+
+    protected override void OnInitialized()
+    {
+        switch (StatusCode)
+        {
+            case 404:
+                _isNotFound = true;
+                break;
+            case 500:
+                _isInternalError = true;
+                break;
+            case 403:
+                _isAccessDenined = true;
+                break;
+            default:
+                _isOther = true;
+                break;
+        }
+    }
+}
