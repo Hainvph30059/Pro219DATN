@@ -11,8 +11,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\Assets\Images\" />
     <Folder Include="wwwroot\Assets\Icons\" />
+    <Folder Include="wwwroot\Assets\Images\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Pro219.BUS\Pro219.API.csproj" />
   </ItemGroup>
 
 </Project>
