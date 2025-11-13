@@ -1,128 +1,72 @@
-﻿<style>
-    .custom-text span {
+﻿
+<style>
+    .custom-text a div,
+    .custom-text a svg path {
         color: #FFFFFF;
     }
 </style>
 
-<nav class="relative h-full w-[18.75rem] px-3 py-4 pt-6 shadow-lg">
-    <div class="mb-4 flex h-12 w-full items-center justify-center border">
-        LOGO
-    </div>
+<nav class="relative h-full w-[18.75rem] pb-4 pt-6 shadow-lg">
+    <MudNavMenu Class="mud-width-full" Color="Color.Primary" Bordered="true">
+        <a href="@RouterConst.Admin.Home" class="flex w-full items-center justify-center px-10">
+            <img src="/Assets/Icons/logo-admin.svg" alt="logo" />
+        </a>
 
-    <MudDivider />
+        <MudDivider Class="my-5 !border-slate-200" />
 
-    <ul class="mt-4">
-        <li class="w-full">
-            <a class="@GetNavLinkClass(@RouterConst.Admin.Home)" href="@RouterConst.Admin.Home">
-                <span class="text-base font-medium text-[#252a2b]">Trang Chủ</span>
+        <div class="max-h-[calc(100lvh-15.5rem)] flex flex-col gap-2 overflow-y-auto px-3">
+            <MudNavLink Href="@RouterConst.Admin.Home" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Home">Trang chủ</MudNavLink>
+            <MudNavLink Href="@RouterConst.Admin.Product" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.AllInbox">Sản phẩm</MudNavLink>
+            <MudNavLink Href="@RouterConst.Admin.Coupon" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PanoramaHorizontalSelect">Mã giảm giá</MudNavLink>
+            <MudNavLink Href="@RouterConst.Admin.Sale" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PanoramaHorizontalSelect">Giảm giá</MudNavLink>
+            <MudNavLink Href="@RouterConst.Admin.Category" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Category">Danh mục</MudNavLink>
+            <MudNavLink Href="@RouterConst.Admin.Brand" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.AutoAwesome">Thương hiệu</MudNavLink>
+            <MudNavLink Href="@RouterConst.Admin.Color" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Style">Màu</MudNavLink>
+            <MudNavLink Href="@RouterConst.Admin.Size" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.BorderColor">Kích cỡ</MudNavLink>
+            <MudNavLink Href="@RouterConst.Admin.Bill" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Payments">Hóa đơn</MudNavLink>
+            <MudNavLink Href="@RouterConst.Admin.Statistical" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.SsidChart">Thống kê</MudNavLink>
+            <MudNavLink Href="@RouterConst.Admin.Customer" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Group">Tài khoản khách hàng</MudNavLink>
+            <MudNavLink Href="@RouterConst.Admin.User" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.SupervisedUserCircle">Tài quản trị</MudNavLink>
+        </div>
+    </MudNavMenu>
 
-                <MudIcon Icon="@Icons.Material.Filled.KeyboardArrowRight" />
-            </a>
-        </li>
-        <li class="w-full">
-            <a class="@GetNavLinkClass(@RouterConst.Admin.Product)" href="@RouterConst.Admin.Product">
-                <span class="text-base font-medium text-[#252a2b]">Sản Phẩm</span>
+    <div class="absolute bottom-4 left-0 right-0">
+        <MudDivider Class="my-5 !border-slate-200" />
 
-                <MudIcon Icon="@Icons.Material.Filled.KeyboardArrowRight" />
-            </a>
-        </li>
-        <li class="w-full">
-            <button class="@GetNavLinkClass(@RouterConst.Admin.Category)" href="@RouterConst.Admin.Category">
-                <span class="text-base font-medium text-[#252a2b]">Loại</span>
+        <div class="relative px-3">
+            <div class="flex cursor-pointer items-center gap-2 rounded-xl p-2 hover:bg-gray-100" @onclick="HandleShowMenuChild">
+                <MudAvatar Size="@Size.Medium" Class="!bg-admin-default !font-bold !text-white">A</MudAvatar>
+                <p class="line-clamp-1 text-base font-medium text-[#252a2b]">Adams Store Management</p>
+            </div>
+        </div>
 
-                <MudIcon Icon="@Icons.Material.Filled.KeyboardArrowRight" />
-            </button>
-        </li>
-        <li class="w-full">
-            <button class="@GetNavLinkClass(@RouterConst.Admin.Brand)" href="@RouterConst.Admin.Brand">
-                <span class="text-base font-medium text-[#252a2b]">Thương Hiệu</span>
-
-                <MudIcon Icon="@Icons.Material.Filled.KeyboardArrowRight" />
-            </button>
-        </li>
-        <li class="w-full">
-            <button class="@GetNavLinkClass(@RouterConst.Admin.Bill)" href="@RouterConst.Admin.Bill">
-                <span class="text-base font-medium text-[#252a2b]">Hóa Đơn</span>
-
-                <MudIcon Icon="@Icons.Material.Filled.KeyboardArrowRight" />
-            </button>
-        </li>
-        <li class="w-full">
-            <button class="@GetNavLinkClass(@RouterConst.Admin.Statistical)" href="@RouterConst.Admin.Statistical">
-                <span class="text-base font-medium text-[#252a2b]">Thống Kê</span>
-
-                <MudIcon Icon="@Icons.Material.Filled.KeyboardArrowRight" />
-            </button>
-        </li>
-    </ul>
-
-    <div class="absolute bottom-4 left-3 right-3">
-        <MudDivider />
-
-        <div class="group relative mt-4 flex items-center gap-2 rounded-xl p-2 hover:bg-gray-100">
-            <MudAvatar Size="@Size.Medium" Color="@Color.Success">B</MudAvatar>
-            <p class="text-base font-medium text-[#252a2b]">Adams Management</p>
-
-            <div class="absolute bottom-0 left-full hidden bg-transparent group-hover:block">
-                <ul class="ml-4 bg-white px-3 py-2">
-                    <li>
-                        <MudAvatar Size="@Size.Small" Color="@Color.Success">B</MudAvatar>
+        @if (_isShowMenuChild)
+        {
+            <div class="-top-[calc(100vh-7.0625rem)] absolute h-screen w-screen cursor-pointer bg-transparent" @onclick="HandleShowMenuChild"></div>
+            <div class="absolute bottom-0 left-full w-full min-w-40 bg-transparent">
+                <ul class="ml-4 w-full bg-white py-2">
+                    <li class="px-3">
+                        <MudAvatar Size="@Size.Small" Class="!bg-admin-default !text-white">A</MudAvatar>
                     </li>
-                    <li class="mb-3 mt-2">
+                    <li class="mt-2 px-3">
                         <p class="whitespace-nowrap text-sm font-medium text-[#252a2b]">Adams Store</p>
                     </li>
-                    <MudDivider />
-                    <li class="mt-3">
-                        <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:bg-gray-100 hover:text-black">Đăng Xuất</a>
+                    <MudDivider Class="my-3 !border-slate-200" />
+                    <li class="px-3">
+                        <a href="@RouterConst.Admin.Login" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:bg-gray-100 hover:text-black">Đăng Xuất</a>
                     </li>
                 </ul>
             </div>
-        </div>
+        }
     </div>
 </nav>
 
 @code {
-    private string _currentPath;
+    private bool _isShowMenuChild = false;
 
-    protected override void OnInitialized()
+    private void HandleShowMenuChild()
     {
-        string baseUrl = navigation.BaseUri;
-        string fullUrl = navigation.Uri;
-        _currentPath = "/" + fullUrl.Substring(baseUrl.Length).ToLowerInvariant().TrimStart('/');
-
-        navigation.LocationChanged += OnLocationChanged;
-    }
-
-    private void OnLocationChanged(object sender, LocationChangedEventArgs e)
-    {
-        string baseUrl = navigation.BaseUri;
-        _currentPath = "/" + e.Location.Substring(baseUrl.Length).ToLowerInvariant().TrimStart('/');
+        _isShowMenuChild = !_isShowMenuChild;
         StateHasChanged();
-    }
-
-    private string GetNavLinkClass(string targetPath)
-    {
-        string defaultClasses = "flex w-full items-center justify-between rounded-lg p-4 font-medium text-[#252a2b] transition-colors duration-150";
-        string activeClasses = " text-white bg-admin-default custom-text hover:opacity-80";
-        string inactiveClasses = " hover:bg-gray-100";
-
-        if (string.IsNullOrEmpty(targetPath))
-        {
-            if (_currentPath == "")
-            {
-                return defaultClasses + activeClasses;
-            }
-        }
-        else if (_currentPath.StartsWith(targetPath) && _currentPath != "")
-        {
-            return defaultClasses + activeClasses;
-        }
-
-        return defaultClasses + inactiveClasses;
-    }
-
-    public void Dispose()
-    {
-        navigation.LocationChanged -= OnLocationChanged;
     }
 }

@@ -2,7 +2,7 @@
 {
     public static class Constant
     {
-        public const string PageTitleUser = "Adams Store";
-        public const string PageTitleAdmin = "Adams Store Management";
+        public const string PageTitleUser = "Adams Store -";
+        public const string PageTitleAdmin = "Adams Store Management -";
     }
 }

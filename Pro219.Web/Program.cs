@@ -1,6 +1,7 @@
 using Pro219.Web.Components;
 using MudBlazor;
 using MudBlazor.Services;
+using Pro219.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,18 @@ builder.Services.AddMudServices(config =>
     config.SnackbarConfiguration.ShowTransitionDuration = 500;
     config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
 });
+
+
+builder.Services.AddScoped<ProductService>();
+builder.Services.AddScoped<AccountService>();
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<BrandService>();
+builder.Services.AddScoped<CartService>();
+builder.Services.AddScoped<CategoryService>();
+builder.Services.AddScoped<ColorService>();
+builder.Services.AddScoped<CouponService>();
+builder.Services.AddScoped<SaleService>();
+builder.Services.AddScoped<SizeService>();
 
 builder.Services.AddScoped(http => new HttpClient
 {
