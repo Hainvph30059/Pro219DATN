@@ -1,0 +1,17 @@
+﻿@page "/admin/categories/create"
+@layout AdminLayout
+
+<div class="p-6">
+    <MudBreadcrumbs Class="!p-0 !text-sm" Items="_items" Separator=">"></MudBreadcrumbs>
+
+    <h1 class="leading-[3rem] h-12 text-3xl font-bold text-admin-default">Tạo danh mục</h1>
+</div>
+
+@code {
+    private List<BreadcrumbItem> _items =
+    [
+        new("Trang Chủ", href: RouterConst.Admin.Home),
+        new("Danh Mục", href: RouterConst.Admin.Category),
+        new("Tạo Danh Mục", href: "#", disabled: true),
+    ];
+}

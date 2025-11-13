@@ -8,6 +8,7 @@
 @using Microsoft.JSInterop
 @using Pro219.Web
 @using Pro219.Web.Components
+@using Pro219.Web.Services
 @using Pro219.Web.Components.Layout
 @using Pro219.Web.Components.Common.User
 @using Pro219.Web.Components.Common.Admin
@@ -15,3 +16,13 @@
 @using MudBlazor.Services
 @using Pro219.Web.Constants
 @inject NavigationManager navigation
+@inject ProductService _productService
+@inject AccountService _accountService
+@inject AuthService _authService
+@inject BrandService _brandService
+@inject CartService _cartService
+@inject CategoryService _categoryService
+@inject ColorService _colorService
+@inject CouponService _couponService
+@inject SaleService _saleService
+@inject SizeService _sizeService

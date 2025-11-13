@@ -1,109 +1,111 @@
 ﻿<header class="fixed left-0 right-0 top-0 flex h-20 bg-white px-10 py-2.5 shadow-lg">
     <nav class="flex h-full w-full items-center justify-between">
-            <div>
-                LOGO
+        <div class="max-h-16 max-w-48">
+             <a href="@RouterConst.User.Home">
+                <img src="/Assets/Icons/logo.svg" alt="logo" />
+             </a>
+        </div>
+
+        <ul class="flex items-center gap-2">
+            <li class="group relative mx-3 h-full hover:border-b hover:border-b-black">
+                <a href="#" class="leading-[2.875rem] block text-base font-medium">TRANG CHỦ</a>
+            </li>
+
+            <li class="group relative mx-3 h-full hover:border-b hover:border-b-black">
+                <a href="#" class="leading-[2.875rem] block text-base font-medium">ÁO THU ĐÔNG</a>
+
+                <ul class="absolute hidden bg-white p-2.5 group-hover:block">
+                    <li>
+                        <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:text-black">Áo Nỉ / Thun Dài Tay</a>
+                    </li>
+                    <li>
+                        <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:text-black">Áo Len</a>
+                    </li>
+                    <li>
+                        <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:text-black">Áo Khoác</a>
+                    </li>
+                    <li>
+                        <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:text-black">Cardigan</a>
+                    </li>
+                    <li>
+                        <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:text-black">Áo Blazer / Măng Tô</a>
+                    </li>
+                    <li>
+                        <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:text-black">Áo Hoodie</a>
+                    </li>
+                </ul>
+            </li>
+
+            <li class="group relative mx-3 h-full hover:border-b hover:border-b-black">
+                <a href="#" class="leading-[2.875rem] block text-base font-medium">ÁO XUÂN HÈ</a>
+
+                <ul class="absolute hidden bg-white p-2.5 group-hover:block">
+                    <li>
+                        <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:text-black">Áo Phông</a>
+                    </li>
+                    <li>
+                        <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:text-black">Áo Sơ Mi Ngắn Tay</a>
+                    </li>
+                    <li>
+                        <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:text-black">Áo Sơ Mi Dài Tay</a>
+                    </li>
+                    <li>
+                        <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:text-black">Áo Polo</a>
+                    </li>
+                </ul>
+            </li>
+
+            <li class="group relative mx-3 h-full hover:border-b hover:border-b-black">
+                <a href="#" class="leading-[2.875rem] block text-base font-medium">QUẦN</a>
+
+                <ul class="absolute hidden bg-white p-2.5 group-hover:block">
+                    <li>
+                        <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:text-black">Quần Dài</a>
+                    </li>
+                    <li>
+                        <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:text-black">Quần Cộc</a>
+                    </li>
+                </ul>
+            </li>
+
+            <li class="group relative mx-3 h-full hover:border-b hover:border-b-black">
+                <a href="#" class="leading-[2.875rem] block text-base font-medium">THÔNG TIN</a>
+            </li>
+        </ul>
+
+        <div class="flex items-center gap-3">
+            <div class="flex items-center">
+            <input placeholder="Tìm kiếm sản phẩm" class="!h-10 !w-56 rounded-e-none rounded-l-lg border-y border-l border-gray-300 px-2 outline-0" name="_searchValue" />
+                <MudIcon Icon="@Icons.Material.Filled.Search" Size="@Size.Large" Class="!h-10 cursor-pointer rounded-r-lg border-y border-r border-gray-300 pr-2" />
             </div>
-
-            <ul class="flex items-center gap-2">
-                <li class="group relative mx-3 h-full hover:border-b hover:border-b-black">
-                    <a href="#" class="leading-[2.875rem] block text-base font-medium">TRANG CHỦ</a>
-                </li>
-
-                <li class="group relative mx-3 h-full hover:border-b hover:border-b-black">
-                    <a href="#" class="leading-[2.875rem] block text-base font-medium">ÁO THU ĐÔNG</a>
-
-                    <ul class="absolute hidden bg-white p-2.5 group-hover:block">
-                        <li>
-                            <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:text-black">Áo Nỉ / Thun Dài Tay</a>
-                        </li>
-                        <li>
-                            <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:text-black">Áo Len</a>
-                        </li>
-                        <li>
-                            <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:text-black">Áo Khoác</a>
-                        </li>
-                        <li>
-                            <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:text-black">Cardigan</a>
-                        </li>
-                        <li>
-                            <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:text-black">Áo Blazer / Măng Tô</a>
-                        </li>
-                        <li>
-                            <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:text-black">Áo Hoodie</a>
-                        </li>
-                    </ul>
-                </li>
-
-                <li class="group relative mx-3 h-full hover:border-b hover:border-b-black">
-                    <a href="#" class="leading-[2.875rem] block text-base font-medium">ÁO XUÂN HÈ</a>
-
-                    <ul class="absolute hidden bg-white p-2.5 group-hover:block">
-                        <li>
-                            <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:text-black">Áo Phông</a>
-                        </li>
-                        <li>
-                            <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:text-black">Áo Sơ Mi Ngắn Tay</a>
-                        </li>
-                        <li>
-                            <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:text-black">Áo Sơ Mi Dài Tay</a>
-                        </li>
-                        <li>
-                            <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:text-black">Áo Polo</a>
-                        </li>
-                    </ul>
-                </li>
-
-                <li class="group relative mx-3 h-full hover:border-b hover:border-b-black">
-                    <a href="#" class="leading-[2.875rem] block text-base font-medium">QUẦN</a>
-
-                    <ul class="absolute hidden bg-white p-2.5 group-hover:block">
-                        <li>
-                            <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:text-black">Quần Dài</a>
-                        </li>
-                        <li>
-                            <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:text-black">Quần Cộc</a>
-                        </li>
-                    </ul>
-                </li>
-
-                <li class="group relative mx-3 h-full hover:border-b hover:border-b-black">
-                    <a href="#" class="leading-[2.875rem] block text-base font-medium">THÔNG TIN</a>
-                </li>
-            </ul>
-
-            <div class="flex items-center gap-3">
-                <div class="flex items-center">
-                <input placeholder="Tìm kiếm sản phẩm" class="!h-10 !w-56 rounded-e-none rounded-l-lg border-y border-l border-gray-300 px-2 outline-0" name="_searchValue" />
-                    <MudIcon Icon="@Icons.Material.Filled.Search" Size="@Size.Large" Class="!h-10 cursor-pointer rounded-r-lg border-y border-r border-gray-300 pr-2" />
-                </div>
                 
-                <div class="group relative">
-                    <a href="@RouterConst.User.Login">
-                        <MudAvatar Size="@Size.Medium" Class="cursor-pointer" Color="@Color.Success">B</MudAvatar>
-                    </a>
+            <div class="group relative">
+                <a href="@RouterConst.User.Login">
+                    <MudAvatar Size="@Size.Medium" Class="!bg-black !text-white">A</MudAvatar>
+                </a>
 
-                    @* <ul class="absolute right-0 hidden bg-white group-hover:block">
-                        <li>
-                            <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:text-black">Thông tin tài khoản</a>
-                        </li>
-                        <li>
-                            <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:text-black">Giỏ Hàng</a>
-                        </li>
-                        <li>
-                            <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:text-black">Yêu Thích</a>
-                        </li>
-                        <MudDivider />
-                        <li>
-                            <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:text-black">Đăng Xuất</a>
-                        </li>
-                    </ul> *@
-                </div>
-
-            <MudBadge Content="@_countCart" Color="Color.Error" Overlap="true" Bordered="true">
-                <MudIcon Icon="@Icons.Material.Filled.ShoppingCart" Class="cursor-pointer" />
-            </MudBadge>
+                @* <ul class="absolute right-0 hidden bg-white group-hover:block">
+                    <li>
+                        <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:text-black">Thông tin tài khoản</a>
+                    </li>
+                    <li>
+                        <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:text-black">Giỏ Hàng</a>
+                    </li>
+                    <li>
+                        <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:text-black">Yêu Thích</a>
+                    </li>
+                    <MudDivider />
+                    <li>
+                        <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:text-black">Đăng Xuất</a>
+                    </li>
+                </ul> *@
             </div>
-        </nav>
+
+        <MudBadge Content="@_countCart" Color="Color.Error" Overlap="true" Bordered="true">
+            <MudIcon Icon="@Icons.Material.Filled.ShoppingCart" Class="cursor-pointer" />
+        </MudBadge>
+        </div>
+    </nav>
 </header>
 
 @code {

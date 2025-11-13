@@ -1,0 +1,22 @@
+﻿@page "/admin/users"
+@layout AdminLayout
+
+<div class="p-6">
+    <MudBreadcrumbs Class="!p-0 !text-sm" Items="_items" Separator=">"></MudBreadcrumbs>
+
+    <div class="flex items-center justify-between">
+        <h1 class="leading-[3rem] h-12 text-3xl font-bold text-admin-default">Danh tài khoản</h1>
+        <a href="@RouterConst.Admin.CreateUser" class="leading-[1.5rem] h-10 rounded-lg bg-admin-default px-6 py-2 text-white">Tạo mới</a>
+    </div>
+
+    <div class="h-[calc(100lvh-9.25rem)] mt-6 w-full rounded-xl border border-slate-200 bg-white shadow-sm">
+    </div>
+</div>
+
+@code {
+    private List<BreadcrumbItem> _items =
+    [
+        new("Trang Chủ", href: RouterConst.Admin.Home),
+        new("Tài Khoản", href: "#", disabled: true),
+    ];
+}

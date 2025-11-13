@@ -1,11 +1,13 @@
 ﻿@page "/admin/login"
 @layout PublicLayout
 
-<PageTitle>@Constant.PageTitleAdmin | Login</PageTitle>
+<PageTitle>@Constant.PageTitleAdmin Login</PageTitle>
 
 <section class="flex h-full w-full flex-col items-center justify-center gap-10 bg-[#7e6fff]">
-    <div class="flex w-full max-w-[40rem] flex-col items-center justify-center rounded-lg bg-white p-12 shadow-2xl">
-        <div class="flex h-10 w-40 items-center justify-center">LOGO</div>
+    <div class="flex w-full max-w-[35rem] flex-col items-center justify-center rounded-lg bg-white p-12 shadow-2xl">
+        <div class="flex w-64 items-center justify-center">
+            <img src="/Assets/Icons/logo-admin.svg" alt="logo" />
+        </div>
 
         <h2 class="mb-6 mt-2 text-2xl font-bold text-[#252a2b]">Welcome to Adams Store Management</h2>
 
@@ -34,6 +36,6 @@
 
     void OnLogin()
     {
-
+        navigation.NavigateTo(RouterConst.Admin.Home);
     }
 }
