@@ -26,6 +26,19 @@ namespace Pro219.DAL.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal Subtotal { get; set; }
 
+        public bool? Delete { get; set; }
+
+        public DateTime? CreateAt { get; set; }
+
+        public DateTime? UpdateAt { get; set; }
+
+        public DateTime? DeleteAt { get; set; }
+
+        public byte? Status { get; set; }
+
+        [MaxLength(255)]
+        public string? UpdateBy { get; set; }
+
         // Foreign key navigation properties
         [ForeignKey("OrderId")]
         public virtual Order Order { get; set; } = null!;

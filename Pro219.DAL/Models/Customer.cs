@@ -33,11 +33,23 @@ namespace Pro219.DAL.Models
         [MaxLength(20)]
         public string Status { get; set; } = string.Empty;
 
+        public bool? Delete { get; set; }
+
+        public DateTime? UpdateAt { get; set; }
+
+        public DateTime? DeleteAt { get; set; }
+
+        public byte? StatusByte { get; set; }
+
+        [MaxLength(255)]
+        public string? UpdateBy { get; set; }
+
         // Navigation properties
         public virtual ICollection<Address> Addresses { get; set; } = new List<Address>();
         public virtual ICollection<Cart> Carts { get; set; } = new List<Cart>();
         public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
         public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
+        public virtual ICollection<Wishlist> Wishlists { get; set; } = new List<Wishlist>();
     }
 }
 

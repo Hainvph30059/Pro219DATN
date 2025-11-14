@@ -16,6 +16,19 @@ namespace Pro219.DAL.Models
         [MaxLength(7)]
         public string? HexCode { get; set; } // #RRGGBB format
 
+        public bool? Delete { get; set; }
+
+        public DateTime? CreateAt { get; set; }
+
+        public DateTime? UpdateAt { get; set; }
+
+        public DateTime? DeleteAt { get; set; }
+
+        public byte? Status { get; set; }
+
+        [MaxLength(255)]
+        public string? UpdateBy { get; set; }
+
         // Navigation properties
         public virtual ICollection<ProductVariant> ProductVariants { get; set; } = new List<ProductVariant>();
     }

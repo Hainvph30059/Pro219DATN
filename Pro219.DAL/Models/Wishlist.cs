@@ -3,24 +3,21 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Pro219.DAL.Models
 {
-    [Table("InventoryLog")]
-    public class InventoryLog
+    [Table("Wishlist")]
+    public class Wishlist
     {
         [Key]
-        public int InventoryLogId { get; set; }
+        public int Id { get; set; }
 
         [Required]
-        public int VariantId { get; set; }
+        public int CustomerId { get; set; }
 
         [Required]
-        public int ChangeQuantity { get; set; } // Positive for addition, negative for subtraction
-
-        [MaxLength(500)]
-        public string? Reason { get; set; }
-
-        public DateTime CreateAt { get; set; }
+        public int ProductVariantId { get; set; }
 
         public bool? Delete { get; set; }
+
+        public DateTime? CreateAt { get; set; }
 
         public DateTime? UpdateAt { get; set; }
 
@@ -31,8 +28,11 @@ namespace Pro219.DAL.Models
         [MaxLength(255)]
         public string? UpdateBy { get; set; }
 
-        // Foreign key navigation property
-        [ForeignKey("VariantId")]
+        // Foreign key navigation properties
+        [ForeignKey("CustomerId")]
+        public virtual Customer Customer { get; set; } = null!;
+
+        [ForeignKey("ProductVariantId")]
         public virtual ProductVariant ProductVariant { get; set; } = null!;
     }
 }
