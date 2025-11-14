@@ -29,6 +29,7 @@
     private string _username;
     private string _password;
     private bool _isPasswordVisible = false;
+    [Inject] ISnackbar Snackbar { get; set; }
 
     InputType PasswordInput => _isPasswordVisible ? InputType.Text : InputType.Password;
     string PasswordInputIcon => _isPasswordVisible ? Icons.Material.Filled.Visibility : Icons.Material.Filled.VisibilityOff;
@@ -39,8 +40,21 @@
         StateHasChanged();
     }
 
-    void OnLogin()
+    async Task OnLogin()
     {
-        
+        var response = await  _accountService.Login(_username, _password);
+        if (response.LoginSuccess ==true)
+        {
+            Snackbar.Add("Đăng nhập thành công!", Severity.Success);            
+            navigation.NavigateTo(RouterConst.User.Home, true);
+            await localStorage.SetItemAsync("token", response.Token);
+            await localStorage.SetItemAsync("expired", response.Expiration);
+            
+        }
+        else
+        {
+            Snackbar.Add("Đăng nhập không thành công. Vui lòng kiểm tra lại tên người dùng và mật khẩu.", Severity.Warning);
+        }
+
     }
 }

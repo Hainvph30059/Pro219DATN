@@ -1,6 +1,7 @@
-using Pro219.Web.Components;
+using Blazored.LocalStorage;
 using MudBlazor;
 using MudBlazor.Services;
+using Pro219.Web.Components;
 using Pro219.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,8 +37,10 @@ builder.Services.AddScoped<SizeService>();
 
 builder.Services.AddScoped(http => new HttpClient
 {
-    BaseAddress = new Uri("http://localhost:7128/")
+    BaseAddress = new Uri("https://localhost:7179/")
 });
+
+builder.Services.AddBlazoredLocalStorage();
 
 var app = builder.Build();
 

@@ -61,15 +61,21 @@ namespace Pro219.API.Controllers
                     signingCredentials: creds
                 );
 
-                return Ok(new
+                return Ok(new LoginResponseDTO
                 {
-                    token = new JwtSecurityTokenHandler().WriteToken(token),
-                    expiration = expirationGmt7
+                    Token = new JwtSecurityTokenHandler().WriteToken(token),
+                    Expiration = expirationGmt7,
+                    LoginSuccess = true
                 });
             }
             else
             {
-                return Unauthorized();
+                return Unauthorized(new LoginResponseDTO
+                {
+                    Token = null,
+                    Expiration = DateTime.MinValue,
+                    LoginSuccess = false
+                });
             }
         }
 
@@ -104,15 +110,21 @@ namespace Pro219.API.Controllers
                     signingCredentials: creds
                 );
 
-                return Ok(new
+                return Ok(new LoginResponseDTO
                 {
-                    token = new JwtSecurityTokenHandler().WriteToken(token),
-                    expiration = expirationGmt7
+                    Token = new JwtSecurityTokenHandler().WriteToken(token),
+                    Expiration = expirationGmt7,
+                    LoginSuccess = true
                 });
             }
             else
             {
-                return Unauthorized();
+                return Unauthorized(new LoginResponseDTO
+                {
+                    Token = null,
+                    Expiration = DateTime.MinValue,
+                    LoginSuccess = false
+                });
             }
         }
 
