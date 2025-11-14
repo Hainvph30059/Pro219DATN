@@ -53,7 +53,7 @@
                     </li>
                     <MudDivider Class="my-3 !border-slate-200" />
                     <li class="px-3">
-                        <a href="@RouterConst.Admin.Login" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:bg-gray-100 hover:text-black">Đăng Xuất</a>
+                        <button @onclick="Logout" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:bg-gray-100 hover:text-black">Đăng Xuất</button>
                     </li>
                 </ul>
             </div>
@@ -68,5 +68,13 @@
     {
         _isShowMenuChild = !_isShowMenuChild;
         StateHasChanged();
+    }
+
+    async Task Logout()
+    {
+        await localStorage.RemoveItemAsync(Constant.TokenNameLocalStorage);
+        await localStorage.RemoveItemAsync(Constant.TokenExpiredLocalStorage);
+
+        navigation.NavigateTo(RouterConst.Admin.Login);
     }
 }
