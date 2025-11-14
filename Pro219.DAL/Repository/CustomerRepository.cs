@@ -126,6 +126,19 @@ namespace Pro219.DAL.Repository
             }
         }
 
+        public async Task<Customer> FindCustomerByEmailAndPhone(string email, string phoneNumber)
+        {
+            try
+            {
+                var customer = await _context.Customers.FirstOrDefaultAsync(x => x.Email == email || x.PhoneNumber == phoneNumber);
+                return customer;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
 
     }
 }
