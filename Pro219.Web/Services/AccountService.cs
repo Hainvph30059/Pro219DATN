@@ -30,7 +30,7 @@ namespace Pro219.Web.Services
 
         }
 
-        public async Task<LoginResponseDTO> Login(string username, string password)
+        public async Task<LoginResponseDTO> LoginCustomer(string username, string password)
         {
             var loginRequest = new LoginModel
             {
@@ -39,6 +39,32 @@ namespace Pro219.Web.Services
             };
 
             var response = await _httpClient.PostAsJsonAsync("/Access/LoginCustomer", loginRequest);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseDTO = await response.Content.ReadFromJsonAsync<LoginResponseDTO>();
+                return responseDTO;
+            }
+            else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                var responseDTO = await response.Content.ReadFromJsonAsync<LoginResponseDTO>();
+                return responseDTO ?? new LoginResponseDTO { LoginSuccess = false };
+            }
+            else
+            {
+                return new LoginResponseDTO { LoginSuccess = false };
+            }
+        }
+
+        public async Task<LoginResponseDTO> LoginStaff(string username, string password)
+        {
+            var loginRequest = new LoginModel
+            {
+                Username = username,
+                PasswordHash = HashPassword(password)
+            };
+
+            var response = await _httpClient.PostAsJsonAsync("/Access/LoginStaff", loginRequest);
 
             if (response.IsSuccessStatusCode)
             {

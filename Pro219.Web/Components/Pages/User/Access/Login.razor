@@ -42,7 +42,7 @@
 
     async Task OnLogin()
     {
-        var response = await  _accountService.Login(_username, _password);
+        var response = await  _accountService.LoginCustomer(_username, _password);
         if (response.LoginSuccess ==true)
         {
             Snackbar.Add("Đăng nhập thành công!", Severity.Success);            
