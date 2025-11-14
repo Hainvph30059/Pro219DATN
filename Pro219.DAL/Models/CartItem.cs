@@ -26,6 +26,19 @@ namespace Pro219.DAL.Models
 
         public DateTime AddedAt { get; set; }
 
+        public bool? Delete { get; set; }
+
+        public DateTime? CreateAt { get; set; }
+
+        public DateTime? UpdateAt { get; set; }
+
+        public DateTime? DeleteAt { get; set; }
+
+        public byte? Status { get; set; }
+
+        [MaxLength(255)]
+        public string? UpdateBy { get; set; }
+
         // Foreign key navigation properties
         [ForeignKey("CartId")]
         public virtual Cart Cart { get; set; } = null!;

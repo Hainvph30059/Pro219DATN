@@ -33,6 +33,19 @@ namespace Pro219.DAL.Models
 
         public bool IsActive { get; set; }
 
+        public bool? Delete { get; set; }
+
+        public DateTime? CreateAt { get; set; }
+
+        public DateTime? UpdateAt { get; set; }
+
+        public DateTime? DeleteAt { get; set; }
+
+        public byte? Status { get; set; }
+
+        [MaxLength(255)]
+        public string? UpdateByString { get; set; }
+
         // Foreign key navigation properties
         [ForeignKey("ProductId")]
         public virtual Product Product { get; set; } = null!;
@@ -51,6 +64,7 @@ namespace Pro219.DAL.Models
         public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
         public virtual ICollection<InventoryLog> InventoryLogs { get; set; } = new List<InventoryLog>();
         public virtual ICollection<ProductImage> ProductImages { get; set; } = new List<ProductImage>();
+        public virtual ICollection<Wishlist> Wishlists { get; set; } = new List<Wishlist>();
     }
 }
 

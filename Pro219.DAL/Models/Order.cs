@@ -51,6 +51,17 @@ namespace Pro219.DAL.Models
 
         public DateTime LastUpdate { get; set; }
 
+        public bool? Delete { get; set; }
+
+        public DateTime? CreateAt { get; set; }
+
+        public DateTime? DeleteAt { get; set; }
+
+        public byte? StatusByte { get; set; }
+
+        [MaxLength(255)]
+        public string? UpdateByString { get; set; }
+
         // Foreign key navigation properties
         [ForeignKey("CustomerId")]
         public virtual Customer Customer { get; set; } = null!;

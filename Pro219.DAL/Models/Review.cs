@@ -27,6 +27,17 @@ namespace Pro219.DAL.Models
 
         public DateTime CreatedAt { get; set; }
 
+        public bool? Delete { get; set; }
+
+        public DateTime? UpdateAt { get; set; }
+
+        public DateTime? DeleteAt { get; set; }
+
+        public byte? Status { get; set; }
+
+        [MaxLength(255)]
+        public string? UpdateBy { get; set; }
+
         // Foreign key navigation properties
         [ForeignKey("ProductId")]
         public virtual Product Product { get; set; } = null!;
