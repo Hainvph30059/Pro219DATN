@@ -731,8 +731,16 @@ video {
   display: block;
 }
 
+.inline-block {
+  display: inline-block;
+}
+
 .flex {
   display: flex;
+}
+
+.grid {
+  display: grid;
 }
 
 .hidden {
@@ -791,6 +799,10 @@ video {
   max-height: calc(100lvh - 15.5rem);
 }
 
+.max-h-12 {
+  max-height: 3rem;
+}
+
 .min-h-\[calc\(100lvh-26\.625rem\)\] {
   min-height: calc(100lvh - 26.625rem);
 }
@@ -835,6 +847,23 @@ video {
   width: 100vw;
 }
 
+.w-60 {
+  width: 15rem;
+}
+
+.w-52 {
+  width: 13rem;
+}
+
+.w-44 {
+  width: 11rem;
+}
+
+.w-fit {
+  width: -moz-fit-content;
+  width: fit-content;
+}
+
 .min-w-40 {
   min-width: 10rem;
 }
@@ -863,8 +892,24 @@ video {
   max-width: 28rem;
 }
 
+.max-w-\[64\.5rem\] {
+  max-width: 64.5rem;
+}
+
+.flex-1 {
+  flex: 1 1 0%;
+}
+
+.flex-shrink-0 {
+  flex-shrink: 0;
+}
+
 .cursor-pointer {
   cursor: pointer;
+}
+
+.grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .flex-col {
@@ -909,6 +954,10 @@ video {
 
 .gap-72 {
   gap: 18rem;
+}
+
+.gap-6 {
+  gap: 1.5rem;
 }
 
 .overflow-auto {
@@ -1031,6 +1080,21 @@ video {
   background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
 }
 
+.bg-slate-50 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(248 250 252 / var(--tw-bg-opacity, 1));
+}
+
+.bg-slate-100 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(241 245 249 / var(--tw-bg-opacity, 1));
+}
+
+.\!bg-white {
+  --tw-bg-opacity: 1 !important;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1)) !important;
+}
+
 .\!p-0 {
   padding: 0px !important;
 }
@@ -1133,6 +1197,26 @@ video {
   padding-top: 1.5rem;
 }
 
+.pt-12 {
+  padding-top: 3rem;
+}
+
+.pt-3 {
+  padding-top: 0.75rem;
+}
+
+.\!pt-3 {
+  padding-top: 0.75rem !important;
+}
+
+.pt-2 {
+  padding-top: 0.5rem;
+}
+
+.pt-4 {
+  padding-top: 1rem;
+}
+
 .text-left {
   text-align: left;
 }
@@ -1226,6 +1310,10 @@ video {
   line-height: 4.375rem;
 }
 
+.leading-5 {
+  line-height: 1.25rem;
+}
+
 .\!text-white {
   --tw-text-opacity: 1 !important;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
@@ -1289,6 +1377,11 @@ video {
 .text-white {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+}
+
+.text-gray-900 {
+  --tw-text-opacity: 1;
+  color: rgb(17 24 39 / var(--tw-text-opacity, 1));
 }
 
 .underline {
