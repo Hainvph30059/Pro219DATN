@@ -15,8 +15,10 @@
 @using MudBlazor
 @using MudBlazor.Services
 @using Pro219.Web.Constants
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject NavigationManager navigation
 @inject ProductService _productService
+@inject IJSRuntime JS
 @inject AccountService _accountService
 @inject AuthService _authService
 @inject BrandService _brandService
