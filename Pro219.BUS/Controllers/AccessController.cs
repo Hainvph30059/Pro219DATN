@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Pro219.API.DTOs;
+using Pro219.API.Utilities;
 using Pro219.DAL.Models;
 using Pro219.DAL.Repository;
 using System.IdentityModel.Tokens.Jwt;
@@ -189,6 +190,37 @@ namespace Pro219.API.Controllers
                 return NotFound("Dumplicate Email,Phone");
 
             }
+        }
+
+        [HttpPost("ResetPassword")]
+        public async Task<ActionResult<bool>> ResetPassword([FromBody] ResetPasswordModel resetPasswordModel)
+        {
+            if (string.IsNullOrEmpty(resetPasswordModel.PhoneNumber) || string.IsNullOrEmpty(resetPasswordModel.Email) || string.IsNullOrEmpty(resetPasswordModel.NewPassword))
+            {
+                return BadRequest("Phone number, email, and new password are required");
+            }
+
+            _customerRepository = new CustomerRepository();
+            var customer = await _customerRepository.FindCustomerByEmailAndPhone(resetPasswordModel.Email, resetPasswordModel.PhoneNumber);
+            
+            if (customer == null)
+            {
+                return NotFound("Customer not found with the provided email and phone number");
+            }
+
+            UtilityFunc utilityFunc = new UtilityFunc();
+            string hashedPassword = utilityFunc.HashPassword(resetPasswordModel.NewPassword);
+            customer.PasswordHash = hashedPassword;
+            customer.LastLogin = null;
+
+            var updatedCustomer = await _customerRepository.UpdateCustomer(customer);
+            
+            if (updatedCustomer == null)
+            {
+                return StatusCode(500, "Failed to update password");
+            }
+
+            return Ok(true);
         }
     }
 
