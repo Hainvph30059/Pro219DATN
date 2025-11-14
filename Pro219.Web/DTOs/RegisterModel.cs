@@ -1,4 +1,4 @@
-namespace Pro219.API.DTOs
+namespace Pro219.Web.DTOs
 {
     public class RegisterModel
     {
