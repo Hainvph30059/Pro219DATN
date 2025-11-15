@@ -38,12 +38,15 @@ namespace Pro219.DAL.Repository
 
         public async Task<List<User>> GetAllUsers()
         {
-            return await _context.Users.ToListAsync();
+            return await _context.Users.Where(x => x.Status != "Deleted").ToListAsync();
         }
 
         public async Task<User> GetByIdUser(int id)
         {
-            return await _context.Users.FindAsync(id);
+            var user = await _context.Users.FindAsync(id);
+            if (user != null && user.Status == "Deleted")
+                return null;
+            return user;
         }
 
         public async Task<User> AddUser(User user)
@@ -66,7 +69,7 @@ namespace Pro219.DAL.Repository
             {
                 var existingUser = await _context.Users.FindAsync(user.UserID);
 
-                if (existingUser == null) return null;
+                if (existingUser == null || existingUser.Status == "Deleted") return null;
 
                 existingUser.UserName = user.UserName;
                 existingUser.PasswordHash = user.PasswordHash;
@@ -91,9 +94,13 @@ namespace Pro219.DAL.Repository
 
                 if (user == null) return null;
 
-                _context.Users.Remove(user);
+                // Note: User model doesn't have Delete field, so we'll update Status instead
+                user.Status = "Deleted";
+                // If User model had Delete, UpdateAt, UpdateBy fields, we would set them here
+
+                var updatedUser = _context.Users.Update(user).Entity;
                 await _context.SaveChangesAsync();
-                return user;
+                return updatedUser;
             }
             catch
             {
