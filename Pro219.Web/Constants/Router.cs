@@ -2,6 +2,7 @@
 {
     public static class RouterConst
     {
+        public const string AccessDenied = "/access-denined";
         public static class User
         {
             // Home
@@ -15,6 +16,9 @@
 
         public static class Admin
         {
+            // Root
+            public const string Root = "/admin/";
+
             // Home
             public const string Home = "/admin/home";
 

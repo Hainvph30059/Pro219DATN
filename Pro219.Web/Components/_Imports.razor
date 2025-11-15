@@ -12,14 +12,18 @@
 @using Pro219.Web.Components.Layout
 @using Pro219.Web.Components.Common.User
 @using Pro219.Web.Components.Common.Admin
+@using Pro219.Web.Components.Common.Loading
+@using Pro219.Web.Components.Common.Error
 @using MudBlazor
 @using MudBlazor.Services
 @using Pro219.Web.Constants
 @using Pro219.Web.Schema
+@using System.Text.Json
+@using Pro219.Web.DTOs
+@inject IJSRuntime JS
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject NavigationManager navigation
 @inject ProductService _productService
-@inject IJSRuntime JS
 @inject AccountService _accountService
 @inject AuthService _authService
 @inject BrandService _brandService
@@ -29,4 +33,3 @@
 @inject CouponService _couponService
 @inject SaleService _saleService
 @inject SizeService _sizeService
-@inject ISnackbar _snackbar

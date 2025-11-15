@@ -11,35 +11,145 @@
 @* Needed for snackbars *@
 <MudSnackbarProvider />
 
-<PageTitle>@Constant.PageTitleUser</PageTitle>
+<PageTitle>@Constant.PageTitleUser.Replace("-", "")</PageTitle>
 
-<div class="relative">
-    <Header />
+@if (_isLoading)
+{
+    <LoadingUser />
+} else
+{   
+    <CascadingValue Value="_currentUserInfo" Name="@Constant.CascadingNameParams.UserInfo">
+        <div>
+            <Header OnLoggedOut="HandleLogout" />
 
-    <main id="main_container" class="min-h-[calc(100lvh-26.625rem)] pt-20">
-        @Body
-    </main>
+            <main class="min-h-[calc(100lvh-26.625rem)] pt-20">
+                @Body
+            </main>
 
-    <Footer />
+            <Footer />
+        </div>
+    </CascadingValue>
 
-    <MudScrollToTop TopOffset="100"
-                    OnScroll="OnScroll"
-                    Selector="#main_container"
-                    VisibleCssClass="visible absolute"
-                    HiddenCssClass="invisible">
-        <MudIcon Icon="@Icons.Material.Filled.ArrowCircleUp" Size="@Size.Large" />
-    </MudScrollToTop>
-</div>
-
-<div id="blazor-error-ui">
-    An unhandled error has occurred.
-    <a href="" class="reload">Reload</a>
-    <a class="dismiss">🗙</a>
-</div>
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+}
 
 @code {
-    private void OnScroll()
+    private GetMeResponseDTO _currentUserInfo = null;
+    private bool _isLoading = true;
+
+    private async Task PerformAuthCheckAndNavigate(bool isInitialLoad)
     {
-        
+        var token = await localStorage.GetItemAsStringAsync(Constant.TokenNameLocalStorage);
+        var expired = await localStorage.GetItemAsStringAsync(Constant.TokenExpiredLocalStorage);
+
+        if (!string.IsNullOrEmpty(token))
+        {
+            if (!string.IsNullOrEmpty(expired))
+            {
+                if (DateTime.TryParse(expired.Trim('"'), out DateTime expirationTime))
+                {
+                    if (expirationTime <= DateTime.Now)
+                    {
+                        await ClearLocalStorageAndNavigate(RouterConst.User.Login);
+                        return;
+                    }
+                }
+            }
+
+            GetMeResponseDTO getMe = null;
+            try
+            {
+                getMe = await _authService.AccessCheck(token.Trim('"'));
+            }
+            catch (Exception ex) when (ex is UnauthorizedAccessException || ex is HttpRequestException)
+            {
+                await ClearLocalStorageAndNavigate(RouterConst.User.Login);
+                return;
+            }
+            catch (Exception)
+            {
+                await ClearLocalStorageAndNavigate(RouterConst.User.Login);
+                return;
+            }
+
+            if (getMe != null && getMe.IsExpired)
+            {
+                await ClearLocalStorageAndNavigate(RouterConst.User.Login);
+                return;
+            }
+
+            if (getMe != null)
+            {
+                var currentUrl = "/" + navigation.ToBaseRelativePath(navigation.Uri);
+                var forbiddenPages = new[] { RouterConst.User.Login, RouterConst.User.SignUp, RouterConst.User.ForgotPassword };
+
+                if (forbiddenPages.Contains(currentUrl))
+                {
+                    navigation.NavigateTo(RouterConst.User.Home, true);
+                    _isLoading = false;
+                    return;
+                }
+
+                var userInfoJson = JsonSerializer.Serialize(getMe);
+                await localStorage.SetItemAsStringAsync(Constant.UserInfoLocalStorage, userInfoJson);
+                _currentUserInfo = getMe;
+            }
+        }
+
+        if (isInitialLoad)
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            navigation.LocationChanged += HandleLocationChanged;
+            await PerformAuthCheckAndNavigate(isInitialLoad: true);
+        }
+    }
+
+    private async void HandleLocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        if (e.Location.Contains(RouterConst.Admin.Root))
+        {
+            await PerformAuthCheckAndNavigate(isInitialLoad: false);
+        }
+    }
+
+    public void Dispose()
+    {
+        navigation.LocationChanged -= HandleLocationChanged;
+    }
+
+    private async Task HandleLogout()
+    {
+        await localStorage.RemoveItemAsync(Constant.TokenNameLocalStorage);
+        await localStorage.RemoveItemAsync(Constant.TokenExpiredLocalStorage);
+        await localStorage.RemoveItemAsync(Constant.UserInfoLocalStorage);
+
+        _currentUserInfo = null;
+
+        navigation.NavigateTo(RouterConst.User.Login, forceLoad: true);
+
+        _isLoading = false;
+        StateHasChanged();
+    }
+
+    public async Task ClearLocalStorageAndNavigate(string route)
+    {
+        await localStorage.RemoveItemAsync(Constant.TokenNameLocalStorage);
+        await localStorage.RemoveItemAsync(Constant.TokenExpiredLocalStorage);
+        await localStorage.RemoveItemAsync(Constant.UserInfoLocalStorage);
+
+        _isLoading = false;
+        navigation.NavigateTo(route, true);
     }
 }

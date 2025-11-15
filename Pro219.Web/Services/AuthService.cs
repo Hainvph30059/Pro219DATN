@@ -1,4 +1,5 @@
-﻿using Pro219.Web.DTOs;
+﻿using Microsoft.AspNetCore.Identity.Data;
+using Pro219.Web.DTOs;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
@@ -81,6 +82,36 @@ namespace Pro219.Web.Services
             else
             {
                 return new LoginResponseDTO { LoginSuccess = false };
+            }
+        }
+
+        public async Task<GetMeResponseDTO> AccessCheck(string token)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, "/Access/Check");
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                var formatToken = token.Trim('"');
+                request.Headers.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", formatToken);
+            }
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseDTO = await response.Content.ReadFromJsonAsync<GetMeResponseDTO>();
+                return responseDTO;
+            }
+            else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                var responseDTO = await response.Content.ReadFromJsonAsync<GetMeResponseDTO>();
+                return responseDTO ?? new GetMeResponseDTO { IsExpired = true };
+            }
+            else
+            {
+                var responseDTO = await response.Content.ReadFromJsonAsync<GetMeResponseDTO>();
+                return responseDTO ?? new GetMeResponseDTO { IsExpired = true };
             }
         }
     }
