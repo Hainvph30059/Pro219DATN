@@ -16,8 +16,6 @@ namespace Pro219.DAL.Models
 
         public int? SizeId { get; set; }
 
-        public int? UpdateBy { get; set; }
-
         [Required]
         [MaxLength(100)]
         public string SKU { get; set; } = string.Empty;
@@ -44,7 +42,7 @@ namespace Pro219.DAL.Models
         public byte? Status { get; set; }
 
         [MaxLength(255)]
-        public string? UpdateByString { get; set; }
+        public string? UpdateBy { get; set; }
 
         // Foreign key navigation properties
         [ForeignKey("ProductId")]
@@ -55,9 +53,6 @@ namespace Pro219.DAL.Models
 
         [ForeignKey("SizeId")]
         public virtual Size? Size { get; set; }
-
-        [ForeignKey("UpdateBy")]
-        public virtual User? User { get; set; }
 
         // Navigation properties
         public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();

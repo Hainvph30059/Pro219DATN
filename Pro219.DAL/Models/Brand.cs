@@ -9,8 +9,6 @@ namespace Pro219.DAL.Models
         [Key]
         public int Id { get; set; }
 
-        public int? UpdateBy { get; set; }
-
         [Required]
         [MaxLength(200)]
         public string Name { get; set; } = string.Empty;
@@ -33,11 +31,7 @@ namespace Pro219.DAL.Models
         public byte? StatusByte { get; set; }
 
         [MaxLength(255)]
-        public string? UpdateByString { get; set; }
-
-        // Foreign key navigation property
-        [ForeignKey("UpdateBy")]
-        public virtual User? User { get; set; }
+        public string? UpdateBy { get; set; }
 
         // Navigation properties
         public virtual ICollection<Product> Products { get; set; } = new List<Product>();
