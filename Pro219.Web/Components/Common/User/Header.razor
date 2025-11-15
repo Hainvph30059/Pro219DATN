@@ -80,9 +80,9 @@
             </div>
                 
             <div class="group relative">
-                @if (_isToken)
+                @if (UserInfo != null)
                 {
-                    <MudAvatar Size="@Size.Medium" Class="cursor-pointer !bg-black !text-white" @onclick="HandleShowMenuChild">A</MudAvatar>
+                    <MudAvatar Size="@Size.Medium" Class="cursor-pointer !bg-black !text-white" @onclick="HandleShowMenuChild">@UserInfo.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries)[^1][0].ToString().ToUpper()</MudAvatar>
 
                     if(_isShowMenuChild)
                     {
@@ -119,21 +119,16 @@
 </header>
 
 @code {
+    [CascadingParameter(Name = Constant.CascadingNameParams.UserInfo)]
+    public GetMeResponseDTO UserInfo { get; set; }
+
+    [Parameter]
+    public EventCallback OnLoggedOut { get; set; }
+
     private string _searchValue = "";
     private int _countCart = 99;
 
-    private bool _isToken = false;
     private bool _isShowMenuChild = false;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if(firstRender)
-        {
-            var token = await localStorage.GetItemAsStringAsync(Constant.TokenNameLocalStorage);
-            _isToken = token != null && token != "";
-            StateHasChanged();
-        }
-    }
 
     private void HandleShowMenuChild()
     {
@@ -143,11 +138,8 @@
 
     async Task Logout()
     {
-        await localStorage.RemoveItemAsync(Constant.TokenNameLocalStorage);
-        await localStorage.RemoveItemAsync(Constant.TokenExpiredLocalStorage);
+        _isShowMenuChild = false;
 
-        _isToken = false;
-        navigation.NavigateTo(RouterConst.User.Login);
-        StateHasChanged();
+        await OnLoggedOut.InvokeAsync();
     }
 }

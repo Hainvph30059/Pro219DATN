@@ -7,6 +7,7 @@
 
         public const string TokenNameLocalStorage = "token";
         public const string TokenExpiredLocalStorage = "expired";
+        public const string UserInfoLocalStorage = "userInfo";
 
         public class Regex
         {
@@ -25,6 +26,18 @@
             public const string Email = "Sai định dạng Email.";
             public const string PhoneNumber = "Sai định dạng số điện thoại.";
             public const string PhoneNumberLength = "Tối thiểu 10 số và tối đa 11 số";
+        }
+
+        public class Role
+        {
+            public const string Admin = "Admin";
+            public const string Manager = "Manager";
+            public const string Customer = "Customer";
+        }
+
+        public class CascadingNameParams
+        {
+            public const string UserInfo = "CurrentUserInfo";
         }
     }
 }

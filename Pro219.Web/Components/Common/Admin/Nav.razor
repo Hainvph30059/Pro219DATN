@@ -35,25 +35,28 @@
 
         <div class="relative px-3">
             <div class="flex cursor-pointer items-center gap-2 rounded-xl p-2 hover:bg-gray-100" @onclick="HandleShowMenuChild">
-                <MudAvatar Size="@Size.Medium" Class="!bg-admin-default !font-bold !text-white">A</MudAvatar>
-                <p class="line-clamp-1 text-base font-medium text-[#252a2b]">Adams Store Management</p>
+                <MudAvatar Size="@Size.Medium" Class="!bg-admin-default !font-bold !text-white">@UserInfo.Role.Substring(0, 1)</MudAvatar>
+                <div class="w-full">
+                    <p class="line-clamp-1 text-base font-medium text-gray-900">@UserInfo.Username</p>
+                    <p class="line-clamp-1 text-sm font-medium text-gray-400">@UserInfo.Role</p>
+                </div>
             </div>
         </div>
 
         @if (_isShowMenuChild)
         {
             <div class="-top-[calc(100vh-7.0625rem)] absolute h-screen w-screen cursor-pointer bg-transparent" @onclick="HandleShowMenuChild"></div>
-            <div class="absolute bottom-0 left-full w-full min-w-40 bg-transparent">
+            <div class="absolute bottom-0 left-full w-full bg-transparent">
                 <ul class="ml-4 w-full bg-white py-2">
                     <li class="px-3">
-                        <MudAvatar Size="@Size.Small" Class="!bg-admin-default !text-white">A</MudAvatar>
+                        <MudAvatar Size="@Size.Small" Class="!bg-admin-default !text-white">@UserInfo.Role.Substring(0, 1)</MudAvatar>
                     </li>
                     <li class="mt-2 px-3">
-                        <p class="whitespace-nowrap text-sm font-medium text-[#252a2b]">Adams Store</p>
+                        <p class="whitespace-nowrap text-sm font-medium text-gray-900">@UserInfo.Username</p>
                     </li>
                     <MudDivider Class="my-3 !border-slate-200" />
                     <li class="px-3">
-                        <button @onclick="Logout" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:bg-gray-100 hover:text-black">Đăng Xuất</button>
+                        <button @onclick="Logout" class="flex justify-start whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:bg-gray-100 hover:text-black">Đăng Xuất</button>
                     </li>
                 </ul>
             </div>
@@ -62,6 +65,9 @@
 </nav>
 
 @code {
+    [CascadingParameter(Name = Constant.CascadingNameParams.UserInfo)]
+    public GetMeResponseDTO UserInfo { get; set; }
+
     private bool _isShowMenuChild = false;
 
     private void HandleShowMenuChild()
@@ -74,6 +80,7 @@
     {
         await localStorage.RemoveItemAsync(Constant.TokenNameLocalStorage);
         await localStorage.RemoveItemAsync(Constant.TokenExpiredLocalStorage);
+        await localStorage.RemoveItemAsync(Constant.UserInfoLocalStorage);
 
         navigation.NavigateTo(RouterConst.Admin.Login);
     }
