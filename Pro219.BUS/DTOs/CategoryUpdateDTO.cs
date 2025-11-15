@@ -1,15 +1,27 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Pro219.API.DTOs
 {
-    public class CategoryDTO
+    public class CategoryUpdateDTO
     {
+        [Required]
         public int Id { get; set; }
+
         public int? ParentCategoryId { get; set; }
-        public string? UpdateBy { get; set; }
+
+        [Required]
+        [MaxLength(200)]
         public string Name { get; set; } = string.Empty;
+
+        [MaxLength(1000)]
         public string? Description { get; set; }
+
+        [Required]
+        [MaxLength(20)]
         public string Status { get; set; } = string.Empty;
-        public bool isParent { get; set; }
-        public List<CategoryDTO>? SubCategory { get; set; }
+
+        public bool? Delete { get; set; }
     }
 }
+
 
