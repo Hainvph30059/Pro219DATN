@@ -145,7 +145,7 @@ namespace Pro219.API.Controllers
             try
             {
                 var updateBy = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                var result = await discountCodeRepository.DeleteDiscountCode(id, null, updateBy);
+                var result = await discountCodeRepository.DeleteDiscountCode(id, updateBy);
                 if (result == null)
                 {
                     return NotFound("Discount code not found");

@@ -84,7 +84,6 @@ namespace Pro219.DAL.Repository
                 existingProduct.BasePrice = product.BasePrice;
                 existingProduct.Status = product.Status;
                 existingProduct.UpdateBy = product.UpdateBy;
-                existingProduct.UpdateByString = product.UpdateByString;
                 existingProduct.UpdateAt = DateTime.Now;
 
                 var updatedProduct = _context.Products.Update(existingProduct).Entity;
@@ -97,7 +96,7 @@ namespace Pro219.DAL.Repository
             }
         }
 
-        public async Task<Product> DeleteProduct(int id, int? updateBy = null, string updateByString = null)
+        public async Task<Product> DeleteProduct(int id, string? updateBy = null)
         {
             try
             {
@@ -107,14 +106,11 @@ namespace Pro219.DAL.Repository
 
                 product.Delete = true;
                 product.UpdateAt = DateTime.Now;
-                if (updateBy.HasValue)
+                if (updateBy != null)
                 {
                     product.UpdateBy = updateBy;
                 }
-                if (!string.IsNullOrEmpty(updateByString))
-                {
-                    product.UpdateByString = updateByString;
-                }
+               
 
                 var updatedProduct = _context.Products.Update(product).Entity;
                 await _context.SaveChangesAsync();

@@ -126,7 +126,7 @@ namespace Pro219.API.Controllers
             try
             {
                 var updateBy = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                var result = await productRepository.DeleteProduct(id, null, updateBy);
+                var result = await productRepository.DeleteProduct(id, updateBy);
                 if (result == null)
                 {
                     return NotFound("Product not found");

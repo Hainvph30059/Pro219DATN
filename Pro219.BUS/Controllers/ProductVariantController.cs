@@ -146,7 +146,7 @@ namespace Pro219.API.Controllers
             try
             {
                 var updateBy = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                var result = await productVariantRepository.DeleteProductVariant(id, null, updateBy);
+                var result = await productVariantRepository.DeleteProductVariant(id, updateBy);
                 if (result == null)
                 {
                     return NotFound("Product variant not found");

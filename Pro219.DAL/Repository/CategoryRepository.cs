@@ -91,7 +91,7 @@ namespace Pro219.DAL.Repository
             }
         }
 
-        public async Task<Category> DeleteCategory(int id, int? updateBy = null)
+        public async Task<Category> DeleteCategory(int id, string? updateBy = null)
         {
             try
             {
@@ -101,7 +101,7 @@ namespace Pro219.DAL.Repository
 
                 category.Delete = true;
                 category.UpdateAt = DateTime.Now;
-                if (updateBy.HasValue)
+                if (updateBy!=null)
                 {
                     category.UpdateBy = updateBy;
                 }

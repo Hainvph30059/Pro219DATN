@@ -96,7 +96,6 @@ namespace Pro219.DAL.Repository
                 existingVariant.IsActive = variant.IsActive;
                 existingVariant.Status = variant.Status;
                 existingVariant.UpdateBy = variant.UpdateBy;
-                existingVariant.UpdateByString = variant.UpdateByString;
                 existingVariant.UpdateAt = DateTime.Now;
 
                 var updatedVariant = _context.ProductVariants.Update(existingVariant).Entity;
@@ -109,7 +108,7 @@ namespace Pro219.DAL.Repository
             }
         }
 
-        public async Task<ProductVariant> DeleteProductVariant(int id, int? updateBy = null, string updateByString = null)
+        public async Task<ProductVariant> DeleteProductVariant(int id,string? updateBy = null)
         {
             try
             {
@@ -119,14 +118,11 @@ namespace Pro219.DAL.Repository
 
                 variant.Delete = true;
                 variant.UpdateAt = DateTime.Now;
-                if (updateBy.HasValue)
+                if (updateBy != null)
                 {
                     variant.UpdateBy = updateBy;
                 }
-                if (!string.IsNullOrEmpty(updateByString))
-                {
-                    variant.UpdateByString = updateByString;
-                }
+               
 
                 var updatedVariant = _context.ProductVariants.Update(variant).Entity;
                 await _context.SaveChangesAsync();

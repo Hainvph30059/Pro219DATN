@@ -107,7 +107,6 @@ namespace Pro219.DAL.Repository
                 existingImage.IsMain = image.IsMain;
                 existingImage.Status = image.Status;
                 existingImage.UpdateBy = image.UpdateBy;
-                existingImage.UpdateByString = image.UpdateByString;
                 existingImage.UpdateAt = DateTime.Now;
 
                 var updatedImage = _context.ProductImages.Update(existingImage).Entity;
@@ -120,7 +119,7 @@ namespace Pro219.DAL.Repository
             }
         }
 
-        public async Task<ProductImage> DeleteProductImage(int id, int? updateBy = null, string updateByString = null)
+        public async Task<ProductImage> DeleteProductImage(int id, string? updateBy = null)
         {
             try
             {
@@ -130,14 +129,11 @@ namespace Pro219.DAL.Repository
 
                 image.Delete = true;
                 image.UpdateAt = DateTime.Now;
-                if (updateBy.HasValue)
+                if (updateBy != null)
                 {
                     image.UpdateBy = updateBy;
                 }
-                if (!string.IsNullOrEmpty(updateByString))
-                {
-                    image.UpdateByString = updateByString;
-                }
+              
 
                 var updatedImage = _context.ProductImages.Update(image).Entity;
                 await _context.SaveChangesAsync();

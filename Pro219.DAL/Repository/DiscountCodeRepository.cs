@@ -94,7 +94,7 @@ namespace Pro219.DAL.Repository
                 existingDiscountCode.IsActive = discountCode.IsActive;
                 existingDiscountCode.Status = discountCode.Status;
                 existingDiscountCode.UpdateBy = discountCode.UpdateBy;
-                existingDiscountCode.UpdateByString = discountCode.UpdateByString;
+                existingDiscountCode.UpdateBy = discountCode.UpdateBy;
                 existingDiscountCode.UpdateAt = DateTime.Now;
 
                 var updatedDiscountCode = _context.DiscountCodes.Update(existingDiscountCode).Entity;
@@ -107,7 +107,7 @@ namespace Pro219.DAL.Repository
             }
         }
 
-        public async Task<DiscountCode> DeleteDiscountCode(int id, int? updateBy = null, string updateByString = null)
+        public async Task<DiscountCode> DeleteDiscountCode(int id, string? updateBy = null)
         {
             try
             {
@@ -117,14 +117,11 @@ namespace Pro219.DAL.Repository
 
                 discountCode.Delete = true;
                 discountCode.UpdateAt = DateTime.Now;
-                if (updateBy.HasValue)
+                if (updateBy!=null)
                 {
                     discountCode.UpdateBy = updateBy;
                 }
-                if (!string.IsNullOrEmpty(updateByString))
-                {
-                    discountCode.UpdateByString = updateByString;
-                }
+              
 
                 var updatedDiscountCode = _context.DiscountCodes.Update(discountCode).Entity;
                 await _context.SaveChangesAsync();

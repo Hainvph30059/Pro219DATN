@@ -48,61 +48,7 @@ namespace Pro219.DAL.Context
 
             // Configure relationships and constraints
             
-            // User relationships
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.PaymentMethods)
-                .WithOne(pm => pm.User)
-                .HasForeignKey(pm => pm.UpdateBy)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.DiscountCodes)
-                .WithOne(dc => dc.User)
-                .HasForeignKey(dc => dc.UpdateBy)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.Categories)
-                .WithOne(c => c.User)
-                .HasForeignKey(c => c.UpdateBy)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.Products)
-                .WithOne(p => p.User)
-                .HasForeignKey(p => p.UpdateBy)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.ProductImages)
-                .WithOne(pi => pi.User)
-                .HasForeignKey(pi => pi.UpdateBy)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.ProductVariants)
-                .WithOne(pv => pv.User)
-                .HasForeignKey(pv => pv.UpdateBy)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.Orders)
-                .WithOne(o => o.User)
-                .HasForeignKey(o => o.UpdateBy)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.Brands)
-                .WithOne(b => b.User)
-                .HasForeignKey(b => b.UpdateBy)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.Sales)
-                .WithOne(s => s.User)
-                .HasForeignKey(s => s.UpdateBy)
-                .OnDelete(DeleteBehavior.Restrict);
-
+          
             // Customer relationships
             modelBuilder.Entity<Customer>()
                 .HasMany(c => c.Addresses)

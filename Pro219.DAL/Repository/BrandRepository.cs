@@ -75,7 +75,6 @@ namespace Pro219.DAL.Repository
                 existingBrand.Description = brand.Description;
                 existingBrand.Status = brand.Status;
                 existingBrand.UpdateBy = brand.UpdateBy;
-                existingBrand.UpdateByString = brand.UpdateByString;
                 existingBrand.UpdateAt = DateTime.Now;
 
                 var updatedBrand = _context.Brands.Update(existingBrand).Entity;
@@ -88,7 +87,7 @@ namespace Pro219.DAL.Repository
             }
         }
 
-        public async Task<Brand> DeleteBrand(int id, int? updateBy = null, string updateByString = null)
+        public async Task<Brand> DeleteBrand(int id, string? updateBy = null)
         {
             try
             {
@@ -98,15 +97,11 @@ namespace Pro219.DAL.Repository
 
                 brand.Delete = true;
                 brand.UpdateAt = DateTime.Now;
-                if (updateBy.HasValue)
+                if (updateBy != null)
                 {
                     brand.UpdateBy = updateBy;
                 }
-                if (!string.IsNullOrEmpty(updateByString))
-                {
-                    brand.UpdateByString = updateByString;
-                }
-
+               
                 var updatedBrand = _context.Brands.Update(brand).Entity;
                 await _context.SaveChangesAsync();
                 return updatedBrand;

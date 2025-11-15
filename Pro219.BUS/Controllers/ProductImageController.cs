@@ -160,7 +160,7 @@ namespace Pro219.API.Controllers
             try
             {
                 var updateBy = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                var result = await productImageRepository.DeleteProductImage(id, null, updateBy);
+                var result = await productImageRepository.DeleteProductImage(id, updateBy);
                 if (result == null)
                 {
                     return NotFound("Product image not found");

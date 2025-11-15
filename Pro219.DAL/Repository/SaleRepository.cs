@@ -80,7 +80,6 @@ namespace Pro219.DAL.Repository
                 existingSale.IsActive = sale.IsActive;
                 existingSale.Status = sale.Status;
                 existingSale.UpdateBy = sale.UpdateBy;
-                existingSale.UpdateByString = sale.UpdateByString;
                 existingSale.UpdateAt = DateTime.Now;
 
                 var updatedSale = _context.Sales.Update(existingSale).Entity;
@@ -93,7 +92,7 @@ namespace Pro219.DAL.Repository
             }
         }
 
-        public async Task<Sale> DeleteSale(int id, int? updateBy = null, string updateByString = null)
+        public async Task<Sale> DeleteSale(int id, string? updateBy = null)
         {
             try
             {
@@ -103,14 +102,11 @@ namespace Pro219.DAL.Repository
 
                 sale.Delete = true;
                 sale.UpdateAt = DateTime.Now;
-                if (updateBy.HasValue)
+                if (updateBy != null)
                 {
                     sale.UpdateBy = updateBy;
                 }
-                if (!string.IsNullOrEmpty(updateByString))
-                {
-                    sale.UpdateByString = updateByString;
-                }
+               
 
                 var updatedSale = _context.Sales.Update(sale).Entity;
                 await _context.SaveChangesAsync();

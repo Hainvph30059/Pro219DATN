@@ -122,7 +122,7 @@ namespace Pro219.API.Controllers
             try
             {
                 var updateBy = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                var result = await brandRepository.DeleteBrand(id, null, updateBy);
+                var result = await brandRepository.DeleteBrand(id, updateBy);
                 if (result == null)
                 {
                     return NotFound("Brand not found");
