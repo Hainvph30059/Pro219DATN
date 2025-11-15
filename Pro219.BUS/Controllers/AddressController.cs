@@ -4,6 +4,7 @@ using Pro219.DAL.Models;
 using Pro219.DAL.Repository;
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Pro219.API.Controllers
@@ -39,7 +40,7 @@ namespace Pro219.API.Controllers
                     District = addressDTO.District,
                     OtherInfo = addressDTO.OtherInfo,
                     IsDefault = addressDTO.IsDefault,
-                    Status = "1" // Default status
+                    Status = "1"
                 };
 
                 var result = await addressRepository.AddAddress(address);
@@ -57,14 +58,31 @@ namespace Pro219.API.Controllers
         }
 
         [HttpPut("Update")]
-        public async Task<ActionResult<Address>> UpdateAddress([FromBody] Address address)
+        public async Task<ActionResult<Address>> UpdateAddress([FromBody] AddressUpdateDTO addressDTO)
         {
             try
             {
-                if (address == null)
+                if (addressDTO == null)
                 {
                     return BadRequest("Address data is required");
                 }
+
+                var address = new Address
+                {
+                    Id = addressDTO.Id,
+                    CustomerId = addressDTO.CustomerId,
+                    FullName = addressDTO.FullName,
+                    Phone = addressDTO.Phone,
+                    Street = addressDTO.Street,
+                    City = addressDTO.City,
+                    District = addressDTO.District,
+                    OtherInfo = addressDTO.OtherInfo,
+                    IsDefault = addressDTO.IsDefault,
+                    UpdateBy = User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
+                    UpdateAt = DateTime.Now,
+                    Delete = addressDTO.Delete,
+                    DeleteAt = addressDTO.Delete == true ? DateTime.Now : null
+                };
 
                 var result = await addressRepository.UpdateAddress(address);
                 if (result == null)
@@ -127,6 +145,26 @@ namespace Pro219.API.Controllers
                 if (result == null)
                 {
                     return Ok(new List<Address>());
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        [HttpDelete("Delete/{id}")]
+        public async Task<ActionResult<Address>> DeleteAddress(int id)
+        {
+            try
+            {
+                var updateBy = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var result = await addressRepository.DeleteAddress(id, updateBy);
+                if (result == null)
+                {
+                    return NotFound("Address not found");
                 }
 
                 return Ok(result);

@@ -11,8 +11,6 @@ namespace Pro219.DAL.Models
 
         public int? ParentCategoryId { get; set; }
 
-        public int? UpdateBy { get; set; }
-
         [Required]
         [MaxLength(200)]
         public string Name { get; set; } = string.Empty;
@@ -35,14 +33,11 @@ namespace Pro219.DAL.Models
         public byte? StatusByte { get; set; }
 
         [MaxLength(255)]
-        public string? UpdateByString { get; set; }
+        public string? UpdateBy { get; set; }
 
         // Foreign key navigation properties
         [ForeignKey("ParentCategoryId")]
         public virtual Category? ParentCategory { get; set; }
-
-        [ForeignKey("UpdateBy")]
-        public virtual User? User { get; set; }
 
         // Navigation properties
         public virtual ICollection<Category> SubCategories { get; set; } = new List<Category>();

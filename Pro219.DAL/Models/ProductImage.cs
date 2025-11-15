@@ -14,8 +14,6 @@ namespace Pro219.DAL.Models
 
         public int? ProductVariantId { get; set; }
 
-        public int? UpdateBy { get; set; }
-
         [Required]
         [MaxLength(500)]
         public string ImageUrl { get; set; } = string.Empty;
@@ -33,7 +31,7 @@ namespace Pro219.DAL.Models
         public byte? Status { get; set; }
 
         [MaxLength(255)]
-        public string? UpdateByString { get; set; }
+        public string? UpdateBy { get; set; }
 
         // Foreign key navigation properties
         [ForeignKey("ProductId")]
@@ -41,9 +39,6 @@ namespace Pro219.DAL.Models
 
         [ForeignKey("ProductVariantId")]
         public virtual ProductVariant? ProductVariant { get; set; }
-
-        [ForeignKey("UpdateBy")]
-        public virtual User? User { get; set; }
     }
 }
 

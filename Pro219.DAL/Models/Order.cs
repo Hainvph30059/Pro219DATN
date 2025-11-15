@@ -19,8 +19,6 @@ namespace Pro219.DAL.Models
 
         public int? PaymentMethodId { get; set; }
 
-        public int? UpdateBy { get; set; }
-
         [Required]
         [MaxLength(50)]
         public string OrderCode { get; set; } = string.Empty;
@@ -60,7 +58,7 @@ namespace Pro219.DAL.Models
         public byte? StatusByte { get; set; }
 
         [MaxLength(255)]
-        public string? UpdateByString { get; set; }
+        public string? UpdateBy { get; set; }
 
         // Foreign key navigation properties
         [ForeignKey("CustomerId")]
@@ -74,9 +72,6 @@ namespace Pro219.DAL.Models
 
         [ForeignKey("PaymentMethodId")]
         public virtual PaymentMethod? PaymentMethod { get; set; }
-
-        [ForeignKey("UpdateBy")]
-        public virtual User? User { get; set; }
 
         // Navigation properties
         public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
