@@ -40,11 +40,14 @@ namespace Pro219.DAL.Repository
 
         public async Task<List<Customer>> GetAllCustomers()
         {
-            return await _context.Customers.ToListAsync();
+            return await _context.Customers.Where(x => x.Delete != true).ToListAsync();
         }
         public async Task<Customer> GetByIdCustomer(int id)
         {
-            return await _context.Customers.FindAsync(id);
+            var customer = await _context.Customers.FindAsync(id);
+            if (customer != null && customer.Delete == true)
+                return null;
+            return customer;
         }
 
         public async Task<Customer> GetByIdCustomerSendMail(int id)
@@ -71,7 +74,7 @@ namespace Pro219.DAL.Repository
             {
                 var existingCustomer = await _context.Customers.FindAsync(customer.Id);
 
-                if (existingCustomer == null) return null;
+                if (existingCustomer == null || existingCustomer.Delete == true) return null;
 
                 existingCustomer.FullName = customer.FullName;
                 existingCustomer.DateOfBirth = customer.DateOfBirth;
@@ -80,6 +83,11 @@ namespace Pro219.DAL.Repository
                 existingCustomer.PasswordHash = customer.PasswordHash;
                 existingCustomer.Status = customer.Status;
                 existingCustomer.LastLogin = customer.LastLogin;
+                existingCustomer.UpdateAt = DateTime.Now;
+                if (!string.IsNullOrEmpty(customer.UpdateBy))
+                {
+                    existingCustomer.UpdateBy = customer.UpdateBy;
+                }
 
                 var updatedCustomer = _context.Customers.Update(existingCustomer).Entity;
                 await _context.SaveChangesAsync();
@@ -90,7 +98,7 @@ namespace Pro219.DAL.Repository
                 return null;
             }
         }
-        public async Task<Customer> DeleteCustomer(int id)
+        public async Task<Customer> DeleteCustomer(int id, string updateBy = null)
         {
             try
             {
@@ -98,9 +106,16 @@ namespace Pro219.DAL.Repository
 
                 if (customer == null) return null;
 
-                _context.Customers.Remove(customer);
+                customer.Delete = true;
+                customer.UpdateAt = DateTime.Now;
+                if (!string.IsNullOrEmpty(updateBy))
+                {
+                    customer.UpdateBy = updateBy;
+                }
+
+                var updatedCustomer = _context.Customers.Update(customer).Entity;
                 await _context.SaveChangesAsync();
-                return customer;
+                return updatedCustomer;
             }
             catch
             {
