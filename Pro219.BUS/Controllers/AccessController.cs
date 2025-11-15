@@ -39,7 +39,7 @@ namespace Pro219.API.Controllers
             {
                 var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.GivenName, loginModel.Username),
+                new Claim(ClaimTypes.NameIdentifier, loginModel.Username),
                 new Claim(ClaimTypes.Role, "Customer"),
                  new Claim(ClaimTypes.Email, customer.Email),
                   new Claim(ClaimTypes.Name, customer.FullName),
@@ -90,7 +90,7 @@ namespace Pro219.API.Controllers
             {
                 var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.GivenName, loginModel.Username),
+                new Claim(ClaimTypes.NameIdentifier, loginModel.Username),
                 new Claim(ClaimTypes.Role, user.Role),
                  new Claim(ClaimTypes.Name, user.UserName)
             };
@@ -158,7 +158,7 @@ namespace Pro219.API.Controllers
 
                 var userInfo = new
                 {
-                    username = User.FindFirst(ClaimTypes.GivenName)?.Value,
+                    username = User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
                     role = User.FindFirst(ClaimTypes.Role)?.Value,
                     email = User.FindFirst(ClaimTypes.Email)?.Value,
                     fullName = User.FindFirst(ClaimTypes.Name)?.Value,
