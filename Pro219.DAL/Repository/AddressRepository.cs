@@ -38,7 +38,7 @@ namespace Pro219.DAL.Repository
             {
                 var existingAddress = await _context.Addresses.FindAsync(address.Id);
 
-                if (existingAddress == null) return null;
+                if (existingAddress == null || existingAddress.Delete == true) return null;
 
                 existingAddress.CustomerId = address.CustomerId;
                 existingAddress.FullName = address.FullName;
@@ -49,6 +49,11 @@ namespace Pro219.DAL.Repository
                 existingAddress.OtherInfo = address.OtherInfo;
                 existingAddress.IsDefault = address.IsDefault;
                 existingAddress.Status = address.Status;
+                existingAddress.UpdateAt = DateTime.Now;
+                if (!string.IsNullOrEmpty(address.UpdateBy))
+                {
+                    existingAddress.UpdateBy = address.UpdateBy;
+                }
 
                 var updatedAddress = _context.Addresses.Update(existingAddress).Entity;
                 await _context.SaveChangesAsync();
@@ -65,7 +70,7 @@ namespace Pro219.DAL.Repository
             try
             {
                 var addresses = await _context.Addresses
-                    .Where(x => x.CustomerId == customerId)
+                    .Where(x => x.CustomerId == customerId && x.Delete != true)
                     .ToListAsync();
                 return addresses;
             }
@@ -80,6 +85,8 @@ namespace Pro219.DAL.Repository
             try
             {
                 var address = await _context.Addresses.FindAsync(id);
+                if (address != null && address.Delete == true)
+                    return null;
                 return address;
             }
             catch (Exception)
@@ -92,8 +99,35 @@ namespace Pro219.DAL.Repository
         {
             try
             {
-                var addresses = await _context.Addresses.ToListAsync();
+                var addresses = await _context.Addresses
+                    .Where(x => x.Delete != true)
+                    .ToListAsync();
                 return addresses;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        public async Task<Address> DeleteAddress(int id, string updateBy = null)
+        {
+            try
+            {
+                var address = await _context.Addresses.FindAsync(id);
+
+                if (address == null) return null;
+
+                address.Delete = true;
+                address.UpdateAt = DateTime.Now;
+                if (!string.IsNullOrEmpty(updateBy))
+                {
+                    address.UpdateBy = updateBy;
+                }
+
+                var updatedAddress = _context.Addresses.Update(address).Entity;
+                await _context.SaveChangesAsync();
+                return updatedAddress;
             }
             catch (Exception)
             {

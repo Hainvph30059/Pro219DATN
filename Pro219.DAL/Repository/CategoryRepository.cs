@@ -21,7 +21,7 @@ namespace Pro219.DAL.Repository
         public async Task<List<Category>> GetAllCategories()
         {
             List<Category> listCategory = new List<Category>();
-            listCategory = _context.Categories.ToList();
+            listCategory = _context.Categories.Where(x => x.Delete != true).ToList();
             if (listCategory.Count > 0)
                 return listCategory;
             return null;
@@ -29,7 +29,7 @@ namespace Pro219.DAL.Repository
         public async Task<Category> GetCategoryById(int id)
         {
             var category = await _context.Categories.FindAsync(id);
-            if (category == null)
+            if (category == null || category.Delete == true)
                 return null;
             return category;
         }
@@ -37,7 +37,7 @@ namespace Pro219.DAL.Repository
         public async Task<List<Category>> GetAllParentCategories()
         {
             List<Category> listCategory = new List<Category>();
-            listCategory = _context.Categories.Where(x => x.ParentCategoryId == null).ToList();
+            listCategory = _context.Categories.Where(x => x.ParentCategoryId == null && x.Delete != true).ToList();
             if (listCategory.Count > 0)
                 return listCategory;
             return null;
@@ -60,7 +60,7 @@ namespace Pro219.DAL.Repository
         public async Task<List<Category>> GetAllSubCategoriesByParentId(int parentId)
         {
             List<Category> listCategory = new List<Category>();
-            listCategory = _context.Categories.Where(x => x.ParentCategoryId == parentId).ToList();
+            listCategory = _context.Categories.Where(x => x.ParentCategoryId == parentId && x.Delete != true).ToList();
             if (listCategory.Count > 0)
                 return listCategory;
             return null;
@@ -72,13 +72,14 @@ namespace Pro219.DAL.Repository
             {
                 var existingCategory = await _context.Categories.FindAsync(category.Id);
 
-                if (existingCategory == null) return null;
+                if (existingCategory == null || existingCategory.Delete == true) return null;
 
                 existingCategory.Name = category.Name;
                 existingCategory.Description = category.Description;
                 existingCategory.Status = category.Status;
                 existingCategory.ParentCategoryId = category.ParentCategoryId;
                 existingCategory.UpdateBy = category.UpdateBy;
+                existingCategory.UpdateAt = DateTime.Now;
 
                 var updatedCategory = _context.Categories.Update(existingCategory).Entity;
                 await _context.SaveChangesAsync();
@@ -90,6 +91,29 @@ namespace Pro219.DAL.Repository
             }
         }
 
+        public async Task<Category> DeleteCategory(int id, int? updateBy = null)
+        {
+            try
+            {
+                var category = await _context.Categories.FindAsync(id);
 
+                if (category == null) return null;
+
+                category.Delete = true;
+                category.UpdateAt = DateTime.Now;
+                if (updateBy.HasValue)
+                {
+                    category.UpdateBy = updateBy;
+                }
+
+                var updatedCategory = _context.Categories.Update(category).Entity;
+                await _context.SaveChangesAsync();
+                return updatedCategory;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
     }
 }
