@@ -293,8 +293,8 @@ namespace Pro219.DAL.Context
 
             // Users
             modelBuilder.Entity<User>().HasData(
-                new User { UserID = 1, UserName = "admin", PasswordHash = "hashed_password_123", Role = "Admin", CreateAt = seedDate, Status = "Active" },
-                new User { UserID = 2, UserName = "manager", PasswordHash = "hashed_password_456", Role = "Manager", CreateAt = seedDate, Status = "Active" }
+                new User { UserID = 1, UserName = "admin", PasswordHash = "26dc318942685872cf79c5eb96c9bb13", Role = "Admin", CreateAt = seedDate, Status = "Active" },
+                new User { UserID = 2, UserName = "manager", PasswordHash = "26dc318942685872cf79c5eb96c9bb13", Role = "Manager", CreateAt = seedDate, Status = "Active" }
             );
 
             // Colors
@@ -344,9 +344,9 @@ namespace Pro219.DAL.Context
 
             // Customers
             modelBuilder.Entity<Customer>().HasData(
-                new Customer { Id = 1, FullName = "Nguyễn Văn An", PhoneNumber = "0912345678", Email = "nguyenvanan@example.com", DateOfBirth = new DateTime(1990, 5, 15), PasswordHash = "hashed_password_customer1", CreateAt = seedDate, Status = "Active", Delete = false, StatusByte = 1 },
-                new Customer { Id = 2, FullName = "Trần Thị Bình", PhoneNumber = "0987654321", Email = "tranthibinh@example.com", DateOfBirth = new DateTime(1992, 8, 20), PasswordHash = "hashed_password_customer2", CreateAt = seedDate, Status = "Active", Delete = false, StatusByte = 1 },
-                new Customer { Id = 3, FullName = "Lê Minh Cường", PhoneNumber = "0901234567", Email = "leminhcuong@example.com", DateOfBirth = new DateTime(1988, 3, 10), PasswordHash = "hashed_password_customer3", CreateAt = seedDate, Status = "Active", Delete = false, StatusByte = 1 }
+                new Customer { Id = 1, FullName = "Nguyễn Văn An", PhoneNumber = "0912345678", Email = "nguyenvanan@example.com", DateOfBirth = new DateTime(1990, 5, 15), PasswordHash = "b855e41c5c5f5061ecba4fd8613a7760", CreateAt = seedDate, Status = "Active", Delete = false, StatusByte = 1 },
+                new Customer { Id = 2, FullName = "Trần Thị Bình", PhoneNumber = "0987654321", Email = "tranthibinh@example.com", DateOfBirth = new DateTime(1992, 8, 20), PasswordHash = "b855e41c5c5f5061ecba4fd8613a7760", CreateAt = seedDate, Status = "Active", Delete = false, StatusByte = 1 },
+                new Customer { Id = 3, FullName = "Lê Minh Cường", PhoneNumber = "0901234567", Email = "leminhcuong@example.com", DateOfBirth = new DateTime(1988, 3, 10), PasswordHash = "b855e41c5c5f5061ecba4fd8613a7760", CreateAt = seedDate, Status = "Active", Delete = false, StatusByte = 1 }
             );
 
             // Products

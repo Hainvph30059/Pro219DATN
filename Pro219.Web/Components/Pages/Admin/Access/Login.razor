@@ -26,11 +26,25 @@
 @code {
     AuthSchema.LoginSchema _model = new AuthSchema.LoginSchema();
     private bool _isPasswordVisible = false;
+    private bool _isLoading = false;
 
     [Inject] ISnackbar Snackbar { get; set; }
 
     InputType PasswordInput => _isPasswordVisible ? InputType.Text : InputType.Password;
     string PasswordInputIcon => _isPasswordVisible ? Icons.Material.Filled.Visibility : Icons.Material.Filled.VisibilityOff;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var token = await localStorage.GetItemAsStringAsync(Constant.TokenNameLocalStorage);
+
+            if (token != null && token != "")
+            {
+                navigation.NavigateTo(RouterConst.Admin.Home, true);
+            }
+        }
+    }
 
     void ShowHidePassword()
     {
@@ -40,7 +54,7 @@
 
     async Task OnLogin()
     {
-        var response = await _accountService.LoginStaff(_model.Username, _model.Password);
+        var response = await _authService.LoginStaff(_model.Username, _model.Password);
         if (response.LoginSuccess == true)
         {
             Snackbar.Add("Đăng nhập thành công!", Severity.Success);

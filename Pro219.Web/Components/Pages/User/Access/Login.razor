@@ -46,7 +46,7 @@
 
     async Task OnLogin()
     {
-        var response = await  _accountService.LoginCustomer(_model.Username, _model.Password);
+        var response = await  _authService.LoginCustomer(_model.Username, _model.Password);
         if (response.LoginSuccess ==true)
         {
             Snackbar.Add("Đăng nhập thành công!", Severity.Success);            
