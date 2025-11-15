@@ -76,7 +76,6 @@ namespace Pro219.DAL.Repository
                 existingPaymentMethod.IsActive = paymentMethod.IsActive;
                 existingPaymentMethod.Status = paymentMethod.Status;
                 existingPaymentMethod.UpdateBy = paymentMethod.UpdateBy;
-                existingPaymentMethod.UpdateByString = paymentMethod.UpdateByString;
                 existingPaymentMethod.UpdateAt = DateTime.Now;
 
                 var updatedPaymentMethod = _context.PaymentMethods.Update(existingPaymentMethod).Entity;
@@ -89,7 +88,7 @@ namespace Pro219.DAL.Repository
             }
         }
 
-        public async Task<PaymentMethod> DeletePaymentMethod(int id, int? updateBy = null, string updateByString = null)
+        public async Task<PaymentMethod> DeletePaymentMethod(int id, string? updateBy = null)
         {
             try
             {
@@ -99,13 +98,9 @@ namespace Pro219.DAL.Repository
 
                 paymentMethod.Delete = true;
                 paymentMethod.UpdateAt = DateTime.Now;
-                if (updateBy.HasValue)
+                if (!string.IsNullOrEmpty(updateBy))
                 {
                     paymentMethod.UpdateBy = updateBy;
-                }
-                if (!string.IsNullOrEmpty(updateByString))
-                {
-                    paymentMethod.UpdateByString = updateByString;
                 }
 
                 var updatedPaymentMethod = _context.PaymentMethods.Update(paymentMethod).Entity;
