@@ -21,16 +21,18 @@ namespace Pro219.API.Controllers
         }
 
         [HttpGet("GetAllCategories")]
-        public async Task<ActionResult<List<Category>>> GetAllCategories()
+        public async Task<ActionResult<List<CategoryDTO>>> GetAllCategories()
         {
             try
             {
-                var result = await categoryRepository.GetAllCategories();
+                List<Category> result = await categoryRepository.GetAllCategories();
                 if (result == null)
                 {
-                    return Ok(new List<Category>());
+                    return NoContent();
                 }
-                return Ok(result);
+                
+                var categoryDTOs = result.Select(c => ConvertToSimpleCategoryDTO(c)).ToList();
+                return Ok(categoryDTOs);
             }
             catch (Exception ex)
             {
@@ -101,17 +103,18 @@ namespace Pro219.API.Controllers
         }
 
         [HttpGet("GetAllParentCategories")]
-        public async Task<ActionResult<List<Category>>> GetAllParentCategories()
+        public async Task<ActionResult<List<CategoryDTO>>> GetAllParentCategories()
         {
             try
             {
                 var result = await categoryRepository.GetAllParentCategories();
                 if (result == null)
                 {
-                    return Ok(new List<Category>());
+                    return Ok(new List<CategoryDTO>());
                 }
 
-                return Ok(result);
+                var categoryDTOs = result.Select(c => ConvertToSimpleCategoryDTO(c)).ToList();
+                return Ok(categoryDTOs);
             }
             catch (Exception ex)
             {
@@ -120,17 +123,18 @@ namespace Pro219.API.Controllers
         }
 
         [HttpGet("GetSubCategoriesByParentId/{parentId}")]
-        public async Task<ActionResult<List<Category>>> GetSubCategoriesByParentId(int parentId)
+        public async Task<ActionResult<List<CategoryDTO>>> GetSubCategoriesByParentId(int parentId)
         {
             try
             {
                 var result = await categoryRepository.GetAllSubCategoriesByParentId(parentId);
                 if (result == null)
                 {
-                    return Ok(new List<Category>());
+                    return Ok(new List<CategoryDTO>());
                 }
 
-                return Ok(result);
+                var categoryDTOs = result.Select(c => ConvertToSimpleCategoryDTO(c)).ToList();
+                return Ok(categoryDTOs);
             }
             catch (Exception ex)
             {
@@ -139,7 +143,7 @@ namespace Pro219.API.Controllers
         }
 
         [HttpGet("GetCategoryById/{id}")]
-        public async Task<ActionResult<Category>> GetCategoryById(int id)
+        public async Task<ActionResult<CategoryDTO>> GetCategoryById(int id)
         {
             try
             {
@@ -148,7 +152,9 @@ namespace Pro219.API.Controllers
                 {
                     return NotFound("Category not found");
                 }
-                return Ok(result);
+                
+                var categoryDTO = ConvertToSimpleCategoryDTO(result);
+                return Ok(categoryDTO);
             }
             catch (Exception ex)
             {
@@ -176,6 +182,21 @@ namespace Pro219.API.Controllers
             {
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
+        }
+
+        private CategoryDTO ConvertToSimpleCategoryDTO(Category category)
+        {
+            return new CategoryDTO
+            {
+                Id = category.Id,
+                ParentCategoryId = category.ParentCategoryId,
+                UpdateBy = category.UpdateBy,
+                Name = category.Name,
+                Description = category.Description,
+                Status = category.Status,
+                isParent = false,
+                SubCategory = null
+            };
         }
 
         private CategoryDTO ConvertToCategoryDTO(Category category, List<Category> allCategories)
