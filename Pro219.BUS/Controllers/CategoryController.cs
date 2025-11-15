@@ -5,6 +5,7 @@ using Pro219.DAL.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 
 namespace Pro219.API.Controllers
 {
@@ -63,14 +64,27 @@ namespace Pro219.API.Controllers
 
 
         [HttpPut("Update")]
-        public async Task<ActionResult<Category>> UpdateCategory([FromBody] Category category)
+        public async Task<ActionResult<Category>> UpdateCategory([FromBody] CategoryUpdateDTO categoryDTO)
         {
             try
             {
-                if (category == null)
+                if (categoryDTO == null)
                 {
                     return BadRequest("Category data is required");
                 }
+
+                var category = new Category
+                {
+                    Id = categoryDTO.Id,
+                    ParentCategoryId = categoryDTO.ParentCategoryId,
+                    Name = categoryDTO.Name,
+                    Description = categoryDTO.Description,
+                    Status = categoryDTO.Status,
+                    UpdateBy = User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
+                    UpdateAt = DateTime.Now,
+                    Delete = categoryDTO.Delete,
+                    DeleteAt = categoryDTO.Delete == true ? DateTime.Now : null
+                };
 
                 var result = await categoryRepository.UpdateCategory(category);
                 if (result == null)
@@ -182,6 +196,26 @@ namespace Pro219.API.Controllers
                     ? subCategories.Select(c => ConvertToCategoryDTO(c, allCategories)).ToList() 
                     : null
             };
+        }
+
+        [HttpDelete("Delete/{id}")]
+        public async Task<ActionResult<Category>> DeleteCategory(int id)
+        {
+            try
+            {
+                var updateBy = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var result = await categoryRepository.DeleteCategory(id, null);
+                if (result == null)
+                {
+                    return NotFound("Category not found");
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
         }
     }
 }
