@@ -94,9 +94,7 @@ namespace Pro219.DAL.Repository
 
                 if (user == null) return null;
 
-                // Note: User model doesn't have Delete field, so we'll update Status instead
                 user.Status = "Deleted";
-                // If User model had Delete, UpdateAt, UpdateBy fields, we would set them here
 
                 var updatedUser = _context.Users.Update(user).Entity;
                 await _context.SaveChangesAsync();
