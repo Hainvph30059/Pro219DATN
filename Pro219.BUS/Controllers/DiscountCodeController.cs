@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pro219.API.DTOs;
 using Pro219.DAL.Models;
@@ -99,6 +100,7 @@ namespace Pro219.API.Controllers
         }
 
         [HttpPut("Update")]
+        [Authorize(Roles = "Admin,Manager,Staff")]
         public async Task<ActionResult<DiscountCode>> UpdateDiscountCode([FromBody] DiscountCodeUpdateDTO discountCodeDTO)
         {
             try
@@ -140,6 +142,7 @@ namespace Pro219.API.Controllers
         }
 
         [HttpDelete("Delete/{id}")]
+        [Authorize(Roles = "Admin,Manager,Staff")]
         public async Task<ActionResult<DiscountCode>> DeleteDiscountCode(int id)
         {
             try

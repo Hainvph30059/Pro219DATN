@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Pro219.API.DTOs;
 using Pro219.DAL.Models;
 using Pro219.DAL.Repository;
@@ -58,6 +59,7 @@ namespace Pro219.API.Controllers
         }
 
         [HttpPut("Update")]
+        [Authorize(Roles = "Admin,Manager,Staff")]
         public async Task<ActionResult<Address>> UpdateAddress([FromBody] AddressUpdateDTO addressDTO)
         {
             try
@@ -156,6 +158,7 @@ namespace Pro219.API.Controllers
         }
 
         [HttpDelete("Delete/{id}")]
+        [Authorize(Roles = "Admin,Manager,Staff")]
         public async Task<ActionResult<Address>> DeleteAddress(int id)
         {
             try
