@@ -9,13 +9,17 @@
     <p class="mt-1 text-sm font-medium text-[#666666]">Nhập thông tin đăng ký:</p>
 
     <MudDivider Class="!my-4" />
+    <EditForm Model="_model" OnValidSubmit="OnRegister" class="flex w-full flex-col gap-4">
+        <DataAnnotationsValidator />
 
-    <MudTextField T="string" @bind-Value="_name" Class="mt-4 w-full" Placeholder="Họ và tên" Variant="Variant.Outlined" FullWidth="true"></MudTextField>
-    <MudTextField T="string" @bind-Value="_email" Class="mt-4 w-full" Placeholder="Email" Variant="Variant.Outlined" FullWidth="true"></MudTextField>
-    <MudTextField T="string" @bind-Value="_phoneNumber" Class="mt-4 w-full" Placeholder="Số điện thoại" Variant="Variant.Outlined" FullWidth="true"></MudTextField>
-    <MudTextField T="string" @bind-Value="_password" Class="mb-4 mt-4 w-full" Placeholder="Mật khẩu" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ShowHidePassword" AdornmentAriaLabel="Show Password" FullWidth="true"></MudTextField>
-
-    <MudButton Class="!h-12 w-full rounded-lg !bg-black !text-white" OnClick="OnLogin">Đăng Ký</MudButton>
+        <MudTextField @bind-Value="@_model.FullName" For="@(() => _model.FullName)" Placeholder="Họ và tên" Variant="Variant.Outlined" FullWidth />
+        <MudDatePicker @bind-Date="@_model.DateOfBirth" For="@(() => _model.DateOfBirth)" DateFormat="dd/MM/yyyy" Placeholder="01/01/2000" Variant="Variant.Outlined" ShowToolbar="false" />
+        <MudTextField @bind-Value="@_model.Email" For="@(() => _model.Email)" Placeholder="Email" Variant="Variant.Outlined" FullWidth />
+        <MudTextField @bind-Value="@_model.PhoneNumber" For="@(() => _model.PhoneNumber)" Placeholder="Số điện thoại" Variant="Variant.Outlined" FullWidth />
+        <MudTextField @bind-Value="@_model.PasswordHash" For="@(() => _model.PasswordHash)" Placeholder="Mật khẩu" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ShowHidePassword" AdornmentAriaLabel="Show Password" FullWidth />
+        
+        <MudButton Class="!h-12 w-full rounded-lg !bg-black !text-white" ButtonType="ButtonType.Submit">Đăng Ký</MudButton>
+    </EditForm>
 
     <div class="mt-4 flex items-center gap-2">
         <span class="text-sm text-[#666666]">Đã có tài khoản?</span>
@@ -24,11 +28,10 @@
 </section>
 
 @code {
-    private string _name;
-    private string _email;
-    private string _phoneNumber;
-    private string _password;
+    RegisterModel _model = new RegisterModel();
     private bool _isPasswordVisible = false;
+
+    [Inject] ISnackbar _snackbar { get; set; }
 
     InputType PasswordInput => _isPasswordVisible ? InputType.Text : InputType.Password;
     string PasswordInputIcon => _isPasswordVisible ? Icons.Material.Filled.Visibility : Icons.Material.Filled.VisibilityOff;
@@ -39,8 +42,20 @@
         StateHasChanged();
     }
 
-    void OnLogin()
+    async Task OnRegister()
     {
+        var response = await _authService.RegisterCustomer(_model);
+        if (response.isSuccess == true)
+        {
+            navigation.NavigateTo(RouterConst.User.Login, true);
+            _snackbar.Add("Đăng nhập thành công!", Severity.Success);
 
+        }
+        else
+        {
+            var errorMess = Constant.Errors[response.Code];
+            _snackbar.Add(errorMess != null ? errorMess : "Đăng nhập không thành công!", Severity.Warning);
+            _model.PasswordHash = string.Empty;
+        }
     }
 }

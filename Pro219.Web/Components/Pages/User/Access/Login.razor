@@ -10,11 +10,11 @@
 
     <MudDivider Class="!my-4"/>
 
-    <EditForm class="w-full" Model="@_model" OnValidSubmit="OnLogin">
+    <EditForm class="w-full" Model="_model" OnValidSubmit="OnLogin">
         <DataAnnotationsValidator />
 
         <MudTextField @bind-Value="@_model.Username" For="@(() => _model.Username)" Class="w-full" Placeholder="Email" Variant="Variant.Outlined" FullWidth="true" />
-        <MudTextField @bind-Value="@_model.Password" For="@(() => _model.Password)" Class="mb-2 mt-4 w-full" Placeholder="Mật khẩu" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ShowHidePassword" AdornmentAriaLabel="Show Password" FullWidth="true" />
+        <MudTextField @bind-Value="@_model.PasswordHash" For="@(() => _model.PasswordHash)" Class="mb-2 mt-4 w-full" Placeholder="Mật khẩu" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ShowHidePassword" AdornmentAriaLabel="Show Password" FullWidth="true" />
 
         <div class="mb-4">
             <a href="@RouterConst.User.ForgotPassword" class="text-xs font-medium text-[#252a2b]">Quên mật khẩu?</a>
@@ -30,7 +30,7 @@
 </section>
 
 @code {
-    AuthSchema.LoginSchema _model = new AuthSchema.LoginSchema();
+    LoginModel _model = new LoginModel();
     private bool _isPasswordVisible = false;
 
     [Inject] ISnackbar Snackbar { get; set; }
@@ -46,7 +46,7 @@
 
     async Task OnLogin()
     {
-        var response = await  _authService.LoginCustomer(_model.Username, _model.Password);
+        var response = await  _authService.LoginCustomer(_model.Username, _model.PasswordHash);
         if (response.LoginSuccess ==true)
         {
             Snackbar.Add("Đăng nhập thành công!", Severity.Success);            
