@@ -199,8 +199,7 @@ namespace Pro219.API.Controllers
             }
             else
             {
-                return NotFound("Dumplicate Email,Phone");
-
+                return BadRequest(Constant.ErrorCode.EmailOrPhoneAlreadyExit);
             }
         }
 
@@ -209,7 +208,7 @@ namespace Pro219.API.Controllers
         {
             if (string.IsNullOrEmpty(resetPasswordModel.PhoneNumber) || string.IsNullOrEmpty(resetPasswordModel.Email) || string.IsNullOrEmpty(resetPasswordModel.NewPassword))
             {
-                return BadRequest("Phone number, email, and new password are required");
+                return BadRequest(Constant.ErrorCode.EmailOrPhoneRequired);
             }
 
             _customerRepository = new CustomerRepository();
@@ -217,7 +216,7 @@ namespace Pro219.API.Controllers
             
             if (customer == null)
             {
-                return NotFound("Customer not found with the provided email and phone number");
+                return BadRequest(Constant.ErrorCode.EmailOrPhoneNotFound);
             }
 
             UtilityFunc utilityFunc = new UtilityFunc();
@@ -229,7 +228,7 @@ namespace Pro219.API.Controllers
             
             if (updatedCustomer == null)
             {
-                return StatusCode(500, "Failed to update password");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
 
             return Ok(true);

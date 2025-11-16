@@ -1,16 +1,15 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using Pro219.Web.Constants;
 
 namespace Pro219.Web.DTOs
 {
-    public class RegisterModel
+    public class CustomerModel
     {
         [Required(ErrorMessage = Constant.MessageValid.Required)]
         [MaxLength(200, ErrorMessage = Constant.MessageValid.Max200)]
         [MinLength(2, ErrorMessage = Constant.MessageValid.Min2)]
-        public string FullName { get; set; }
+        public string FullName { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = Constant.MessageValid.Required)]
         [MaxLength(11, ErrorMessage = Constant.MessageValid.PhoneNumberLength)]
         [MinLength(10, ErrorMessage = Constant.MessageValid.PhoneNumberLength)]
         [RegularExpression(Constant.Regex.PhoneNumber, ErrorMessage = Constant.MessageValid.PhoneNumber)]
@@ -27,7 +26,9 @@ namespace Pro219.Web.DTOs
         [MaxLength(16, ErrorMessage = Constant.MessageValid.Password)]
         [MinLength(8, ErrorMessage = Constant.MessageValid.Password)]
         [RegularExpression(Constant.Regex.Password, ErrorMessage = Constant.MessageValid.Password)]
-        public string PasswordHash { get; set; }
+        public string PasswordHash { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = Constant.MessageValid.Required)]
+        public byte StatusByte { get; set; }
     }
 }
-

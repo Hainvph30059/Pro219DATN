@@ -19,9 +19,9 @@
             <EditForm class="w-full" Model="_model" OnValidSubmit="OnLogin">
                 <DataAnnotationsValidator />
 
-                <MudTextField @bind-Value="_model.Username" For="@(() => _model.Username)" Variant="Variant.Outlined" Placeholder="Email" FullWidth="true" />
+                <MudTextField @bind-Value="_model.Username" For="@(() => _model.Username)" Variant="Variant.Outlined" Placeholder="Username" FullWidth="true" />
 
-                <MudTextField @bind-Value="_model.Password" For="@(() => _model.Password)" Class="mt-4 w-full" Variant="Variant.Outlined" Placeholder="Password" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ShowHidePassword" AdornmentAriaLabel="Show Password" FullWidth="true" />
+                <MudTextField @bind-Value="_model.PasswordHash" For="@(() => _model.PasswordHash)" Class="mt-4 w-full" Variant="Variant.Outlined" Placeholder="Password" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ShowHidePassword" AdornmentAriaLabel="Show Password" FullWidth="true" />
 
                 <MudButton Class="mt-6 !h-12 !w-full rounded-lg !bg-[#7e6fff] !text-white" ButtonType="ButtonType.Submit">Đăng Nhập</MudButton>
             </EditForm>
@@ -30,7 +30,7 @@
 }
 
 @code {
-    AuthSchema.LoginSchema _model = new AuthSchema.LoginSchema();
+    LoginAdminModel _model = new LoginAdminModel();
     private bool _isPasswordVisible = false;
     private bool _isLoading = true;
 
@@ -137,7 +137,7 @@
 
     async Task OnLogin()
     {
-        var response = await _authService.LoginStaff(_model.Username, _model.Password);
+        var response = await _authService.LoginStaff(_model.Username, _model.PasswordHash);
         if (response.LoginSuccess == true)
         {
             Snackbar.Add("Đăng nhập thành công!", Severity.Success);

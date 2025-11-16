@@ -3,6 +3,8 @@ using Pro219.Web.DTOs;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
+using Pro219.Web.Constants;
+using Microsoft.AspNetCore.Http;
 
 namespace Pro219.Web.Services
 {
@@ -112,6 +114,64 @@ namespace Pro219.Web.Services
             {
                 var responseDTO = await response.Content.ReadFromJsonAsync<GetMeResponseDTO>();
                 return responseDTO ?? new GetMeResponseDTO { IsExpired = true };
+            }
+        }
+
+        public async Task<RegisterResponseDTO> RegisterCustomer(RegisterModel payload)
+        {
+            if (payload == null)
+            {
+                return new RegisterResponseDTO
+                {
+                    isSuccess = false,
+                    Code = Constant.ErrorCode.OtherError,
+                };
+            }
+
+            payload.PasswordHash = HashPassword(payload.PasswordHash);
+
+            var response = await _httpClient.PostAsJsonAsync("/Access/Register", payload);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return new RegisterResponseDTO
+                {
+                    isSuccess = true,
+                    Code = null,
+                };
+            } else
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+                return new RegisterResponseDTO
+                {
+                    isSuccess = false,
+                    Code = responseContent.Trim('"'),
+                };
+            }
+        }
+         
+        public async Task<ForgotResponseDTO> ForgotPassword(string request)
+        {
+            var response = await _httpClient.PostAsJsonAsync("/Access/ResetPassword", request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return new ForgotResponseDTO
+                {
+                    isSuccess = true,
+                    Code = null,
+                    StatusCode = int.Parse(response.StatusCode.ToString()),
+                };
+            }
+            else
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+                return new ForgotResponseDTO
+                {
+                    isSuccess = false,
+                    Code = responseContent,
+                    StatusCode = int.Parse(response.StatusCode.ToString()),
+                };
             }
         }
     }
