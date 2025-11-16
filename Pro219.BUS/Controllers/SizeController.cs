@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pro219.API.DTOs;
 using Pro219.DAL.Models;
@@ -81,6 +82,7 @@ namespace Pro219.API.Controllers
         }
 
         [HttpPut("Update")]
+        [Authorize(Roles = "Admin,Manager,Staff")]
         public async Task<ActionResult<Size>> UpdateSize([FromBody] SizeUpdateDTO sizeDTO)
         {
             try
@@ -116,6 +118,7 @@ namespace Pro219.API.Controllers
         }
 
         [HttpDelete("Delete/{id}")]
+        [Authorize(Roles = "Admin,Manager,Staff")]
         public async Task<ActionResult<Size>> DeleteSize(int id)
         {
             try
