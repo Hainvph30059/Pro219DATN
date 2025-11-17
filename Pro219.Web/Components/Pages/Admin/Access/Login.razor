@@ -34,8 +34,6 @@
     private bool _isPasswordVisible = false;
     private bool _isLoading = true;
 
-    [Inject] ISnackbar Snackbar { get; set; }
-
     InputType PasswordInput => _isPasswordVisible ? InputType.Text : InputType.Password;
     string PasswordInputIcon => _isPasswordVisible ? Icons.Material.Filled.Visibility : Icons.Material.Filled.VisibilityOff;
 
@@ -108,13 +106,13 @@
             {
                 if (userInfo.Role == Constant.Role.Customer)
                 {
-                    navigation.NavigateTo(RouterConst.User.Home, true);
+                    navigation.NavigateTo(RouterConst.User.Home);
                     _isLoading = false;
                     return;
                 }
                 else
                 {
-                    navigation.NavigateTo(RouterConst.Admin.Home, true);
+                    navigation.NavigateTo(RouterConst.Admin.Home);
                     _isLoading = false;
                     return;
                 }
@@ -140,15 +138,15 @@
         var response = await _authService.LoginStaff(_model.Username, _model.PasswordHash);
         if (response.LoginSuccess == true)
         {
-            Snackbar.Add("Đăng nhập thành công!", Severity.Success);
-            navigation.NavigateTo(RouterConst.Admin.Home, true);
+            _snackbar.Add("Đăng nhập thành công!", Severity.Success);
+            navigation.NavigateTo(RouterConst.Admin.Home);
             await localStorage.SetItemAsync(Constant.TokenNameLocalStorage, response.Token);
             await localStorage.SetItemAsync(Constant.TokenExpiredLocalStorage, response.Expiration);
 
         }
         else
         {
-            Snackbar.Add("Đăng nhập không thành công. Vui lòng kiểm tra lại tên người dùng và mật khẩu.", Severity.Warning);
+            _snackbar.Add("Đăng nhập không thành công. Vui lòng kiểm tra lại tên người dùng và mật khẩu.", Severity.Warning);
         }
 
     }

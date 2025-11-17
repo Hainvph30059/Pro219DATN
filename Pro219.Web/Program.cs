@@ -23,7 +23,6 @@ builder.Services.AddMudServices(config =>
     config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
 });
 
-
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<AuthService>();
