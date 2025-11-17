@@ -47,10 +47,17 @@
         var response = await  _authService.LoginCustomer(_model.Username, _model.PasswordHash);
         if (response.LoginSuccess ==true)
         {
-            _snackbar.Add("Đăng nhập thành công!", Severity.Success);            
-            navigation.NavigateTo(RouterConst.User.Home);
             await localStorage.SetItemAsync(Constant.TokenNameLocalStorage, response.Token);
             await localStorage.SetItemAsync(Constant.TokenExpiredLocalStorage, response.Expiration);
+            await localStorage.SetItemAsync(Constant.UserFirstLoginLocalStorage, response.FirstLogin);
+
+            if (response.FirstLogin)
+            {
+                navigation.NavigateTo(RouterConst.User.Home, false, true);
+                return;
+            }
+            _snackbar.Add("Đăng nhập thành công!", Severity.Success);            
+            navigation.NavigateTo(RouterConst.User.Home);
             
         }
         else

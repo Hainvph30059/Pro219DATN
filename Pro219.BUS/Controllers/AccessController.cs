@@ -65,7 +65,8 @@ namespace Pro219.API.Controllers
                 {
                     Token = new JwtSecurityTokenHandler().WriteToken(token),
                     Expiration = expirationGmt7,
-                    LoginSuccess = true
+                    LoginSuccess = true,
+                    FirstLogin = customer.LastLogin == null,
                 });
             }
             else
@@ -190,6 +191,7 @@ namespace Pro219.API.Controllers
             cus.CreateAt = DateTime.Now;
             cus.PasswordHash = registerModel.PasswordHash;
             cus.Status = "1";
+            cus.LastLogin = DateTime.Now;
             _customerRepository = new CustomerRepository();
             var user = _customerRepository.FindCustomerExistByKeyWord(cus.Email).Result;
             if (user == null)
@@ -206,13 +208,13 @@ namespace Pro219.API.Controllers
         [HttpPost("ResetPassword")]
         public async Task<ActionResult<bool>> ResetPassword([FromBody] ResetPasswordModel resetPasswordModel)
         {
-            if (string.IsNullOrEmpty(resetPasswordModel.PhoneNumber) || string.IsNullOrEmpty(resetPasswordModel.Email))
+            if (string.IsNullOrEmpty(resetPasswordModel.Email))
             {
                 return BadRequest(Constant.ErrorCode.EmailOrPhoneRequired);
             }
 
             _customerRepository = new CustomerRepository();
-            var customer = await _customerRepository.FindCustomerByEmailAndPhone(resetPasswordModel.Email, resetPasswordModel.PhoneNumber);
+            var customer = await _customerRepository.FindCustomerByEmailAndPhone(resetPasswordModel.Email, string.Empty);
 
             if (customer == null)
             {
@@ -220,7 +222,8 @@ namespace Pro219.API.Controllers
             }
 
             UtilityFunc utilityFunc = new UtilityFunc();
-            string newPassword = utilityFunc.GenerateRandomString(10);
+            //string newPassword = utilityFunc.GenerateRandomString(10);
+            string newPassword = "User@12345";
 
             customer.PasswordHash = utilityFunc.HashPassword(newPassword);
             customer.LastLogin = null;
@@ -242,7 +245,7 @@ namespace Pro219.API.Controllers
             if (userName == null)
             {
 
-                return BadRequest("User Not found");
+                return BadRequest(Constant.ErrorCode.CustomerNotFound);
             }
             else
             {
@@ -251,16 +254,20 @@ namespace Pro219.API.Controllers
 
                 if (customer == null)
                 {
-                    return NotFound("Customer not found with the provided email and phone number");
+                    return NotFound(Constant.ErrorCode.CustomerNotFoundWidthEmailOrPhone);
                 }
                 UtilityFunc utilityFunc = new UtilityFunc();
                 //string hashedPassword = utilityFunc.GenerateRandomString(6);
                 customer.PasswordHash = changePasswordDTO.NewHashPassword;
+                if (customer.LastLogin == null)
+                {
+                    customer.LastLogin = DateTime.Now;
+                }
                 var updatedCustomer = await _customerRepository.UpdateCustomer(customer);
 
                 if (updatedCustomer == null)
                 {
-                    return StatusCode(500, "Failed to update password");
+                    return StatusCode(500, Constant.ErrorCode.OtherError);
                 }
 
                 return Ok(true);

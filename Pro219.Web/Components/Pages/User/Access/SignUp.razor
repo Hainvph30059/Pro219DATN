@@ -13,7 +13,7 @@
         <DataAnnotationsValidator />
 
         <MudTextField @bind-Value="@_model.FullName" For="@(() => _model.FullName)" Placeholder="Họ và tên" Variant="Variant.Outlined" FullWidth />
-        <MudDatePicker @bind-Date="@_model.DateOfBirth" For="@(() => _model.DateOfBirth)" Editable="true" Mask="@(new DateMask("MM/dd/yyyy"))" DateFormat="dd/MM/yyyy" Placeholder="01/01/2000" Variant="Variant.Outlined" ShowToolbar="false" />
+        <MudDatePicker @bind-Date="@_model.DateOfBirth" For="@(() => _model.DateOfBirth)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" Placeholder="01/01/2000" Variant="Variant.Outlined" ShowToolbar="false" />
         <MudTextField @bind-Value="@_model.Email" For="@(() => _model.Email)" Placeholder="Email" Variant="Variant.Outlined" FullWidth />
         <MudTextField @bind-Value="@_model.PhoneNumber" For="@(() => _model.PhoneNumber)" Placeholder="Số điện thoại" Variant="Variant.Outlined" FullWidth />
         <MudTextField @bind-Value="@_model.PasswordHash" For="@(() => _model.PasswordHash)" Placeholder="Mật khẩu" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ShowHidePassword" AdornmentAriaLabel="Show Password" FullWidth />
@@ -23,7 +23,7 @@
 
     <div class="mt-4 flex items-center gap-2">
         <span class="text-sm text-[#666666]">Đã có tài khoản?</span>
-        <a href="@RouterConst.User.Login" class="text-sm font-medium text-[#252a2b]">Đăng nhập ngay</a>
+        <a href="@RouterConst.User.Login" class="text-sm font-medium text-[#252a2b]">Đăng ký</a>
     </div>
 </section>
 
@@ -46,14 +46,13 @@
         if (response.isSuccess == true)
         {
             navigation.NavigateTo(RouterConst.User.Login);
-            _snackbar.Add("Đăng nhập thành công!", Severity.Success);
+            _snackbar.Add("Đăng ký thành công!", Severity.Success);
 
         }
         else
         {
             var errorMess = Constant.Errors[response.Code];
-            _snackbar.Add(errorMess != null ? errorMess : "Đăng nhập không thành công!", Severity.Warning);
-            _model.PasswordHash = string.Empty;
+            _snackbar.Add(errorMess != null ? errorMess : "Đăng ký không thành công!", Severity.Warning);
         }
     }
 }

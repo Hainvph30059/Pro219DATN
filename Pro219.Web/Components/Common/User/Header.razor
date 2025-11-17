@@ -125,6 +125,9 @@
     [Parameter]
     public EventCallback OnLoggedOut { get; set; }
 
+    [Parameter]
+    public bool FirstLogin { get; set; }
+
     private string _searchValue = "";
     private int _countCart = 99;
 
@@ -132,6 +135,8 @@
 
     private void HandleShowMenuChild()
     {
+        if (FirstLogin) return;
+
         _isShowMenuChild = !_isShowMenuChild;
         StateHasChanged();
     }
