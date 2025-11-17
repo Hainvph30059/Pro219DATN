@@ -148,7 +148,7 @@ namespace Pro219.API.Controllers
                         var expirationUtc = jsonToken.ValidTo;
                         expirationTime = TimeZoneInfo.ConvertTimeFromUtc(expirationUtc, _gmtPlus7);
                         isExpired = expirationUtc < DateTime.UtcNow;
-                        
+
                         if (isExpired)
                         {
                             return Unauthorized(new { message = "Token has expired", isExpired = true, expirationTime = expirationTime });
@@ -207,32 +207,67 @@ namespace Pro219.API.Controllers
         [HttpPost("ResetPassword")]
         public async Task<ActionResult<bool>> ResetPassword([FromBody] ResetPasswordModel resetPasswordModel)
         {
-            if (string.IsNullOrEmpty(resetPasswordModel.PhoneNumber) || string.IsNullOrEmpty(resetPasswordModel.Email) || string.IsNullOrEmpty(resetPasswordModel.NewPassword))
+            if (string.IsNullOrEmpty(resetPasswordModel.PhoneNumber) || string.IsNullOrEmpty(resetPasswordModel.Email))
             {
                 return BadRequest("Phone number, email, and new password are required");
             }
 
             _customerRepository = new CustomerRepository();
             var customer = await _customerRepository.FindCustomerByEmailAndPhone(resetPasswordModel.Email, resetPasswordModel.PhoneNumber);
-            
+
             if (customer == null)
             {
                 return NotFound("Customer not found with the provided email and phone number");
             }
 
             UtilityFunc utilityFunc = new UtilityFunc();
-            string hashedPassword = utilityFunc.HashPassword(resetPasswordModel.NewPassword);
-            customer.PasswordHash = hashedPassword;
+            string newPassword = utilityFunc.GenerateRandomString(10);
+
+            customer.PasswordHash = utilityFunc.HashPassword(newPassword);
             customer.LastLogin = null;
 
             var updatedCustomer = await _customerRepository.UpdateCustomer(customer);
-            
+
             if (updatedCustomer == null)
             {
                 return StatusCode(500, "Failed to update password");
             }
 
             return Ok(true);
+        }
+
+        [HttpPost("ChangePassword")]
+        public async Task<ActionResult<bool>> ChangePassword([FromBody] ChangePasswordDTO changePasswordDTO)
+        {
+            string userName = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userName == null)
+            {
+
+                return BadRequest("User Not found");
+            }
+            else
+            {
+                _customerRepository = new CustomerRepository();
+                var customer = await _customerRepository.FindCustomerByEmailAndPhone(userName,userName);
+
+                if (customer == null)
+                {
+                    return NotFound("Customer not found with the provided email and phone number");
+                }
+                UtilityFunc utilityFunc = new UtilityFunc();
+                //string hashedPassword = utilityFunc.GenerateRandomString(6);
+                customer.PasswordHash = changePasswordDTO.NewHashPassword;
+                var updatedCustomer = await _customerRepository.UpdateCustomer(customer);
+
+                if (updatedCustomer == null)
+                {
+                    return StatusCode(500, "Failed to update password");
+                }
+
+                return Ok(true);
+            }
+
+              
         }
     }
 

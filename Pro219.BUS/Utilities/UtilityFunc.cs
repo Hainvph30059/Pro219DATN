@@ -20,5 +20,13 @@ namespace Pro219.API.Utilities
             return sb.ToString();
 
         }
+        public string GenerateRandomString(int count)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            Random random = new Random();
+            return new string(Enumerable.Repeat(chars, count)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
+
     }
 }
