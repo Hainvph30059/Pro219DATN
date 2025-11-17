@@ -35,7 +35,7 @@ namespace Pro219.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -47,13 +47,13 @@ namespace Pro219.API.Controllers
                 var result = await productRepository.GetProductById(id);
                 if (result == null)
                 {
-                    return NotFound("Product not found");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -64,20 +64,20 @@ namespace Pro219.API.Controllers
             {
                 if (product == null)
                 {
-                    return BadRequest("Product data is required");
+                    return BadRequest(Constant.ErrorCode.DataRequired);
                 }
 
                 var result = await productRepository.AddProduct(product);
                 if (result == null)
                 {
-                    return StatusCode(500, "Failed to add product");
+                    return StatusCode(500, Constant.ErrorCode.DatabaseError);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -89,7 +89,7 @@ namespace Pro219.API.Controllers
             {
                 if (productDTO == null)
                 {
-                    return BadRequest("Product data is required");
+                    return BadRequest(Constant.ErrorCode.DataRequired);
                 }
 
                 var product = new Product
@@ -111,14 +111,14 @@ namespace Pro219.API.Controllers
                 var result = await productRepository.UpdateProduct(product);
                 if (result == null)
                 {
-                    return NotFound("Product not found or update failed");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -132,14 +132,14 @@ namespace Pro219.API.Controllers
                 var result = await productRepository.DeleteProduct(id, updateBy);
                 if (result == null)
                 {
-                    return NotFound("Product not found");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
     }

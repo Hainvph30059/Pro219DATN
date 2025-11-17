@@ -35,7 +35,7 @@ namespace Pro219.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -47,13 +47,13 @@ namespace Pro219.API.Controllers
                 var result = await inventoryLogRepository.GetInventoryLogById(id);
                 if (result == null)
                 {
-                    return NotFound("Inventory log not found");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -71,7 +71,7 @@ namespace Pro219.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -82,20 +82,20 @@ namespace Pro219.API.Controllers
             {
                 if (log == null)
                 {
-                    return BadRequest("Inventory log data is required");
+                    return BadRequest(Constant.ErrorCode.DataRequired);
                 }
 
                 var result = await inventoryLogRepository.AddInventoryLog(log);
                 if (result == null)
                 {
-                    return StatusCode(500, "Failed to add inventory log");
+                    return StatusCode(500, Constant.ErrorCode.DatabaseError);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -107,7 +107,7 @@ namespace Pro219.API.Controllers
             {
                 if (logDTO == null)
                 {
-                    return BadRequest("Inventory log data is required");
+                    return BadRequest(Constant.ErrorCode.DataRequired);
                 }
 
                 var log = new InventoryLog
@@ -126,14 +126,14 @@ namespace Pro219.API.Controllers
                 var result = await inventoryLogRepository.UpdateInventoryLog(log);
                 if (result == null)
                 {
-                    return NotFound("Inventory log not found or update failed");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -147,16 +147,18 @@ namespace Pro219.API.Controllers
                 var result = await inventoryLogRepository.DeleteInventoryLog(id, updateBy);
                 if (result == null)
                 {
-                    return NotFound("Inventory log not found");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
     }
 }
+
+
 

@@ -34,7 +34,7 @@ namespace Pro219.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -46,13 +46,13 @@ namespace Pro219.API.Controllers
                 var result = await orderItemRepository.GetOrderItemById(id);
                 if (result == null)
                 {
-                    return NotFound("Order item not found");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -70,7 +70,7 @@ namespace Pro219.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -88,7 +88,7 @@ namespace Pro219.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -99,20 +99,20 @@ namespace Pro219.API.Controllers
             {
                 if (orderItem == null)
                 {
-                    return BadRequest("Order item data is required");
+                    return BadRequest(Constant.ErrorCode.DataRequired);
                 }
 
                 var result = await orderItemRepository.AddOrderItem(orderItem);
                 if (result == null)
                 {
-                    return StatusCode(500, "Failed to add order item");
+                    return StatusCode(500, Constant.ErrorCode.DatabaseError);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -123,7 +123,7 @@ namespace Pro219.API.Controllers
             {
                 if (orderItem == null)
                 {
-                    return BadRequest("Order item data is required");
+                    return BadRequest(Constant.ErrorCode.DataRequired);
                 }
 
                 orderItem.UpdateBy = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -131,14 +131,14 @@ namespace Pro219.API.Controllers
                 var result = await orderItemRepository.UpdateOrderItem(orderItem);
                 if (result == null)
                 {
-                    return NotFound("Order item not found or update failed");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -151,16 +151,18 @@ namespace Pro219.API.Controllers
                 var result = await orderItemRepository.DeleteOrderItem(id, updateBy);
                 if (result == null)
                 {
-                    return NotFound("Order item not found");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
     }
 }
+
+
 

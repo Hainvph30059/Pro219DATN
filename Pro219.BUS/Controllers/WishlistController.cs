@@ -35,7 +35,7 @@ namespace Pro219.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -47,13 +47,13 @@ namespace Pro219.API.Controllers
                 var result = await wishlistRepository.GetWishlistById(id);
                 if (result == null)
                 {
-                    return NotFound("Wishlist not found");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -71,7 +71,7 @@ namespace Pro219.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -83,13 +83,13 @@ namespace Pro219.API.Controllers
                 var result = await wishlistRepository.GetWishlistByCustomerAndVariant(customerId, productVariantId);
                 if (result == null)
                 {
-                    return NotFound("Wishlist item not found");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -100,20 +100,20 @@ namespace Pro219.API.Controllers
             {
                 if (wishlist == null)
                 {
-                    return BadRequest("Wishlist data is required");
+                    return BadRequest(Constant.ErrorCode.DataRequired);
                 }
 
                 var result = await wishlistRepository.AddWishlist(wishlist);
                 if (result == null)
                 {
-                    return StatusCode(500, "Failed to add wishlist");
+                    return StatusCode(500, Constant.ErrorCode.DatabaseError);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -125,7 +125,7 @@ namespace Pro219.API.Controllers
             {
                 if (wishlistDTO == null)
                 {
-                    return BadRequest("Wishlist data is required");
+                    return BadRequest(Constant.ErrorCode.DataRequired);
                 }
 
                 var wishlist = new Wishlist
@@ -143,14 +143,14 @@ namespace Pro219.API.Controllers
                 var result = await wishlistRepository.UpdateWishlist(wishlist);
                 if (result == null)
                 {
-                    return NotFound("Wishlist not found or update failed");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -164,16 +164,18 @@ namespace Pro219.API.Controllers
                 var result = await wishlistRepository.DeleteWishlist(id, updateBy);
                 if (result == null)
                 {
-                    return NotFound("Wishlist not found");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
     }
 }
+
+
 

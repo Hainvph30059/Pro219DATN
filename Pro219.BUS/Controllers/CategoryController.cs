@@ -37,7 +37,7 @@ namespace Pro219.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -48,20 +48,20 @@ namespace Pro219.API.Controllers
             {
                 if (category == null)
                 {
-                    return BadRequest("Category data is required");
+                    return BadRequest(Constant.ErrorCode.DataRequired);
                 }
 
                 var result = await categoryRepository.AddCategory(category);
                 if (result == null)
                 {
-                    return StatusCode(500, "Failed to add category");
+                    return StatusCode(500, Constant.ErrorCode.DatabaseError);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -74,7 +74,7 @@ namespace Pro219.API.Controllers
             {
                 if (categoryDTO == null)
                 {
-                    return BadRequest("Category data is required");
+                    return BadRequest(Constant.ErrorCode.DataRequired);
                 }
 
                 var category = new Category
@@ -93,14 +93,14 @@ namespace Pro219.API.Controllers
                 var result = await categoryRepository.UpdateCategory(category);
                 if (result == null)
                 {
-                    return NotFound("Category not found or update failed");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -120,7 +120,7 @@ namespace Pro219.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -140,7 +140,7 @@ namespace Pro219.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -152,7 +152,7 @@ namespace Pro219.API.Controllers
                 var result = await categoryRepository.GetCategoryById(id);
                 if (result == null)
                 {
-                    return NotFound("Category not found");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
                 
                 var categoryDTO = ConvertToSimpleCategoryDTO(result);
@@ -160,7 +160,7 @@ namespace Pro219.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -182,7 +182,7 @@ namespace Pro219.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -228,17 +228,17 @@ namespace Pro219.API.Controllers
             try
             {
                 var updateBy = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                var result = await categoryRepository.DeleteCategory(id, null);
+                var result = await categoryRepository.DeleteCategory(id, updateBy);
                 if (result == null)
                 {
-                    return NotFound("Category not found");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
     }
