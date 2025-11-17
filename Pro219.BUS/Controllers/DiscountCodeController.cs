@@ -35,7 +35,7 @@ namespace Pro219.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -47,13 +47,13 @@ namespace Pro219.API.Controllers
                 var result = await discountCodeRepository.GetDiscountCodeById(id);
                 if (result == null)
                 {
-                    return NotFound("Discount code not found");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -65,13 +65,13 @@ namespace Pro219.API.Controllers
                 var result = await discountCodeRepository.GetDiscountCodeByCode(code);
                 if (result == null)
                 {
-                    return NotFound("Discount code not found");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -82,20 +82,20 @@ namespace Pro219.API.Controllers
             {
                 if (discountCode == null)
                 {
-                    return BadRequest("Discount code data is required");
+                    return BadRequest(Constant.ErrorCode.DataRequired);
                 }
 
                 var result = await discountCodeRepository.AddDiscountCode(discountCode);
                 if (result == null)
                 {
-                    return StatusCode(500, "Failed to add discount code");
+                    return StatusCode(500, Constant.ErrorCode.DatabaseError);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -107,7 +107,7 @@ namespace Pro219.API.Controllers
             {
                 if (discountCodeDTO == null)
                 {
-                    return BadRequest("Discount code data is required");
+                    return BadRequest(Constant.ErrorCode.DataRequired);
                 }
 
                 var discountCode = new DiscountCode
@@ -130,14 +130,14 @@ namespace Pro219.API.Controllers
                 var result = await discountCodeRepository.UpdateDiscountCode(discountCode);
                 if (result == null)
                 {
-                    return NotFound("Discount code not found or update failed");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -151,16 +151,18 @@ namespace Pro219.API.Controllers
                 var result = await discountCodeRepository.DeleteDiscountCode(id, updateBy);
                 if (result == null)
                 {
-                    return NotFound("Discount code not found");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
     }
 }
+
+
 

@@ -35,7 +35,7 @@ namespace Pro219.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -47,13 +47,13 @@ namespace Pro219.API.Controllers
                 var result = await paymentMethodRepository.GetPaymentMethodById(id);
                 if (result == null)
                 {
-                    return NotFound("Payment method not found");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -64,20 +64,20 @@ namespace Pro219.API.Controllers
             {
                 if (paymentMethod == null)
                 {
-                    return BadRequest("Payment method data is required");
+                    return BadRequest(Constant.ErrorCode.DataRequired);
                 }
 
                 var result = await paymentMethodRepository.AddPaymentMethod(paymentMethod);
                 if (result == null)
                 {
-                    return StatusCode(500, "Failed to add payment method");
+                    return StatusCode(500, Constant.ErrorCode.DatabaseError);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -89,7 +89,7 @@ namespace Pro219.API.Controllers
             {
                 if (paymentMethodDTO == null)
                 {
-                    return BadRequest("Payment method data is required");
+                    return BadRequest(Constant.ErrorCode.DataRequired);
                 }
 
                 var paymentMethod = new PaymentMethod
@@ -108,14 +108,14 @@ namespace Pro219.API.Controllers
                 var result = await paymentMethodRepository.UpdatePaymentMethod(paymentMethod);
                 if (result == null)
                 {
-                    return NotFound("Payment method not found or update failed");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -129,16 +129,18 @@ namespace Pro219.API.Controllers
                 var result = await paymentMethodRepository.DeletePaymentMethod(id, updateBy);
                 if (result == null)
                 {
-                    return NotFound("Payment method not found");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
     }
 }
+
+
 

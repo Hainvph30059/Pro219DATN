@@ -35,7 +35,7 @@ namespace Pro219.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -47,13 +47,13 @@ namespace Pro219.API.Controllers
                 var result = await sizeRepository.GetSizeById(id);
                 if (result == null)
                 {
-                    return NotFound("Size not found");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -64,20 +64,20 @@ namespace Pro219.API.Controllers
             {
                 if (size == null)
                 {
-                    return BadRequest("Size data is required");
+                    return BadRequest(Constant.ErrorCode.DataRequired);
                 }
 
                 var result = await sizeRepository.AddSize(size);
                 if (result == null)
                 {
-                    return StatusCode(500, "Failed to add size");
+                    return StatusCode(500, Constant.ErrorCode.DatabaseError);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -89,7 +89,7 @@ namespace Pro219.API.Controllers
             {
                 if (sizeDTO == null)
                 {
-                    return BadRequest("Size data is required");
+                    return BadRequest(Constant.ErrorCode.DataRequired);
                 }
 
                 var size = new Size
@@ -106,14 +106,14 @@ namespace Pro219.API.Controllers
                 var result = await sizeRepository.UpdateSize(size);
                 if (result == null)
                 {
-                    return NotFound("Size not found or update failed");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -127,16 +127,18 @@ namespace Pro219.API.Controllers
                 var result = await sizeRepository.DeleteSize(id, updateBy);
                 if (result == null)
                 {
-                    return NotFound("Size not found");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
     }
 }
+
+
 

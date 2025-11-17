@@ -35,7 +35,7 @@ namespace Pro219.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -47,13 +47,13 @@ namespace Pro219.API.Controllers
                 var result = await brandRepository.GetBrandById(id);
                 if (result == null)
                 {
-                    return NotFound("Brand not found");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -64,20 +64,20 @@ namespace Pro219.API.Controllers
             {
                 if (brand == null)
                 {
-                    return BadRequest("Brand data is required");
+                    return BadRequest(Constant.ErrorCode.DataRequired);
                 }
 
                 var result = await brandRepository.AddBrand(brand);
                 if (result == null)
                 {
-                    return StatusCode(500, "Failed to add brand");
+                    return StatusCode(500, Constant.ErrorCode.DatabaseError);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -89,7 +89,7 @@ namespace Pro219.API.Controllers
             {
                 if (brandDTO == null)
                 {
-                    return BadRequest("Brand data is required");
+                    return BadRequest(Constant.ErrorCode.DataRequired);
                 }
 
                 var brand = new Brand
@@ -107,14 +107,14 @@ namespace Pro219.API.Controllers
                 var result = await brandRepository.UpdateBrand(brand);
                 if (result == null)
                 {
-                    return NotFound("Brand not found or update failed");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -128,16 +128,18 @@ namespace Pro219.API.Controllers
                 var result = await brandRepository.DeleteBrand(id, updateBy);
                 if (result == null)
                 {
-                    return NotFound("Brand not found");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
     }
 }
+
+
 

@@ -35,7 +35,7 @@ namespace Pro219.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -47,13 +47,13 @@ namespace Pro219.API.Controllers
                 var result = await productImageRepository.GetProductImageById(id);
                 if (result == null)
                 {
-                    return NotFound("Product image not found");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -71,7 +71,7 @@ namespace Pro219.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -89,7 +89,7 @@ namespace Pro219.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -100,20 +100,20 @@ namespace Pro219.API.Controllers
             {
                 if (image == null)
                 {
-                    return BadRequest("Product image data is required");
+                    return BadRequest(Constant.ErrorCode.DataRequired);
                 }
 
                 var result = await productImageRepository.AddProductImage(image);
                 if (result == null)
                 {
-                    return StatusCode(500, "Failed to add product image");
+                    return StatusCode(500, Constant.ErrorCode.DatabaseError);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -125,7 +125,7 @@ namespace Pro219.API.Controllers
             {
                 if (imageDTO == null)
                 {
-                    return BadRequest("Product image data is required");
+                    return BadRequest(Constant.ErrorCode.DataRequired);
                 }
 
                 var image = new ProductImage
@@ -145,14 +145,14 @@ namespace Pro219.API.Controllers
                 var result = await productImageRepository.UpdateProductImage(image);
                 if (result == null)
                 {
-                    return NotFound("Product image not found or update failed");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -166,16 +166,18 @@ namespace Pro219.API.Controllers
                 var result = await productImageRepository.DeleteProductImage(id, updateBy);
                 if (result == null)
                 {
-                    return NotFound("Product image not found");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
     }
 }
+
+
 

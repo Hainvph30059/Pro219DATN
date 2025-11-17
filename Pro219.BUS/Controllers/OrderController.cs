@@ -38,7 +38,7 @@ namespace Pro219.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -50,13 +50,13 @@ namespace Pro219.API.Controllers
                 var result = await orderRepository.GetOrderById(id);
                 if (result == null)
                 {
-                    return NotFound("Order not found");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -68,13 +68,13 @@ namespace Pro219.API.Controllers
                 var result = await orderRepository.GetOrderByOrderCode(orderCode);
                 if (result == null)
                 {
-                    return NotFound("Order not found");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -92,7 +92,7 @@ namespace Pro219.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -103,20 +103,20 @@ namespace Pro219.API.Controllers
             {
                 if (order == null)
                 {
-                    return BadRequest("Order data is required");
+                    return BadRequest(Constant.ErrorCode.DataRequired);
                 }
 
                 var result = await orderRepository.AddOrder(order);
                 if (result == null)
                 {
-                    return StatusCode(500, "Failed to add order");
+                    return StatusCode(500, Constant.ErrorCode.DatabaseError);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -127,7 +127,7 @@ namespace Pro219.API.Controllers
             {
                 if (order == null)
                 {
-                    return BadRequest("Order data is required");
+                    return BadRequest(Constant.ErrorCode.DataRequired);
                 }
 
                 order.UpdateBy = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -135,14 +135,14 @@ namespace Pro219.API.Controllers
                 var result = await orderRepository.UpdateOrder(order);
                 if (result == null)
                 {
-                    return NotFound("Order not found or update failed");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -155,14 +155,14 @@ namespace Pro219.API.Controllers
                 var result = await orderRepository.DeleteOrder(id, updateBy);
                 if (result == null)
                 {
-                    return NotFound("Order not found");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -174,7 +174,7 @@ namespace Pro219.API.Controllers
                 var order = await orderRepository.GetOrderByIdForInvoice(id);
                 if (order == null)
                 {
-                    return NotFound("Order not found");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
 
                 var invoice = new InvoiceDTO
@@ -273,7 +273,7 @@ namespace Pro219.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -285,7 +285,7 @@ namespace Pro219.API.Controllers
                 var order = await orderRepository.GetOrderByIdForInvoice(id);
                 if (order == null)
                 {
-                    return NotFound("Order not found");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
 
                 var invoice = new InvoiceDTO
@@ -387,9 +387,11 @@ namespace Pro219.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
     }
 }
+
+
 

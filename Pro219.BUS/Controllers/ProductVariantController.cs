@@ -35,7 +35,7 @@ namespace Pro219.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -47,13 +47,13 @@ namespace Pro219.API.Controllers
                 var result = await productVariantRepository.GetProductVariantById(id);
                 if (result == null)
                 {
-                    return NotFound("Product variant not found");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -71,7 +71,7 @@ namespace Pro219.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -82,20 +82,20 @@ namespace Pro219.API.Controllers
             {
                 if (variant == null)
                 {
-                    return BadRequest("Product variant data is required");
+                    return BadRequest(Constant.ErrorCode.DataRequired);
                 }
 
                 var result = await productVariantRepository.AddProductVariant(variant);
                 if (result == null)
                 {
-                    return StatusCode(500, "Failed to add product variant");
+                    return StatusCode(500, Constant.ErrorCode.DatabaseError);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -107,7 +107,7 @@ namespace Pro219.API.Controllers
             {
                 if (variantDTO == null)
                 {
-                    return BadRequest("Product variant data is required");
+                    return BadRequest(Constant.ErrorCode.DataRequired);
                 }
 
                 var variant = new ProductVariant
@@ -131,14 +131,14 @@ namespace Pro219.API.Controllers
                 var result = await productVariantRepository.UpdateProductVariant(variant);
                 if (result == null)
                 {
-                    return NotFound("Product variant not found or update failed");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -152,16 +152,18 @@ namespace Pro219.API.Controllers
                 var result = await productVariantRepository.DeleteProductVariant(id, updateBy);
                 if (result == null)
                 {
-                    return NotFound("Product variant not found");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
     }
 }
+
+
 

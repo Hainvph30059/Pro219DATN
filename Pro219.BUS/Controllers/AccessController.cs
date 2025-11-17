@@ -71,12 +71,7 @@ namespace Pro219.API.Controllers
             }
             else
             {
-                return Unauthorized(new LoginResponseDTO
-                {
-                    Token = null,
-                    Expiration = DateTime.MinValue,
-                    LoginSuccess = false
-                });
+                return StatusCode(403, Constant.ErrorCode.Unauthorized);
             }
         }
 
@@ -120,12 +115,7 @@ namespace Pro219.API.Controllers
             }
             else
             {
-                return Unauthorized(new LoginResponseDTO
-                {
-                    Token = null,
-                    Expiration = DateTime.MinValue,
-                    LoginSuccess = false
-                });
+                return StatusCode(403, Constant.ErrorCode.Unauthorized);
             }
         }
 
@@ -152,7 +142,7 @@ namespace Pro219.API.Controllers
 
                         if (isExpired)
                         {
-                            return Unauthorized(new { message = "Token has expired", isExpired = true, expirationTime = expirationTime });
+                            return StatusCode(403, Constant.ErrorCode.TokenExpired);
                         }
                     }
                 }
@@ -172,11 +162,11 @@ namespace Pro219.API.Controllers
             }
             catch (SecurityTokenExpiredException)
             {
-                return Unauthorized(new { message = "Token has expired", isExpired = true });
+                return StatusCode(403, Constant.ErrorCode.TokenExpired);
             }
             catch
             {
-                return Unauthorized(new { message = "Invalid token", isExpired = true });
+                return StatusCode(403, Constant.ErrorCode.InvalidToken);
             }
         }
 

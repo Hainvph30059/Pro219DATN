@@ -35,7 +35,7 @@ namespace Pro219.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -47,13 +47,13 @@ namespace Pro219.API.Controllers
                 var result = await cartItemRepository.GetCartItemById(id);
                 if (result == null)
                 {
-                    return NotFound("Cart item not found");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -71,7 +71,7 @@ namespace Pro219.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -82,20 +82,20 @@ namespace Pro219.API.Controllers
             {
                 if (cartItem == null)
                 {
-                    return BadRequest("Cart item data is required");
+                    return BadRequest(Constant.ErrorCode.DataRequired);
                 }
 
                 var result = await cartItemRepository.AddCartItem(cartItem);
                 if (result == null)
                 {
-                    return StatusCode(500, "Failed to add cart item");
+                    return StatusCode(500, Constant.ErrorCode.DatabaseError);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -107,7 +107,7 @@ namespace Pro219.API.Controllers
             {
                 if (cartItemDTO == null)
                 {
-                    return BadRequest("Cart item data is required");
+                    return BadRequest(Constant.ErrorCode.DataRequired);
                 }
 
                 var cartItem = new CartItem
@@ -128,14 +128,14 @@ namespace Pro219.API.Controllers
                 var result = await cartItemRepository.UpdateCartItem(cartItem);
                 if (result == null)
                 {
-                    return NotFound("Cart item not found or update failed");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
 
@@ -149,16 +149,18 @@ namespace Pro219.API.Controllers
                 var result = await cartItemRepository.DeleteCartItem(id, updateBy);
                 if (result == null)
                 {
-                    return NotFound("Cart item not found");
+                    return NotFound(Constant.ErrorCode.DataNotFound);
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
     }
 }
+
+
 

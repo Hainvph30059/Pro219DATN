@@ -9,7 +9,20 @@
             public const string EmailOrPhoneAlreadyExit = "email_phone_already_exit";
             public const string CustomerNotFound = "customer_not_found";
             public const string CustomerNotFoundWidthEmailOrPhone = "customer_not_found_with_email_or_phone";
+            public const string Unauthorized = "unauthorized";
+            public const string TokenExpired = "token_expired";
+            public const string InvalidToken = "invalid_token";
+
+            public const string NotFound = "not_found";
+            public const string DataNotFound = "data_not_found";
+
+            public const string InvalidData = "invalid_data";
+            public const string DataRequired = "data_required";
+           
+
             public const string OtherError = "other_error";
+            public const string DatabaseError = "database_error";
+            
         }
     }
 }
