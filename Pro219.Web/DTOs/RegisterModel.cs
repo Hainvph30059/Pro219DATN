@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using Pro219.Web.Constants;
 
 namespace Pro219.Web.DTOs
@@ -21,6 +21,7 @@ namespace Pro219.Web.DTOs
         [EmailAddress(ErrorMessage = Constant.MessageValid.Email)]
         public string Email { get; set; }
 
+        [DateNotInFutureAttribute]
         public DateTime? DateOfBirth { get; set; }
 
         [Required(ErrorMessage = Constant.MessageValid.Required)]
@@ -28,6 +29,27 @@ namespace Pro219.Web.DTOs
         [MinLength(8, ErrorMessage = Constant.MessageValid.Password)]
         [RegularExpression(Constant.Regex.Password, ErrorMessage = Constant.MessageValid.Password)]
         public string PasswordHash { get; set; }
+    }
+
+    public class DateNotInFutureAttribute : ValidationAttribute
+    {
+        public DateNotInFutureAttribute()
+        {
+            ErrorMessage = Constant.MessageValid.DateFuture;
+        }
+
+        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        {
+            if (value is DateTime date)
+            {   
+                if (date > DateTime.Today)
+                {
+                    return new ValidationResult(ErrorMessage, new[] { validationContext.MemberName });
+                }
+            }
+
+            return ValidationResult.Success;
+        }
     }
 }
 

@@ -26,6 +26,7 @@
             public const string Email = "Sai định dạng Email.";
             public const string PhoneNumber = "Sai định dạng số điện thoại.";
             public const string PhoneNumberLength = "Tối thiểu 10 số và tối đa 11 số";
+            public const string DateFuture = "Dữ liệu ngày tháng không hợp lệ. Vui lòng chọn ngày tháng hiện tại đổ lại.";
         }
 
         public static class Role
