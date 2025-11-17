@@ -8,6 +8,7 @@
         public const string TokenNameLocalStorage = "token";
         public const string TokenExpiredLocalStorage = "expired";
         public const string UserInfoLocalStorage = "userInfo";
+        public const string UserFirstLoginLocalStorage = "firstLogin";
 
         public static class Regex
         {
@@ -44,9 +45,11 @@
         public static class ErrorCode
         {
             public const string EmailOrPhoneAlreadyExit = "email_phone_already_exit";
-            public const string OtherError = "other_error";
             public const string EmailOrPhoneRequired = "email_phone_required";
             public const string EmailOrPhoneNotFound = "email_phone_not_found";
+            public const string CustomerNotFound = "customer_not_found";
+            public const string CustomerNotFoundWidthEmailOrPhone = "customer_not_found_with_email_or_phone";
+            public const string OtherError = "other_error";
         }
 
         public static readonly Dictionary<string, string> Errors = new Dictionary<string, string>
@@ -54,6 +57,8 @@
             { ErrorCode.EmailOrPhoneAlreadyExit, "Email hoặc số điện thoại này đã được sử dụng." },
             { ErrorCode.EmailOrPhoneRequired, "Hãy nhập email của bạn." },
             { ErrorCode.EmailOrPhoneNotFound, "Email không tồn tại trong hệ thống." },
+            { ErrorCode.CustomerNotFound, "Khách hàng không tồn tại." },
+            { ErrorCode.CustomerNotFoundWidthEmailOrPhone, "Khách hàng không tồn tại." },
             { ErrorCode.OtherError, "Đã có lỗi xảy ra." },
         };
 

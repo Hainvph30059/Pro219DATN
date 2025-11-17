@@ -119,18 +119,16 @@ namespace Pro219.Web.Services
 
         public async Task<RegisterResponseDTO> RegisterCustomer(RegisterModel payload)
         {
-            if (payload == null)
+            var request = new RegisterModel()
             {
-                return new RegisterResponseDTO
-                {
-                    isSuccess = false,
-                    Code = Constant.ErrorCode.OtherError,
-                };
-            }
+                DateOfBirth = payload.DateOfBirth,
+                PasswordHash = HashPassword(payload.PasswordHash),
+                Email = payload.Email,
+                FullName = payload.FullName,
+                PhoneNumber = payload.PhoneNumber,
+            };
 
-            payload.PasswordHash = HashPassword(payload.PasswordHash);
-
-            var response = await _httpClient.PostAsJsonAsync("/Access/Register", payload);
+            var response = await _httpClient.PostAsJsonAsync("/Access/Register", request);
 
             if (response.IsSuccessStatusCode)
             {
@@ -150,7 +148,7 @@ namespace Pro219.Web.Services
             }
         }
          
-        public async Task<ForgotResponseDTO> ForgotPassword(string request)
+        public async Task<ForgotResponseDTO> ForgotPassword(ResetPasswordModel request)
         {
             var response = await _httpClient.PostAsJsonAsync("/Access/ResetPassword", request);
 
@@ -160,7 +158,7 @@ namespace Pro219.Web.Services
                 {
                     isSuccess = true,
                     Code = null,
-                    StatusCode = int.Parse(response.StatusCode.ToString()),
+                    StatusCode = response.StatusCode.ToString(),
                 };
             }
             else
@@ -170,7 +168,50 @@ namespace Pro219.Web.Services
                 {
                     isSuccess = false,
                     Code = responseContent,
-                    StatusCode = int.Parse(response.StatusCode.ToString()),
+                    StatusCode = response.StatusCode.ToString(),
+                };
+            }
+        }
+
+        public async Task<ChangePasswordDTO> ChangePassword(ChangePasswordModel request, string token)
+        {
+
+            var payload = new ChangePasswordModel()
+            {
+                CurrentPassword = HashPassword(request.CurrentPassword),
+                NewHashPassword = HashPassword(request.NewHashPassword)
+            };
+
+            var r = new HttpRequestMessage(HttpMethod.Post, "/Access/ChangePassword");
+
+            r.Content = JsonContent.Create(payload);
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                var formatToken = token.Trim('"');
+                r.Headers.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", formatToken);
+            }
+
+            var response = await _httpClient.SendAsync(r);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return new ChangePasswordDTO
+                {
+                    isSuccess = true,
+                    Code = null,
+                    StatusCode = response.StatusCode.ToString(),
+                };
+            }
+            else
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+                return new ChangePasswordDTO
+                {
+                    isSuccess = false,
+                    Code = responseContent,
+                    StatusCode = response.StatusCode.ToString(),
                 };
             }
         }

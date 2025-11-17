@@ -20,7 +20,7 @@
 {   
     <CascadingValue Value="_currentUserInfo" Name="@Constant.CascadingNameParams.UserInfo">
         <div>
-            <Header OnLoggedOut="HandleLogout" />
+            <Header OnLoggedOut="HandleLogout" FirstLogin="_firstLogin" />
 
             <main class="min-h-[calc(100lvh-26.625rem)] pt-20">
                 @Body
@@ -40,11 +40,24 @@
 @code {
     private GetMeResponseDTO _currentUserInfo = null;
     private bool _isLoading = true;
+    private bool _firstLogin = false;
 
     private async Task PerformAuthCheckAndNavigate(bool isInitialLoad)
     {
         var token = await localStorage.GetItemAsStringAsync(Constant.TokenNameLocalStorage);
         var expired = await localStorage.GetItemAsStringAsync(Constant.TokenExpiredLocalStorage);
+        var FirstLogin = await localStorage.GetItemAsStringAsync(Constant.UserFirstLoginLocalStorage);
+
+        if (!string.IsNullOrEmpty(FirstLogin))
+        {
+            _firstLogin = bool.Parse(FirstLogin);
+            if (_firstLogin == true && !navigation.ToBaseRelativePath(navigation.Uri).Equals(RouterConst.User.ChangePassword.Replace("/", "")))
+            {
+                navigation.NavigateTo(RouterConst.User.ChangePassword, true);
+                _isLoading = false;
+                return;
+            }
+        }
 
         if (!string.IsNullOrEmpty(token))
         {
@@ -97,7 +110,13 @@
                 var userInfoJson = JsonSerializer.Serialize(getMe);
                 await localStorage.SetItemAsStringAsync(Constant.UserInfoLocalStorage, userInfoJson);
                 _currentUserInfo = getMe;
+                StateHasChanged();
             }
+        } else
+        {
+            _currentUserInfo = null;
+            _firstLogin = false;
+            StateHasChanged();
         }
 
         if (isInitialLoad)
@@ -118,10 +137,7 @@
 
     private async void HandleLocationChanged(object sender, LocationChangedEventArgs e)
     {
-        if (e.Location.Contains(RouterConst.Admin.Root))
-        {
-            await PerformAuthCheckAndNavigate(isInitialLoad: false);
-        }
+        await PerformAuthCheckAndNavigate(isInitialLoad: false);
     }
 
     public void Dispose()
