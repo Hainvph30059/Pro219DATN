@@ -113,6 +113,7 @@ namespace Pro219.DAL.Repository
                 if (log == null) return null;
 
                 log.Delete = true;
+                log.DeleteAt = DateTime.Now;
                 log.UpdateAt = DateTime.Now;
                 if (!string.IsNullOrEmpty(updateBy))
                 {

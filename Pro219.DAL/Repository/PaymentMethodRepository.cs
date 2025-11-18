@@ -97,6 +97,7 @@ namespace Pro219.DAL.Repository
                 if (paymentMethod == null) return null;
 
                 paymentMethod.Delete = true;
+                paymentMethod.DeleteAt = DateTime.Now;
                 paymentMethod.UpdateAt = DateTime.Now;
                 if (!string.IsNullOrEmpty(updateBy))
                 {

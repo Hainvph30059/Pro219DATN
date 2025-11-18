@@ -95,6 +95,7 @@ namespace Pro219.DAL.Repository
                 if (size == null) return null;
 
                 size.Delete = true;
+                size.DeleteAt = DateTime.Now;
                 size.UpdateAt = DateTime.Now;
                 if (!string.IsNullOrEmpty(updateBy))
                 {

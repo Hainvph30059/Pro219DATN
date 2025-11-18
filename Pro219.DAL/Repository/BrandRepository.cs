@@ -96,6 +96,7 @@ namespace Pro219.DAL.Repository
                 if (brand == null) return null;
 
                 brand.Delete = true;
+                brand.DeleteAt = DateTime.Now;
                 brand.UpdateAt = DateTime.Now;
                 if (updateBy != null)
                 {

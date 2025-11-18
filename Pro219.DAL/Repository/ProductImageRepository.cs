@@ -128,6 +128,7 @@ namespace Pro219.DAL.Repository
                 if (image == null) return null;
 
                 image.Delete = true;
+                image.DeleteAt = DateTime.Now;
                 image.UpdateAt = DateTime.Now;
                 if (updateBy != null)
                 {

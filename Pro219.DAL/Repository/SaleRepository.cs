@@ -101,6 +101,7 @@ namespace Pro219.DAL.Repository
                 if (sale == null) return null;
 
                 sale.Delete = true;
+                sale.DeleteAt = DateTime.Now;
                 sale.UpdateAt = DateTime.Now;
                 if (updateBy != null)
                 {
