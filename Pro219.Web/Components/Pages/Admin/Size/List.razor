@@ -9,8 +9,8 @@
         <a href="@RouterConst.Admin.CreateSize" class="leading-[1.5rem] h-10 rounded-lg bg-admin-default px-6 py-2 text-white">Tạo mới</a>
     </div>
 
-    <div class="h-[calc(100lvh-9.25rem)] mt-6 w-full rounded-xl border border-slate-200 bg-white shadow-sm">
-        <MudTable Items="@_lstSize" Dense="true" Hover="true" Virtualize="true" FixedHeader="true" HorizontalScrollbar="true" Height="500px">
+    <div class="mt-6 w-full rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
+        <MudTable Bordered Items="@_lstSize" Loading="@_loading" Dense="true" Hover="true" Virtualize="true" FixedHeader="true" HorizontalScrollbar="true" Height="calc(100lvh - 16.5rem)">
             <HeaderContent>
                 <MudTh hidden><MudTableSortLabel SortLabel="Id câu hỏi" T="string" hidden>STT</MudTableSortLabel></MudTh>
                 <MudTh><MudTableSortLabel SortLabel="Tên" T="string">Tên</MudTableSortLabel></MudTh>
@@ -26,12 +26,22 @@
                     <MudIconButton Icon="@Icons.Material.Filled.Delete" aria-label="delete" OnClick="@(() => OpenDialogDelete(context.Id))"></MudIconButton>
                 </MudTd>
             </RowTemplate>
-
             <NoRecordsContent>
-                <MudText></MudText>
+                <MudText>Không có dữ liệu.</MudText>
             </NoRecordsContent>
             <LoadingContent>
-                <MudText>Đang tải...</MudText>
+                <div class="flex w-full flex-col gap-3">
+                    @{
+                        for(var i = 0; i < 5; i++)
+                        { 
+                            <div class="flex items-center justify-between gap-2">
+                                <MudSkeleton Width="100%" Height="3rem" />
+                                <MudSkeleton Width="100%" Height="3rem" />
+                                <MudSkeleton Width="100%" Height="3rem" />
+                            </div>
+                        }
+                    }
+                </div>
             </LoadingContent>
             <PagerContent>
                 <MudTablePager />
@@ -42,18 +52,27 @@
 
 @code {
     private List<DAL.Models.Size> _lstSize = [];
-
     private readonly DialogOptions _maxWidth = new() { MaxWidth = MaxWidth.Large, FullWidth = true };
+    private bool _loading = true;
 
     private List<BreadcrumbItem> _items =
     [
         new("Trang Chủ", href: RouterConst.Admin.Home),
-        new("Kích Thước", href: "#", disabled: true),
+    new("Kích Thước", href: "#", disabled: true),
     ];
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadData();
+        try
+        {
+            await LoadData();
+        } catch (Exception e)
+        {
+            _loading = false;
+        } finally
+        {
+            _loading = false;
+        }
     }
 
     async Task LoadData()
