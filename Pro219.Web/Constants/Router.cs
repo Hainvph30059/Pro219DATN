@@ -3,6 +3,7 @@
     public static class RouterConst
     {
         public const string AccessDenied = "/access-denined";
+        public const string NotFound = "/not-found";
         public static class User
         {
             // Home

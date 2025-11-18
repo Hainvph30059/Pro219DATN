@@ -1,17 +1,86 @@
-﻿@page "/admin/sizes/edit"
+﻿@page "/admin/sizes/edit/{id:int}"
 @layout AdminLayout
 
 <div class="p-6">
     <MudBreadcrumbs Class="!p-0 !text-sm" Items="_items" Separator=">"></MudBreadcrumbs>
 
     <h1 class="leading-[3rem] h-12 text-3xl font-bold text-admin-default">Sửa kích thước</h1>
+
+    <div class="mx-auto mt-6 w-full rounded-lg bg-white p-8 shadow-sm">
+        <EditForm Model="_model" OnValidSubmit="OnSubmit" class="mx-auto flex w-full flex-col gap-4">
+            <DataAnnotationsValidator />
+
+            <div class="mx-auto flex w-full max-w-[64.5rem] gap-6 rounded-lg bg-slate-100 px-6 py-4">
+                <span Class="w-44 flex-shrink-0 pt-4 text-base font-medium text-gray-900">Tên</span>
+                <MudTextField @bind-Value="@_model.Name" For="@(() => _model.Name)" Placeholder="XL" Variant="Variant.Outlined" FullWidth Style="background-color: white" />
+            </div>
+
+            <div class="mx-auto flex w-full max-w-[64.5rem] gap-6 rounded-lg bg-slate-100 px-6 py-4">
+                <span Class="w-44 flex-shrink-0 pt-4 text-base font-medium text-gray-900">Trạng thái</span>
+
+                <MudRadioGroup @bind-Value="@_isActive" For="@(() => _isActive)">
+                    <MudRadio Value="1" Color="Color.Primary">Hoạt động</MudRadio>
+                    <MudRadio Value="0" Color="Color.Primary">Ngừng Hoạt động</MudRadio>
+                </MudRadioGroup>
+            </div>
+
+            <div class="flex items-center justify-center gap-4">
+                <MudButton Href="@RouterConst.Admin.Customer" Color="Color.Surface" Variant="Variant.Filled" ButtonType="ButtonType.Button" Class="w-fit px-10">Quay lại</MudButton>
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Class="w-fit px-10">Sửa</MudButton>
+            </div>
+        </EditForm>
+    </div>
 </div>
 
 @code {
+    [Parameter]
+    public int id { get; set; }
+
+    SizeModel _model = new SizeModel();
+    private int _isActive = 1;
+    private string _token = string.Empty;
+
     private List<BreadcrumbItem> _items =
     [
         new("Trang Chủ", href: RouterConst.Admin.Home),
         new("Kích Thước", href: RouterConst.Admin.Size),
         new("Sửa Kích Thước", href: "#", disabled: true),
     ];
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _token = await localStorage.GetItemAsStringAsync(Constant.TokenNameLocalStorage);
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var size = await _sizeService.GetById(id);
+        var data = size.Data;
+        if (data != null)
+        {
+            _model.Id = data.Id;
+            _model.Name = data.Name;
+            _model.Status = data.Status ?? 1;
+            _isActive = data.Status != null ? (int)data.Status : 1;
+        }
+    }
+
+    async Task OnSubmit()
+    {
+        _model.Status = (byte)_isActive;
+        var result = await _sizeService.Edit(_model, _token);
+
+        if (result.IsSuccess)
+        {
+            _snackbar.Add("Sửa thành công", Severity.Success);
+            navigation.NavigateTo(RouterConst.Admin.Size);
+        }
+        else
+        {
+            _snackbar.Add("Sửa thất bại", Severity.Warning);
+        }
+    }
 }

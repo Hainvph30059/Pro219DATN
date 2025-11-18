@@ -49,7 +49,20 @@
             public const string EmailOrPhoneNotFound = "email_phone_not_found";
             public const string CustomerNotFound = "customer_not_found";
             public const string CustomerNotFoundWidthEmailOrPhone = "customer_not_found_with_email_or_phone";
+
+            public const string Unauthorized = "unauthorized";
+            public const string TokenExpired = "token_expired";
+            public const string InvalidToken = "invalid_token";
+
+            public const string NotFound = "not_found";
+            public const string DataNotFound = "data_not_found";
+
+            public const string InvalidData = "invalid_data";
+            public const string DataRequired = "data_required";
+
+
             public const string OtherError = "other_error";
+            public const string DatabaseError = "database_error";
         }
 
         public static readonly Dictionary<string, string> Errors = new Dictionary<string, string>
@@ -59,6 +72,14 @@
             { ErrorCode.EmailOrPhoneNotFound, "Email không tồn tại trong hệ thống." },
             { ErrorCode.CustomerNotFound, "Khách hàng không tồn tại." },
             { ErrorCode.CustomerNotFoundWidthEmailOrPhone, "Khách hàng không tồn tại." },
+            { ErrorCode.Unauthorized, "unauthorized" },
+            { ErrorCode.InvalidToken, "Token invalid" },
+            { ErrorCode.TokenExpired, "Token expired" },
+            { ErrorCode.NotFound, "Không tìm thấy." },
+            { ErrorCode.DataNotFound, "Không có dữ liệu." },
+            { ErrorCode.InvalidData, "Dữ liệu không hợp lệ." },
+            { ErrorCode.DataRequired, "Thiếu dữ liệu gửi đi." },
+            { ErrorCode.DatabaseError, "Lỗi database." },
             { ErrorCode.OtherError, "Đã có lỗi xảy ra." },
         };
 
@@ -68,6 +89,12 @@
             public const int Fobidden = 403;
             public const int NotFound = 404;
             public const int Internal = 500;
+        }
+
+        public static class StatusDefault
+        {
+            public const byte Active = 1;
+            public const byte InActive = 0;
         }
     }
 }
