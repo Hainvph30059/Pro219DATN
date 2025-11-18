@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Pro219.BUS\Pro219.API.csproj" />
+    <ProjectReference Include="..\Pro219.DAL\Pro219.DAL.csproj" />
   </ItemGroup>
 
 </Project>

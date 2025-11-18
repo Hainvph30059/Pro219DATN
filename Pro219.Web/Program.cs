@@ -33,6 +33,7 @@ builder.Services.AddScoped<ColorService>();
 builder.Services.AddScoped<CouponService>();
 builder.Services.AddScoped<SaleService>();
 builder.Services.AddScoped<SizeService>();
+builder.Services.AddScoped<CustomerService>();
 
 builder.Services.AddScoped(http => new HttpClient
 {

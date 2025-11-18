@@ -36,77 +36,84 @@
 
     private async Task PerformAuthCheckAndNavigate(bool isInitialLoad)
     {
-        var token = await localStorage.GetItemAsStringAsync(Constant.TokenNameLocalStorage);
-        var expired = await localStorage.GetItemAsStringAsync(Constant.TokenExpiredLocalStorage);
-
-        if (string.IsNullOrEmpty(token))
-        {
-            await ClearLocalStorageAndNavigate(RouterConst.Admin.Login);
-            return;
-        }
-
-        if (!string.IsNullOrEmpty(expired))
-        {
-            if (DateTime.TryParse(expired.Trim('"'), out DateTime expirationTime))
-            {
-                if (expirationTime <= DateTime.Now)
-                {
-                    await ClearLocalStorageAndNavigate(RouterConst.Admin.Login);
-                    return;
-                }
-            }
-        }
-
-        GetMeResponseDTO getMe = null;
         try
         {
-            getMe = await _authService.AccessCheck(token.Trim('"'));
-        }
-        catch (Exception ex) when (ex is UnauthorizedAccessException || ex is HttpRequestException)
+            var token = await localStorage.GetItemAsStringAsync(Constant.TokenNameLocalStorage);
+            var expired = await localStorage.GetItemAsStringAsync(Constant.TokenExpiredLocalStorage);
+
+            if (string.IsNullOrEmpty(token))
+            {
+                await ClearLocalStorageAndNavigate(RouterConst.Admin.Login);
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(expired))
+            {
+                if (DateTime.TryParse(expired.Trim('"'), out DateTime expirationTime))
+                {
+                    if (expirationTime <= DateTime.Now)
+                    {
+                        await ClearLocalStorageAndNavigate(RouterConst.Admin.Login);
+                        return;
+                    }
+                }
+            }
+
+            GetMeResponseDTO getMe = null;
+            try
+            {
+                getMe = await _authService.AccessCheck(token.Trim('"'));
+            }
+            catch (Exception ex) when (ex is UnauthorizedAccessException || ex is HttpRequestException)
+            {
+                await ClearLocalStorageAndNavigate(RouterConst.Admin.Login);
+                return;
+            }
+            catch (Exception)
+            {
+                await ClearLocalStorageAndNavigate(RouterConst.Admin.Login);
+                return;
+            }
+
+            if (getMe != null && getMe.IsExpired)
+            {
+                await ClearLocalStorageAndNavigate(RouterConst.Admin.Login);
+                return;
+            }
+
+            if (getMe != null && getMe.Role == Constant.Role.Customer)
+            {
+                navigation.NavigateTo(RouterConst.AccessDenied, true);
+                _isLoading = false;
+                return;
+            }
+
+            if (getMe != null)
+            {
+                var userInfoJson = JsonSerializer.Serialize(getMe);
+                await localStorage.SetItemAsStringAsync(Constant.UserInfoLocalStorage, userInfoJson);
+                _currentUserInfo = getMe;
+            }
+
+
+            if (isInitialLoad)
+            {
+                _isLoading = false;
+                StateHasChanged();
+            }
+        } catch (Exception e)
         {
-            await ClearLocalStorageAndNavigate(RouterConst.Admin.Login);
-            return;
-        }
-        catch (Exception)
-        {
-            await ClearLocalStorageAndNavigate(RouterConst.Admin.Login);
-            return;
+
         }
 
-        if (getMe != null && getMe.IsExpired)
-        {
-            await ClearLocalStorageAndNavigate(RouterConst.Admin.Login);
-            return;
-        }
-
-        if (getMe != null && getMe.Role == Constant.Role.Customer)
-        {
-            navigation.NavigateTo(RouterConst.AccessDenied, true);
-            _isLoading = false;
-            return;
-        }
-
-        if (getMe != null)
-        {
-            var userInfoJson = JsonSerializer.Serialize(getMe);
-            await localStorage.SetItemAsStringAsync(Constant.UserInfoLocalStorage, userInfoJson);
-            _currentUserInfo = getMe;
-        }
-        
-
-        if (isInitialLoad)
-        {
-            _isLoading = false;
-            StateHasChanged();
-        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            navigation.LocationChanged += HandleLocationChanged;
             await PerformAuthCheckAndNavigate(isInitialLoad: true);
+            navigation.LocationChanged += HandleLocationChanged;
         }
     }
 

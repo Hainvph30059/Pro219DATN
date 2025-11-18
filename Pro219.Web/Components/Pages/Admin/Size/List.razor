@@ -10,13 +10,77 @@
     </div>
 
     <div class="h-[calc(100lvh-9.25rem)] mt-6 w-full rounded-xl border border-slate-200 bg-white shadow-sm">
+        <MudTable Items="@_lstSize" Dense="true" Hover="true" Virtualize="true" FixedHeader="true" HorizontalScrollbar="true" Height="500px">
+            <HeaderContent>
+                <MudTh hidden><MudTableSortLabel SortLabel="Id câu hỏi" T="string" hidden>STT</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="Tên" T="string">Tên</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="Trạng thái" T="string">Trạng thái</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="Thao tác" T="string">Thao tác</MudTableSortLabel></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Id đáp án" hidden>@context.Id</MudTd>
+                <MudTd DataLabel="Tên">@context.Name</MudTd>
+                <MudTd DataLabel="Trạng thái">@(context.Status == Convert.ToByte(Constant.StatusDefault.Active) ? "Hoạt Động" : "Không Hoạt Động")</MudTd>
+                <MudTd DataLabel="Thao tác">
+                    <MudIconButton Icon="@Icons.Material.Filled.BorderColor" aria-label="update" Href="@($"{RouterConst.Admin.EditSize}/{context.Id}")"></MudIconButton>
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" aria-label="delete"></MudIconButton>
+                </MudTd>
+            </RowTemplate>
+
+            <NoRecordsContent>
+                <MudText></MudText>
+            </NoRecordsContent>
+            <LoadingContent>
+                <MudText>Đang tải...</MudText>
+            </LoadingContent>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
     </div>
 </div>
 
 @code {
+    private List<DAL.Models.Size> _lstSize = [];
+
+    private readonly DialogOptions _maxWidth = new() { MaxWidth = MaxWidth.Large, FullWidth = true };
+
     private List<BreadcrumbItem> _items =
     [
         new("Trang Chủ", href: RouterConst.Admin.Home),
         new("Kích Thước", href: "#", disabled: true),
     ];
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    async Task LoadData()
+    {
+        var res = await _sizeService.GetAll();
+        var data = res.Data;
+        if(res.IsSuccess && data != null)
+        {
+            _lstSize = data;
+        }
+        StateHasChanged();
+    }
+
+    async Task OpenDialogDelete(int id)
+    {
+        var deleteParaeters = new DialogParameters<Admin.Size.ConfirmDeleteDialog>
+        {
+            {x => x.id, id}
+        };
+
+        var dialog = await _dialogService.ShowAsync<Admin.Size.ConfirmDeleteDialog>("Options Dialog", deleteParaeters, _maxWidth);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await LoadData();
+            StateHasChanged();
+        }
+    }
 }
