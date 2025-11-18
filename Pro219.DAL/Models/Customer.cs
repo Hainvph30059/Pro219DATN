@@ -29,17 +29,13 @@ namespace Pro219.DAL.Models
 
         public DateTime? LastLogin { get; set; }
 
-        [Required]
-        [MaxLength(20)]
-        public string Status { get; set; } = string.Empty;
+        public byte? Status { get; set; }
 
         public bool? Delete { get; set; }
 
         public DateTime? UpdateAt { get; set; }
 
         public DateTime? DeleteAt { get; set; }
-
-        public byte? StatusByte { get; set; }
 
         [MaxLength(255)]
         public string? UpdateBy { get; set; }

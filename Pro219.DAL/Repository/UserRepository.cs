@@ -38,14 +38,12 @@ namespace Pro219.DAL.Repository
 
         public async Task<List<User>> GetAllUsers()
         {
-            return await _context.Users.Where(x => x.Status != "Deleted").ToListAsync();
+            return await _context.Users.ToListAsync();
         }
 
         public async Task<User> GetByIdUser(int id)
         {
             var user = await _context.Users.FindAsync(id);
-            if (user != null && user.Status == "Deleted")
-                return null;
             return user;
         }
 
@@ -69,7 +67,7 @@ namespace Pro219.DAL.Repository
             {
                 var existingUser = await _context.Users.FindAsync(user.UserID);
 
-                if (existingUser == null || existingUser.Status == "Deleted") return null;
+                if (existingUser == null) return null;
 
                 existingUser.UserName = user.UserName;
                 existingUser.PasswordHash = user.PasswordHash;
@@ -94,7 +92,6 @@ namespace Pro219.DAL.Repository
 
                 if (user == null) return null;
 
-                user.Status = "Deleted";
 
                 var updatedUser = _context.Users.Update(user).Entity;
                 await _context.SaveChangesAsync();

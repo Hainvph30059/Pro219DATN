@@ -25,9 +25,7 @@ namespace Pro219.API.DTOs
         [Required]
         public decimal BasePrice { get; set; }
 
-        [Required]
-        [MaxLength(20)]
-        public string Status { get; set; } = string.Empty;
+        public byte? Status { get; set; }
 
         public bool? Delete { get; set; }
     }

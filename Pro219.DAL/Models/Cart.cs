@@ -15,9 +15,7 @@ namespace Pro219.DAL.Models
         [MaxLength(100)]
         public string? SessionId { get; set; }
 
-        [Required]
-        [MaxLength(20)]
-        public string Status { get; set; } = string.Empty;
+        public byte? Status { get; set; }
 
         public DateTime UpdateAt { get; set; }
 
@@ -26,8 +24,6 @@ namespace Pro219.DAL.Models
         public DateTime? CreateAt { get; set; }
 
         public DateTime? DeleteAt { get; set; }
-
-        public byte? StatusByte { get; set; }
 
         [MaxLength(255)]
         public string? UpdateBy { get; set; }
