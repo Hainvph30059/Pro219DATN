@@ -139,7 +139,7 @@
         if (response.LoginSuccess == true)
         {
             _snackbar.Add("Đăng nhập thành công!", Severity.Success);
-            navigation.NavigateTo(RouterConst.Admin.Home);
+            navigation.NavigateTo(RouterConst.Admin.Home, true);
             await localStorage.SetItemAsync(Constant.TokenNameLocalStorage, response.Token);
             await localStorage.SetItemAsync(Constant.TokenExpiredLocalStorage, response.Expiration);
 
