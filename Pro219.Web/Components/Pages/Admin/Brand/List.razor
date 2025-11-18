@@ -9,7 +9,7 @@
         <a href="@RouterConst.Admin.CreateBrand" class="leading-[1.5rem] h-10 rounded-lg bg-admin-default px-6 py-2 text-white">Tạo mới</a>
     </div>
 
-    <div class="h-[calc(100lvh-9.25rem)] mt-6 w-full rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
+    <div class="mt-6 w-full rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
         <MudTable Bordered Items="@_lstBrand" Loading="@_loading" Dense="true" Hover="true" Virtualize="true" FixedHeader="true" HorizontalScrollbar="true" Height="calc(100lvh - 16.5rem)">
             <HeaderContent>
                 <MudTh hidden><MudTableSortLabel SortLabel="Id" T="string" hidden>STT</MudTableSortLabel></MudTh>

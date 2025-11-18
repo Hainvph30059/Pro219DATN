@@ -14,6 +14,7 @@
         {
             public const string Password = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,16}$";
             public const string PhoneNumber = @"(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b";
+            public const string HexColor = @"^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$";
         }
 
         public static class MessageValid
@@ -28,6 +29,7 @@
             public const string PhoneNumber = "Sai định dạng số điện thoại.";
             public const string PhoneNumberLength = "Tối thiểu 10 số và tối đa 11 số";
             public const string DateFuture = "Dữ liệu ngày tháng không hợp lệ. Vui lòng chọn ngày tháng hiện tại đổ lại.";
+            public const string HexColor = "Mã màu không hợp lệ.";
         }
 
         public static class Role
