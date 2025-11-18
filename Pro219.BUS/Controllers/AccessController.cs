@@ -180,7 +180,7 @@ namespace Pro219.API.Controllers
             cus.DateOfBirth = registerModel.DateOfBirth ?? DateTime.Now;
             cus.CreateAt = DateTime.Now;
             cus.PasswordHash = registerModel.PasswordHash;
-            cus.Status = "1";
+            cus.Status = 1;
             cus.LastLogin = DateTime.Now;
             _customerRepository = new CustomerRepository();
             var user = _customerRepository.FindCustomerExistByKeyWord(cus.Email).Result;

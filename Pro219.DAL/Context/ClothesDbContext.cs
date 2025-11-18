@@ -265,20 +265,20 @@ namespace Pro219.DAL.Context
 
             // Brands
             modelBuilder.Entity<Brand>().HasData(
-                new Brand { Id = 1, Name = "Nike", Description = "Thương hiệu thể thao hàng đầu thế giới", Status = "Active", UpdateBy = "admin", Delete = false, CreateAt = seedDate, StatusByte = 1 },
-                new Brand { Id = 2, Name = "Adidas", Description = "Thương hiệu thời trang thể thao nổi tiếng", Status = "Active", UpdateBy = "admin", Delete = false, CreateAt = seedDate, StatusByte = 1 },
-                new Brand { Id = 3, Name = "Puma", Description = "Thương hiệu thời trang thể thao đẳng cấp", Status = "Active", UpdateBy = "admin", Delete = false, CreateAt = seedDate, StatusByte = 1 },
-                new Brand { Id = 4, Name = "Uniqlo", Description = "Thương hiệu thời trang Nhật Bản", Status = "Active", UpdateBy = "admin", Delete = false, CreateAt = seedDate, StatusByte = 1 }
+                new Brand { Id = 1, Name = "Nike", Description = "Thương hiệu thể thao hàng đầu thế giới", Status = 1, UpdateBy = "admin", Delete = false, CreateAt = seedDate },
+                new Brand { Id = 2, Name = "Adidas", Description = "Thương hiệu thời trang thể thao nổi tiếng", Status = 1, UpdateBy = "admin", Delete = false, CreateAt = seedDate },
+                new Brand { Id = 3, Name = "Puma", Description = "Thương hiệu thời trang thể thao đẳng cấp", Status = 1, UpdateBy = "admin", Delete = false, CreateAt = seedDate },
+                new Brand { Id = 4, Name = "Uniqlo", Description = "Thương hiệu thời trang Nhật Bản", Status = 1, UpdateBy = "admin", Delete = false, CreateAt = seedDate }
             );
 
             // Categories
             modelBuilder.Entity<Category>().HasData(
-                new Category { Id = 1, Name = "Nam", Description = "Thời trang nam", Status = "Active", UpdateBy = "admin", Delete = false, CreateAt = seedDate, StatusByte = 1 },
-                new Category { Id = 2, Name = "Nữ", Description = "Thời trang nữ", Status = "Active", UpdateBy = "admin", Delete = false, CreateAt = seedDate, StatusByte = 1 },
-                new Category { Id = 3, Name = "Áo thun", Description = "Áo thun nam nữ", Status = "Active", ParentCategoryId = 1, UpdateBy = "admin", Delete = false, CreateAt = seedDate, StatusByte = 1 },
-                new Category { Id = 4, Name = "Quần jean", Description = "Quần jean nam nữ", Status = "Active", ParentCategoryId = 1, UpdateBy = "admin", Delete = false, CreateAt = seedDate, StatusByte = 1 },
-                new Category { Id = 5, Name = "Áo sơ mi", Description = "Áo sơ mi công sở", Status = "Active", ParentCategoryId = 1, UpdateBy = "admin", Delete = false, CreateAt = seedDate, StatusByte = 1 },
-                new Category { Id = 6, Name = "Váy", Description = "Váy nữ", Status = "Active", ParentCategoryId = 2, UpdateBy = "admin", Delete = false, CreateAt = seedDate, StatusByte = 1 }
+                new Category { Id = 1, Name = "Nam", Description = "Thời trang nam", Status = 1, UpdateBy = "admin", Delete = false, CreateAt = seedDate },
+                new Category { Id = 2, Name = "Nữ", Description = "Thời trang nữ", Status = 1, UpdateBy = "admin", Delete = false, CreateAt = seedDate },
+                new Category { Id = 3, Name = "Áo thun", Description = "Áo thun nam nữ", Status = 1, ParentCategoryId = 1, UpdateBy = "admin", Delete = false, CreateAt = seedDate },
+                new Category { Id = 4, Name = "Quần jean", Description = "Quần jean nam nữ", Status = 1, ParentCategoryId = 1, UpdateBy = "admin", Delete = false, CreateAt = seedDate },
+                new Category { Id = 5, Name = "Áo sơ mi", Description = "Áo sơ mi công sở", Status = 1, ParentCategoryId = 1, UpdateBy = "admin", Delete = false, CreateAt = seedDate },
+                new Category { Id = 6, Name = "Váy", Description = "Váy nữ", Status = 1, ParentCategoryId = 2, UpdateBy = "admin", Delete = false, CreateAt = seedDate }
             );
 
             // Sales
@@ -290,18 +290,18 @@ namespace Pro219.DAL.Context
 
             // Customers
             modelBuilder.Entity<Customer>().HasData(
-                new Customer { Id = 1, FullName = "Nguyễn Văn An", PhoneNumber = "0912345678", Email = "nguyenvanan@example.com", DateOfBirth = new DateTime(1990, 5, 15), PasswordHash = "b855e41c5c5f5061ecba4fd8613a7760", CreateAt = seedDate, Status = "Active", Delete = false, StatusByte = 1 },
-                new Customer { Id = 2, FullName = "Trần Thị Bình", PhoneNumber = "0987654321", Email = "tranthibinh@example.com", DateOfBirth = new DateTime(1992, 8, 20), PasswordHash = "b855e41c5c5f5061ecba4fd8613a7760", CreateAt = seedDate, Status = "Active", Delete = false, StatusByte = 1 },
-                new Customer { Id = 3, FullName = "Lê Minh Cường", PhoneNumber = "0901234567", Email = "leminhcuong@example.com", DateOfBirth = new DateTime(1988, 3, 10), PasswordHash = "b855e41c5c5f5061ecba4fd8613a7760", CreateAt = seedDate, Status = "Active", Delete = false, StatusByte = 1 }
+                new Customer { Id = 1, FullName = "Nguyễn Văn An", PhoneNumber = "0912345678", Email = "nguyenvanan@example.com", DateOfBirth = new DateTime(1990, 5, 15), PasswordHash = "b855e41c5c5f5061ecba4fd8613a7760", CreateAt = seedDate, Status = 1, Delete = false },
+                new Customer { Id = 2, FullName = "Trần Thị Bình", PhoneNumber = "0987654321", Email = "tranthibinh@example.com", DateOfBirth = new DateTime(1992, 8, 20), PasswordHash = "b855e41c5c5f5061ecba4fd8613a7760", CreateAt = seedDate, Status = 1, Delete = false },
+                new Customer { Id = 3, FullName = "Lê Minh Cường", PhoneNumber = "0901234567", Email = "leminhcuong@example.com", DateOfBirth = new DateTime(1988, 3, 10), PasswordHash = "b855e41c5c5f5061ecba4fd8613a7760", CreateAt = seedDate, Status = 1, Delete = false }
             );
 
             // Products
             modelBuilder.Entity<Product>().HasData(
-                new Product { Id = 1, CategoryId = 3, BrandId = 1, SaleId = 1, Name = "Áo thun nam Nike cổ tròn", Description = "Áo thun nam chất liệu cotton mềm mại, thoáng mát, phù hợp mặc hàng ngày", BasePrice = 299000m, CreatedAt = seedDate, Status = "Active", UpdateBy = "admin", Delete = false, StatusByte = 1 },
-                new Product { Id = 2, CategoryId = 4, BrandId = 2, SaleId = null, Name = "Quần jean nam Adidas slim fit", Description = "Quần jean nam kiểu dáng slim fit, chất liệu denim cao cấp, co giãn tốt", BasePrice = 799000m, CreatedAt = seedDate, Status = "Active", UpdateBy = "admin", Delete = false, StatusByte = 1 },
-                new Product { Id = 3, CategoryId = 3, BrandId = 3, SaleId = null, Name = "Áo thun thể thao Puma", Description = "Áo thun thể thao thấm hút mồ hôi tốt, phù hợp tập luyện và vận động", BasePrice = 399000m, CreatedAt = seedDate, Status = "Active", UpdateBy = "admin", Delete = false, StatusByte = 1 },
-                new Product { Id = 4, CategoryId = 5, BrandId = 4, SaleId = null, Name = "Áo sơ mi nam Uniqlo", Description = "Áo sơ mi nam công sở, chất liệu cotton lụa, form dáng đẹp", BasePrice = 499000m, CreatedAt = seedDate, Status = "Active", UpdateBy = "admin", Delete = false, StatusByte = 1 },
-                new Product { Id = 5, CategoryId = 6, BrandId = 2, SaleId = 1, Name = "Váy nữ Adidas", Description = "Váy nữ thể thao, chất liệu thấm hút mồ hôi, thiết kế năng động", BasePrice = 599000m, CreatedAt = seedDate, Status = "Active", UpdateBy = "admin", Delete = false, StatusByte = 1 }
+                new Product { Id = 1, CategoryId = 3, BrandId = 1, SaleId = 1, Name = "Áo thun nam Nike cổ tròn", Description = "Áo thun nam chất liệu cotton mềm mại, thoáng mát, phù hợp mặc hàng ngày", BasePrice = 299000m, CreatedAt = seedDate, Status = 1, UpdateBy = "admin", Delete = false },
+                new Product { Id = 2, CategoryId = 4, BrandId = 2, SaleId = null, Name = "Quần jean nam Adidas slim fit", Description = "Quần jean nam kiểu dáng slim fit, chất liệu denim cao cấp, co giãn tốt", BasePrice = 799000m, CreatedAt = seedDate, Status = 1, UpdateBy = "admin", Delete = false },
+                new Product { Id = 3, CategoryId = 3, BrandId = 3, SaleId = null, Name = "Áo thun thể thao Puma", Description = "Áo thun thể thao thấm hút mồ hôi tốt, phù hợp tập luyện và vận động", BasePrice = 399000m, CreatedAt = seedDate, Status = 1, UpdateBy = "admin", Delete = false },
+                new Product { Id = 4, CategoryId = 5, BrandId = 4, SaleId = null, Name = "Áo sơ mi nam Uniqlo", Description = "Áo sơ mi nam công sở, chất liệu cotton lụa, form dáng đẹp", BasePrice = 499000m, CreatedAt = seedDate, Status = 1, UpdateBy = "admin", Delete = false },
+                new Product { Id = 5, CategoryId = 6, BrandId = 2, SaleId = 1, Name = "Váy nữ Adidas", Description = "Váy nữ thể thao, chất liệu thấm hút mồ hôi, thiết kế năng động", BasePrice = 599000m, CreatedAt = seedDate, Status = 1, UpdateBy = "admin", Delete = false }
             );
 
             // ProductVariants
@@ -328,17 +328,17 @@ namespace Pro219.DAL.Context
 
             // Addresses
             modelBuilder.Entity<Address>().HasData(
-                new Address { Id = 1, CustomerId = 1, FullName = "Nguyễn Văn An", Phone = "0912345678", Street = "123 Đường Nguyễn Huệ", City = "Hồ Chí Minh", District = "Quận 1", OtherInfo = "Chung cư ABC, căn hộ 4B", IsDefault = true, Status = "Active", Delete = false, CreateAt = seedDate, StatusByte = 1 },
-                new Address { Id = 2, CustomerId = 2, FullName = "Trần Thị Bình", Phone = "0987654321", Street = "456 Đường Lê Lợi", City = "Hà Nội", District = "Quận Ba Đình", IsDefault = true, Status = "Active", Delete = false, CreateAt = seedDate, StatusByte = 1 },
-                new Address { Id = 3, CustomerId = 1, FullName = "Nguyễn Văn An", Phone = "0912345678", Street = "789 Đường Trần Hưng Đạo", City = "Hồ Chí Minh", District = "Quận 5", OtherInfo = "Nhà riêng", IsDefault = false, Status = "Active", Delete = false, CreateAt = seedDate, StatusByte = 1 },
-                new Address { Id = 4, CustomerId = 3, FullName = "Lê Minh Cường", Phone = "0901234567", Street = "321 Đường Hoàng Diệu", City = "Đà Nẵng", District = "Quận Hải Châu", IsDefault = true, Status = "Active", Delete = false, CreateAt = seedDate, StatusByte = 1 }
+                new Address { Id = 1, CustomerId = 1, FullName = "Nguyễn Văn An", Phone = "0912345678", Street = "123 Đường Nguyễn Huệ", City = "Hồ Chí Minh", District = "Quận 1", OtherInfo = "Chung cư ABC, căn hộ 4B", IsDefault = true, Status = 1, Delete = false, CreateAt = seedDate },
+                new Address { Id = 2, CustomerId = 2, FullName = "Trần Thị Bình", Phone = "0987654321", Street = "456 Đường Lê Lợi", City = "Hà Nội", District = "Quận Ba Đình", IsDefault = true, Status = 1, Delete = false, CreateAt = seedDate },
+                new Address { Id = 3, CustomerId = 1, FullName = "Nguyễn Văn An", Phone = "0912345678", Street = "789 Đường Trần Hưng Đạo", City = "Hồ Chí Minh", District = "Quận 5", OtherInfo = "Nhà riêng", IsDefault = false, Status = 1, Delete = false, CreateAt = seedDate },
+                new Address { Id = 4, CustomerId = 3, FullName = "Lê Minh Cường", Phone = "0901234567", Street = "321 Đường Hoàng Diệu", City = "Đà Nẵng", District = "Quận Hải Châu", IsDefault = true, Status = 1, Delete = false, CreateAt = seedDate }
             );
 
             // Carts
             modelBuilder.Entity<Cart>().HasData(
-                new Cart { Id = 1, CustomerId = 1, Status = "Active", UpdateAt = seedDate, Delete = false, CreateAt = seedDate, StatusByte = 1 },
-                new Cart { Id = 2, CustomerId = 2, Status = "Active", UpdateAt = seedDate, Delete = false, CreateAt = seedDate, StatusByte = 1 },
-                new Cart { Id = 3, CustomerId = 3, Status = "Active", UpdateAt = seedDate, Delete = false, CreateAt = seedDate, StatusByte = 1 }
+                new Cart { Id = 1, CustomerId = 1, Status = 1, UpdateAt = seedDate, Delete = false, CreateAt = seedDate },
+                new Cart { Id = 2, CustomerId = 2, Status = 1, UpdateAt = seedDate, Delete = false, CreateAt = seedDate },
+                new Cart { Id = 3, CustomerId = 3, Status = 1, UpdateAt = seedDate, Delete = false, CreateAt = seedDate }
             );
 
             // CartItems
@@ -366,9 +366,9 @@ namespace Pro219.DAL.Context
 
             // Orders
             modelBuilder.Entity<Order>().HasData(
-                new Order { OrderId = 1, CustomerId = 1, ShippingAddressId = 1, DiscountId = 1, PaymentMethodId = 1, OrderCode = "DH001", OrderDate = seedDate, TotalAmount = 1397000m, DiscountAmount = 279400m, FinalAmount = 1117600m, PaymentStatus = "Chờ thanh toán", OrderStatus = "Đang xử lý", LastUpdate = seedDate, UpdateBy = "admin", Delete = false, CreateAt = seedDate, StatusByte = 1 },
-                new Order { OrderId = 2, CustomerId = 2, ShippingAddressId = 2, DiscountId = null, PaymentMethodId = 2, OrderCode = "DH002", OrderDate = seedDate.AddDays(1), TotalAmount = 399000m, DiscountAmount = 0, FinalAmount = 399000m, PaymentStatus = "Đã thanh toán", OrderStatus = "Đã giao hàng", LastUpdate = seedDate.AddDays(1), UpdateBy = "admin", Delete = false, CreateAt = seedDate.AddDays(1), StatusByte = 1 },
-                new Order { OrderId = 3, CustomerId = 3, ShippingAddressId = 4, DiscountId = 2, PaymentMethodId = 4, OrderCode = "DH003", OrderDate = seedDate.AddDays(2), TotalAmount = 499000m, DiscountAmount = 49900m, FinalAmount = 449100m, PaymentStatus = "Đã thanh toán", OrderStatus = "Đang vận chuyển", LastUpdate = seedDate.AddDays(2), UpdateBy = "admin", Delete = false, CreateAt = seedDate.AddDays(2), StatusByte = 1 }
+                new Order { OrderId = 1, CustomerId = 1, ShippingAddressId = 1, DiscountId = 1, PaymentMethodId = 1, OrderCode = "DH001", OrderDate = seedDate, TotalAmount = 1397000m, DiscountAmount = 279400m, FinalAmount = 1117600m, PaymentStatus = "Chờ thanh toán", OrderStatus = "Đang xử lý", LastUpdate = seedDate, UpdateBy = "admin", Delete = false, CreateAt = seedDate, Status = 1 },
+                new Order { OrderId = 2, CustomerId = 2, ShippingAddressId = 2, DiscountId = null, PaymentMethodId = 2, OrderCode = "DH002", OrderDate = seedDate.AddDays(1), TotalAmount = 399000m, DiscountAmount = 0, FinalAmount = 399000m, PaymentStatus = "Đã thanh toán", OrderStatus = "Đã giao hàng", LastUpdate = seedDate.AddDays(1), UpdateBy = "admin", Delete = false, CreateAt = seedDate.AddDays(1), Status = 1 },
+                new Order { OrderId = 3, CustomerId = 3, ShippingAddressId = 4, DiscountId = 2, PaymentMethodId = 4, OrderCode = "DH003", OrderDate = seedDate.AddDays(2), TotalAmount = 499000m, DiscountAmount = 49900m, FinalAmount = 449100m, PaymentStatus = "Đã thanh toán", OrderStatus = "Đang vận chuyển", LastUpdate = seedDate.AddDays(2), UpdateBy = "admin", Delete = false, CreateAt = seedDate.AddDays(2), Status = 1 }
             );
 
             // OrderItems

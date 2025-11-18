@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pro219.API.DTOs;
 using Pro219.DAL.Models;
@@ -41,7 +41,7 @@ namespace Pro219.API.Controllers
                     District = addressDTO.District,
                     OtherInfo = addressDTO.OtherInfo,
                     IsDefault = addressDTO.IsDefault,
-                    Status = "1"
+                    Status = 1
                 };
 
                 var result = await addressRepository.AddAddress(address);

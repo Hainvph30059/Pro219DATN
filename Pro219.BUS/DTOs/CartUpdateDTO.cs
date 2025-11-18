@@ -13,9 +13,7 @@ namespace Pro219.API.DTOs
         [MaxLength(100)]
         public string? SessionId { get; set; }
 
-        [Required]
-        [MaxLength(20)]
-        public string Status { get; set; } = string.Empty;
+        public byte? Status { get; set; }
 
         public bool? Delete { get; set; }
     }

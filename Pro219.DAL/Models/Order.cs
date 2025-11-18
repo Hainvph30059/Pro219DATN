@@ -55,7 +55,7 @@ namespace Pro219.DAL.Models
 
         public DateTime? DeleteAt { get; set; }
 
-        public byte? StatusByte { get; set; }
+        public byte? Status { get; set; }
 
         [MaxLength(255)]
         public string? UpdateBy { get; set; }

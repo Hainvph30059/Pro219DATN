@@ -16,9 +16,7 @@ namespace Pro219.API.DTOs
         [MaxLength(1000)]
         public string? Description { get; set; }
 
-        [Required]
-        [MaxLength(20)]
-        public string Status { get; set; } = string.Empty;
+        public byte? Status { get; set; }
 
         public bool? Delete { get; set; }
     }

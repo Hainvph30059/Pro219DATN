@@ -23,9 +23,7 @@ namespace Pro219.DAL.Models
 
         public DateTime CreateAt { get; set; }
 
-        [Required]
-        [MaxLength(20)]
-        public string Status { get; set; } = string.Empty;
+        public byte? Status { get; set; }
 
     }
 }
