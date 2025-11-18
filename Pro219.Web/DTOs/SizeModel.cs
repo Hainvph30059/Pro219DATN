@@ -10,7 +10,6 @@ namespace Pro219.Web.DTOs
         [MaxLength(50)]
         public string Name { get; set; } = string.Empty;
 
-        [Required]
         public byte? Status { get; set; }
     }
 }
