@@ -130,6 +130,6 @@
         await localStorage.RemoveItemAsync(Constant.UserInfoLocalStorage);
 
         _isLoading = false;
-        navigation.NavigateTo(route);
+        navigation.NavigateTo(route, true);
     }
 }
