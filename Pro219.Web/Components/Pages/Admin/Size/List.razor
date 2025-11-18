@@ -23,7 +23,7 @@
                 <MudTd DataLabel="Trạng thái">@(context.Status == Convert.ToByte(Constant.StatusDefault.Active) ? "Hoạt Động" : "Không Hoạt Động")</MudTd>
                 <MudTd DataLabel="Thao tác">
                     <MudIconButton Icon="@Icons.Material.Filled.BorderColor" aria-label="update" Href="@($"{RouterConst.Admin.EditSize}/{context.Id}")"></MudIconButton>
-                    <MudIconButton Icon="@Icons.Material.Filled.Delete" aria-label="delete"></MudIconButton>
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" aria-label="delete" OnClick="@(() => OpenDialogDelete(context.Id))"></MudIconButton>
                 </MudTd>
             </RowTemplate>
 

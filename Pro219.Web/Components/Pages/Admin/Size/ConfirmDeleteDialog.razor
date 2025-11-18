@@ -18,9 +18,19 @@
     [CascadingParameter]
     private IMudDialogInstance MudDialog { get; set; }
 
+    private string _token = string.Empty;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            _token = await localStorage.GetItemAsStringAsync(Constant.TokenNameLocalStorage);
+        }
+    }
+
     async Task OnSubmit()
     {
-        var res = await _sizeService.Delete(id);   
+        var res = await _sizeService.Delete(id, _token);   
 
         if (res)
         {

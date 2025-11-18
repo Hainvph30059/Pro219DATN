@@ -107,9 +107,16 @@ namespace Pro219.Web.Services
             }
         }
 
-        public async Task<bool> Delete(int id)
+        public async Task<bool> Delete(int id, string token)
         {
             var request = new HttpRequestMessage(HttpMethod.Delete, $"/Size/Delete/{id}");
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                var formatToken = token.Trim('"');
+                request.Headers.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", formatToken);
+            }
 
             var response = await _httpClient.SendAsync(request);
 
