@@ -105,6 +105,7 @@ namespace Pro219.DAL.Repository
                 if (product == null) return null;
 
                 product.Delete = true;
+                product.DeleteAt = DateTime.Now;
                 product.UpdateAt = DateTime.Now;
                 if (updateBy != null)
                 {

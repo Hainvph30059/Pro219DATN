@@ -96,6 +96,7 @@ namespace Pro219.DAL.Repository
                 if (color == null) return null;
 
                 color.Delete = true;
+                color.DeleteAt = DateTime.Now;
                 color.UpdateAt = DateTime.Now;
                 if (!string.IsNullOrEmpty(updateBy))
                 {

@@ -127,6 +127,7 @@ namespace Pro219.DAL.Repository
                 if (wishlist == null) return null;
 
                 wishlist.Delete = true;
+                wishlist.DeleteAt = DateTime.Now;
                 wishlist.UpdateAt = DateTime.Now;
                 if (!string.IsNullOrEmpty(updateBy))
                 {
