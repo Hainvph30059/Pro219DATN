@@ -239,8 +239,8 @@ namespace Pro219.DAL.Context
 
             // Users
             modelBuilder.Entity<User>().HasData(
-                new User { UserID = 1, UserName = "admin", PasswordHash = "26dc318942685872cf79c5eb96c9bb13", Role = "Admin", CreateAt = seedDate, Status = "Active" },
-                new User { UserID = 2, UserName = "manager", PasswordHash = "26dc318942685872cf79c5eb96c9bb13", Role = "Manager", CreateAt = seedDate, Status = "Active" }
+                new User { UserID = 1, UserName = "admin", PasswordHash = "26dc318942685872cf79c5eb96c9bb13", Role = "Admin", CreateAt = seedDate, Status = 1 },
+                new User { UserID = 2, UserName = "manager", PasswordHash = "26dc318942685872cf79c5eb96c9bb13", Role = "Manager", CreateAt = seedDate, Status =1 }
             );
 
             // Colors
