@@ -116,6 +116,7 @@ namespace Pro219.DAL.Repository
                 if (discountCode == null) return null;
 
                 discountCode.Delete = true;
+                discountCode.DeleteAt = DateTime.Now;
                 discountCode.UpdateAt = DateTime.Now;
                 if (updateBy!=null)
                 {

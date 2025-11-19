@@ -22,7 +22,7 @@
                 <MudTd DataLabel="Id" hidden>@context.Id</MudTd>
                 <MudTd DataLabel="Tên">@context.Name</MudTd>
                 <MudTd DataLabel="Mô tả">@context.Description</MudTd>
-                <MudTd DataLabel="Trạng thái">@((context.Status == Constant.StatusDefault.Active.ToString()) ? "Hoạt Động" : "Không Hoạt Động")</MudTd>
+                <MudTd DataLabel="Trạng thái">@((context.Status == 1) ? "Hoạt Động" : "Không Hoạt Động")</MudTd>
                 <MudTd DataLabel="Thao tác">
                     <MudIconButton Icon="@Icons.Material.Filled.BorderColor" aria-label="update" Href="@($"{RouterConst.Admin.EditBrand}/{context.Id}")"></MudIconButton>
                     <MudIconButton Icon="@Icons.Material.Filled.Delete" aria-label="delete" OnClick="@(() => OpenDialogDelete(context.Id))"></MudIconButton>

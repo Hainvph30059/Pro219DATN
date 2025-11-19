@@ -39,7 +39,7 @@
 
 @code {
     BrandModel _model = new BrandModel();
-    private int _isActive = 1;
+    private byte _isActive = 1;
 
     private List<BreadcrumbItem> _items =
     [
@@ -50,7 +50,7 @@
 
     async Task OnSubmit()
     {
-        _model.Status = _isActive.ToString();
+        _model.Status = (byte)_isActive;
         var result = await _brandService.Create(_model);
 
         if (result.IsSuccess)

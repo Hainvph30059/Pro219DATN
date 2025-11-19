@@ -114,6 +114,7 @@ namespace Pro219.DAL.Repository
                 if (cart == null) return null;
 
                 cart.Delete = true;
+                cart.DeleteAt = DateTime.Now;
                 cart.UpdateAt = DateTime.Now;
                 if (!string.IsNullOrEmpty(updateBy))
                 {

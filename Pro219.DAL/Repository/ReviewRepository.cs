@@ -129,6 +129,7 @@ namespace Pro219.DAL.Repository
                 if (review == null) return null;
 
                 review.Delete = true;
+                review.DeleteAt = DateTime.Now;
                 review.UpdateAt = DateTime.Now;
                 if (!string.IsNullOrEmpty(updateBy))
                 {

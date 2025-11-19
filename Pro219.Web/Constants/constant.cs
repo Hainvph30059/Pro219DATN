@@ -21,9 +21,11 @@
         {
             public const string Password = "Mật khẩu phải có từ 8 đến 16 ký tự chữ và số, bao gồm cả chữ hoa, chữ thường, số và ký hiệu.";
             public const string Required = "Không được để trống.";
+            public const string Max1000 = "Tối đa 1000 kí tự.";
             public const string Max255 = "Tối đa 255 kí tự.";
             public const string Max200 = "Tối đa 200 kí tự.";
             public const string Max100 = "Tối đa 100 kí tự.";
+            public const string Max50 = "Tối đa 50 kí tự.";
             public const string Min2 = "Tối thiểu 2 kí tự.";
             public const string Email = "Sai định dạng Email.";
             public const string PhoneNumber = "Sai định dạng số điện thoại.";

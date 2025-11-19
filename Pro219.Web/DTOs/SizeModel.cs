@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Pro219.Web.Constants;
+using System.ComponentModel.DataAnnotations;
 
 namespace Pro219.Web.DTOs
 {
@@ -6,8 +7,8 @@ namespace Pro219.Web.DTOs
     {
         public int Id { get; set; }
 
-        [Required]
-        [MaxLength(50)]
+        [Required(ErrorMessage = Constant.MessageValid.Required)]
+        [MaxLength(50, ErrorMessage = Constant.MessageValid.Max50)]
         public string Name { get; set; } = string.Empty;
 
         public byte? Status { get; set; }

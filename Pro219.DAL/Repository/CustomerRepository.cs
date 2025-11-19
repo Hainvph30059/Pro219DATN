@@ -19,7 +19,7 @@ namespace Pro219.DAL.Repository
 
         public async Task<Customer> GetByKeyAndPassword(string keyword, string hashPassword)
         {
-            Customer avaiableUser = await _context.Customers.FirstOrDefaultAsync(x => x.Email == keyword || x.PhoneNumber == keyword);
+            Customer avaiableUser = await _context.Customers.FirstOrDefaultAsync(x => (x.Email == keyword || x.PhoneNumber == keyword) && x.Delete != true);
             if (avaiableUser == null)
             {
                 return null;
@@ -107,6 +107,7 @@ namespace Pro219.DAL.Repository
                 if (customer == null) return null;
 
                 customer.Delete = true;
+                customer.DeleteAt = DateTime.Now;
                 customer.UpdateAt = DateTime.Now;
                 if (!string.IsNullOrEmpty(updateBy))
                 {
@@ -127,7 +128,7 @@ namespace Pro219.DAL.Repository
         {
             try
             {
-                var c = _context.Customers.FirstOrDefault(x => x.Email == key || x.PhoneNumber == key);
+                var c = _context.Customers.FirstOrDefault(x => (x.Email == key || x.PhoneNumber == key) && x.Delete != true);
 
                 if (c == null)
                     return null;
@@ -145,7 +146,7 @@ namespace Pro219.DAL.Repository
         {
             try
             {
-                var customer = await _context.Customers.FirstOrDefaultAsync(x => x.Email == email || x.PhoneNumber == phoneNumber);
+                var customer = await _context.Customers.FirstOrDefaultAsync(x => (x.Email == email || x.PhoneNumber == phoneNumber) && x.Delete != true);
                 return customer;
             }
             catch

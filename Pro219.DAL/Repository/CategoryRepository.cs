@@ -100,6 +100,7 @@ namespace Pro219.DAL.Repository
                 if (category == null) return null;
 
                 category.Delete = true;
+                category.DeleteAt = DateTime.Now;
                 category.UpdateAt = DateTime.Now;
                 if (updateBy!=null)
                 {

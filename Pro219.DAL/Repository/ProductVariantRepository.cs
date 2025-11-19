@@ -117,6 +117,7 @@ namespace Pro219.DAL.Repository
                 if (variant == null) return null;
 
                 variant.Delete = true;
+                variant.DeleteAt = DateTime.Now;
                 variant.UpdateAt = DateTime.Now;
                 if (updateBy != null)
                 {

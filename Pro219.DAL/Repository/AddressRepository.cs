@@ -119,6 +119,7 @@ namespace Pro219.DAL.Repository
                 if (address == null) return null;
 
                 address.Delete = true;
+                address.DeleteAt = DateTime.Now;
                 address.UpdateAt = DateTime.Now;
                 if (!string.IsNullOrEmpty(updateBy))
                 {
