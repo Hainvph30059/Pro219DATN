@@ -10,6 +10,7 @@
         public const string UserInfoLocalStorage = "userInfo";
         public const string UserFirstLoginLocalStorage = "firstLogin";
 
+        public const int DefaultSkeletons = 10;
         public static class Regex
         {
             public const string Password = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,16}$";

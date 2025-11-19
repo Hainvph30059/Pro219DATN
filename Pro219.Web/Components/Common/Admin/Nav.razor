@@ -1,8 +1,18 @@
 ﻿
 <style>
-    .custom-text a div,
-    .custom-text a svg path {
-        color: #FFFFFF;
+    .active-menu {
+        background-color: #594ae20f;
+        border-right: 0.125rem solid #7e6fff;
+    }
+
+    .active-menu div svg,
+    .active-menu div div {
+        color: #7e6fff !important;
+        font-weight: 700 !important;
+    }
+
+    .mud-menu-item {
+        min-width: 15rem;
     }
 </style>
 
@@ -15,52 +25,76 @@
         <MudDivider Class="my-5 !border-slate-200" />
 
         <div class="max-h-[calc(100lvh-15.5rem)] flex flex-col gap-2 overflow-y-auto px-3">
-            <MudNavLink Href="@RouterConst.Admin.Home" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Home">Trang chủ</MudNavLink>
-            <MudNavLink Href="@RouterConst.Admin.Product" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.AllInbox">Sản phẩm</MudNavLink>
-            <MudNavLink Href="@RouterConst.Admin.Coupon" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PanoramaHorizontalSelect">Mã giảm giá</MudNavLink>
-            <MudNavLink Href="@RouterConst.Admin.Sale" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PanoramaHorizontalSelect">Giảm giá</MudNavLink>
-            <MudNavLink Href="@RouterConst.Admin.Category" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Category">Danh mục</MudNavLink>
-            <MudNavLink Href="@RouterConst.Admin.Brand" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.AutoAwesome">Thương hiệu</MudNavLink>
-            <MudNavLink Href="@RouterConst.Admin.Color" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Style">Màu</MudNavLink>
-            <MudNavLink Href="@RouterConst.Admin.Size" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.BorderColor">Kích cỡ</MudNavLink>
-            <MudNavLink Href="@RouterConst.Admin.Bill" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Payments">Hóa đơn</MudNavLink>
-            <MudNavLink Href="@RouterConst.Admin.Statistical" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.SsidChart">Thống kê</MudNavLink>
-            <MudNavLink Href="@RouterConst.Admin.Customer" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Group">Tài khoản khách hàng</MudNavLink>
-            <MudNavLink Href="@RouterConst.Admin.User" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.SupervisedUserCircle">Tài quản trị</MudNavLink>
+            <MudNavLink OnClick="@(() => HandleRedirect(RouterConst.Admin.Home))" Class="@IsActiveMenu(RouterConst.Admin.Home)" Icon="@Icons.Material.Filled.Home">Trang chủ</MudNavLink>
+            <MudNavLink OnClick="@(() => HandleRedirect(RouterConst.Admin.Product))" Class="@IsActiveMenu(RouterConst.Admin.Product)" Icon="@Icons.Material.Filled.AllInbox">Sản phẩm</MudNavLink>
+            <MudNavLink OnClick="@(() => HandleRedirect(RouterConst.Admin.Coupon))" Class="@IsActiveMenu(RouterConst.Admin.Coupon)" Icon="@Icons.Material.Filled.PanoramaHorizontalSelect">Mã giảm giá</MudNavLink>
+            <MudNavLink OnClick="@(() => HandleRedirect(RouterConst.Admin.Sale))" Class="@IsActiveMenu(RouterConst.Admin.Sale)" Icon="@Icons.Material.Filled.PanoramaHorizontalSelect">Giảm giá</MudNavLink>
+            <MudNavLink OnClick="@(() => HandleRedirect(RouterConst.Admin.Category))" Class="@IsActiveMenu(RouterConst.Admin.Category)" Icon="@Icons.Material.Filled.Category">Danh mục</MudNavLink>
+            <MudNavLink OnClick="@(() => HandleRedirect(RouterConst.Admin.Brand))" Class="@IsActiveMenu(RouterConst.Admin.Brand)" Icon="@Icons.Material.Filled.AutoAwesome">Thương hiệu</MudNavLink>
+            <MudNavLink OnClick="@(() => HandleRedirect(RouterConst.Admin.Color))" Class="@IsActiveMenu(RouterConst.Admin.Color)" Icon="@Icons.Material.Filled.Style">Màu</MudNavLink>
+            <MudNavLink OnClick="@(() => HandleRedirect(RouterConst.Admin.Size))" Class="@IsActiveMenu(RouterConst.Admin.Size)" Icon="@Icons.Material.Filled.BorderColor">Kích cỡ</MudNavLink>
+            <MudNavLink OnClick="@(() => HandleRedirect(RouterConst.Admin.Bill))" Class="@IsActiveMenu(RouterConst.Admin.Bill)" Icon="@Icons.Material.Filled.Payments">Hóa đơn</MudNavLink>
+            <MudNavLink OnClick="@(() => HandleRedirect(RouterConst.Admin.Statistical))" Class="@IsActiveMenu(RouterConst.Admin.Statistical)" Icon="@Icons.Material.Filled.SsidChart">Thống kê</MudNavLink>
+            <MudNavLink OnClick="@(() => HandleRedirect(RouterConst.Admin.Customer))" Class="@IsActiveMenu(RouterConst.Admin.Customer)" Icon="@Icons.Material.Filled.Group">Tài khoản khách hàng</MudNavLink>
+            <MudNavLink OnClick="@(() => HandleRedirect(RouterConst.Admin.User))" Class="@IsActiveMenu(RouterConst.Admin.User)" Icon="@Icons.Material.Filled.SupervisedUserCircle">Tài quản trị</MudNavLink>
         </div>
     </MudNavMenu>
 
     <div class="absolute bottom-4 left-0 right-0">
         <MudDivider Class="my-5 !border-slate-200" />
 
-        <div class="relative px-3">
-            <div class="flex cursor-pointer items-center gap-2 rounded-xl p-2 hover:bg-gray-100" @onclick="HandleShowMenuChild">
-                <MudAvatar Size="@Size.Medium" Class="!bg-admin-default !font-bold !text-white">@UserInfo.Role.Substring(0, 1)</MudAvatar>
-                <div class="w-full">
-                    <p class="line-clamp-1 text-base font-medium text-gray-900">@UserInfo.Username</p>
-                    <p class="line-clamp-1 text-sm font-medium text-gray-400">@UserInfo.Role</p>
-                </div>
-            </div>
-        </div>
+         @*<div class="relative px-3">
+             <div class="flex cursor-pointer items-center gap-2 rounded-xl p-2 hover:bg-gray-100" @onclick="HandleShowMenuChild">
+                 <MudAvatar Size="@Size.Medium" Class="!bg-admin-default !font-bold !text-white">@UserInfo.Role.Substring(0, 1)</MudAvatar>
+                 <div class="w-full">
+                     <p class="line-clamp-1 text-base font-medium text-gray-900">@UserInfo.Username</p>
+                     <p class="line-clamp-1 text-sm font-medium text-gray-400">@UserInfo.Role</p>
+                 </div>
+             </div>
+         </div>
 
-        @if (_isShowMenuChild)
-        {
-            <div class="-top-[calc(100vh-7.0625rem)] absolute h-screen w-screen cursor-pointer bg-transparent" @onclick="HandleShowMenuChild"></div>
-            <div class="absolute bottom-0 left-full w-full bg-transparent">
-                <ul class="ml-4 w-full bg-white py-2">
-                    <li class="px-3">
+         @if (_isShowMenuChild)
+         {
+             <div class="-top-[calc(100vh-7.0625rem)] absolute h-screen w-screen cursor-pointer bg-transparent" @onclick="HandleShowMenuChild"></div>
+             <div class="absolute bottom-0 left-full w-full bg-transparent">
+                 <ul class="ml-4 w-full bg-white py-2">
+                     <li class="px-3">
+                         <MudAvatar Size="@Size.Small" Class="!bg-admin-default !text-white">@UserInfo.Role.Substring(0, 1)</MudAvatar>
+                     </li>
+                     <li class="mt-2 px-3">
+                         <p class="whitespace-nowrap text-sm font-medium text-gray-900">@UserInfo.Username</p>
+                     </li>
+                     <MudDivider Class="my-3 !border-slate-200" />
+                     <li class="px-3">
+                         <button @onclick="Logout" class="flex w-full justify-start whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:bg-gray-100 hover:text-black">Đăng Xuất</button>
+                     </li>
+                 </ul>
+             </div>
+         }*@
+
+        <MudMenu Class="w-full px-3" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.BottomLeft">
+            <ActivatorContent>
+                <div class="flex w-full cursor-pointer items-center gap-2 rounded-xl p-2 hover:bg-gray-100">
+                    <MudAvatar Size="@Size.Medium" Class="!bg-admin-default !font-bold !text-white">@UserInfo.Role.Substring(0, 1)</MudAvatar>
+                    <div class="w-full">
+                        <p class="line-clamp-1 text-base font-medium text-gray-900">@UserInfo.Username</p>
+                        <p class="line-clamp-1 text-sm font-medium text-gray-400">@UserInfo.Role</p>
+                    </div>
+                </div>
+            </ActivatorContent>
+            <ChildContent>
+                <MudMenuItem Disabled>
                         <MudAvatar Size="@Size.Small" Class="!bg-admin-default !text-white">@UserInfo.Role.Substring(0, 1)</MudAvatar>
-                    </li>
-                    <li class="mt-2 px-3">
-                        <p class="whitespace-nowrap text-sm font-medium text-gray-900">@UserInfo.Username</p>
-                    </li>
-                    <MudDivider Class="my-3 !border-slate-200" />
-                    <li class="px-3">
-                        <button @onclick="Logout" class="flex justify-start whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:bg-gray-100 hover:text-black">Đăng Xuất</button>
-                    </li>
-                </ul>
-            </div>
-        }
+                </MudMenuItem>
+                <MudMenuItem Disabled>
+                    <p class="whitespace-nowrap text-sm font-medium text-gray-900">@UserInfo.Username</p>
+                </MudMenuItem>
+                <MudDivider />
+                <MudMenuItem>
+                    <button @onclick="Logout" class="flex w-full justify-start whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:bg-gray-100 hover:text-black">Đăng Xuất</button>
+                </MudMenuItem>
+            </ChildContent>
+        </MudMenu>
     </div>
 </nav>
 
@@ -68,13 +102,22 @@
     [CascadingParameter(Name = Constant.CascadingNameParams.UserInfo)]
     public GetMeResponseDTO UserInfo { get; set; }
 
-    private bool _isShowMenuChild = false;
-
-    private void HandleShowMenuChild()
+    private string IsActiveMenu(string path)
     {
-        _isShowMenuChild = !_isShowMenuChild;
-        StateHasChanged();
+        var contentUrl = "/" + navigation.ToBaseRelativePath(navigation.Uri);
+
+        if (contentUrl.Equals(path)) return "active-menu";
+
+        return "";
     }
+
+    void HandleRedirect(string path)
+    {
+        if (path == "") return;
+
+        navigation.NavigateTo(path);
+    }
+
 
     async Task Logout()
     {
