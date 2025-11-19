@@ -30,7 +30,7 @@
             </div>
 
             <div class="flex items-center justify-center gap-4">
-                <MudButton Href="@RouterConst.Admin.Customer" Color="Color.Surface" Variant="Variant.Filled" ButtonType="ButtonType.Button" Class="w-fit px-10">Quay lại</MudButton>
+                <MudButton Href="@RouterConst.Admin.Brand" Color="Color.Surface" Variant="Variant.Filled" ButtonType="ButtonType.Button" Class="w-fit px-10">Quay lại</MudButton>
                 <MudButton Color="Color.Primary" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Class="w-fit px-10">Sửa</MudButton>
             </div>
         </EditForm>
@@ -42,14 +42,14 @@
     public int id { get; set; }
 
     BrandModel _model = new BrandModel();
-    private byte _isActive = 1;
+    private int _isActive;
     private string _token = string.Empty;
 
     private List<BreadcrumbItem> _items =
     [
         new("Trang Chủ", href: RouterConst.Admin.Home),
-        new("Thương Hiệu", href: RouterConst.Admin.Brand),
-        new("Sửa Thương Hiệu", href: "#", disabled: true),
+    new("Thương Hiệu", href: RouterConst.Admin.Brand),
+    new("Sửa Thương Hiệu", href: "#", disabled: true),
     ];
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -70,13 +70,18 @@
             _model.Name = data.Name;
             _model.Description = data.Description;
             _model.Status = data.Status;
-            _isActive = 1;
+            _isActive = data.Status != null ? (int)data.Status : -1;
         }
     }
 
     async Task OnSubmit()
     {
-        _model.Status = _isActive;
+        if(_isActive == -1)
+        {
+            _snackbar.Add("Vui lòng chọn trạng thái (Hoạt động/Ngừng Hoạt động)", Severity.Error);
+            return;
+        }
+        _model.Status = (byte)_isActive;
         var result = await _brandService.Edit(_model, _token);
 
         if (result.IsSuccess)

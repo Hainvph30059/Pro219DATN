@@ -7,13 +7,13 @@ namespace Pro219.Web.DTOs
     {
         public int Id { get; set; }
 
-        [Required]
-        [MaxLength(100)]
+        [Required(ErrorMessage = Constant.MessageValid.Required)]
+        [MaxLength(100, ErrorMessage = Constant.MessageValid.Max100)]
         public string Name { get; set; } = string.Empty;
 
         [RegularExpression(Constant.Regex.HexColor, ErrorMessage = Constant.MessageValid.HexColor)]
         public string HexCode { get; set; }
 
-        public byte Status { get; set; }
+        public byte? Status { get; set; }
     }
 }

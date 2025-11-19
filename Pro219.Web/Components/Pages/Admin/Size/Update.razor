@@ -37,14 +37,14 @@
     public int id { get; set; }
 
     SizeModel _model = new SizeModel();
-    private int _isActive = 1;
+    private int _isActive;
     private string _token = string.Empty;
 
     private List<BreadcrumbItem> _items =
     [
         new("Trang Chủ", href: RouterConst.Admin.Home),
-        new("Kích Thước", href: RouterConst.Admin.Size),
-        new("Sửa Kích Thước", href: "#", disabled: true),
+    new("Kích Thước", href: RouterConst.Admin.Size),
+    new("Sửa Kích Thước", href: "#", disabled: true),
     ];
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -63,13 +63,18 @@
         {
             _model.Id = data.Id;
             _model.Name = data.Name;
-            _model.Status = data.Status ?? 1;
-            _isActive = data.Status != null ? (int)data.Status : 1;
+            _model.Status = data.Status;
+            _isActive = data.Status != null ? (int)data.Status : -1;
         }
     }
 
     async Task OnSubmit()
     {
+        if (_isActive == -1)
+        {
+            _snackbar.Add("Vui lòng chọn trạng thái (Hoạt động/Ngừng Hoạt động)", Severity.Error);
+            return;
+        }
         _model.Status = (byte)_isActive;
         var result = await _sizeService.Edit(_model, _token);
 
