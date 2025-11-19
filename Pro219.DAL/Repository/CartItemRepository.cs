@@ -67,7 +67,6 @@ namespace Pro219.DAL.Repository
             try
             {
                 cartItem.CreateAt = DateTime.Now;
-                cartItem.AddedAt = DateTime.Now;
                 cartItem.Delete = false;
                 var addedCartItem = _context.CartItems.Add(cartItem).Entity;
                 await _context.SaveChangesAsync();
@@ -91,7 +90,6 @@ namespace Pro219.DAL.Repository
                 existingCartItem.VariantId = cartItem.VariantId;
                 existingCartItem.Quantity = cartItem.Quantity;
                 existingCartItem.UnitPrice = cartItem.UnitPrice;
-                existingCartItem.IsSelectedForCheckout = cartItem.IsSelectedForCheckout;
                 existingCartItem.Status = cartItem.Status;
                 existingCartItem.UpdateBy = cartItem.UpdateBy;
                 existingCartItem.UpdateAt = DateTime.Now;

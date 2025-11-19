@@ -12,24 +12,24 @@ namespace Pro219.API.Controllers
 {
     [Route("DiscountCode")]
     [ApiController]
-    public class DiscountCodeController : ControllerBase
+    public class DiscountController : ControllerBase
     {
-        DiscountCodeRepository discountCodeRepository;
+        DiscountRepository discountCodeRepository;
 
-        public DiscountCodeController()
+        public DiscountController()
         {
-            discountCodeRepository = new DiscountCodeRepository();
+            discountCodeRepository = new DiscountRepository();
         }
 
         [HttpGet("GetAll")]
-        public async Task<ActionResult<List<DiscountCode>>> GetAllDiscountCodes()
+        public async Task<ActionResult<List<Discount>>> GetAllDiscountCodes()
         {
             try
             {
                 var result = await discountCodeRepository.GetAllDiscountCodes();
                 if (result == null)
                 {
-                    return Ok(new List<DiscountCode>());
+                    return Ok(new List<Discount>());
                 }
                 return Ok(result);
             }
@@ -40,7 +40,7 @@ namespace Pro219.API.Controllers
         }
 
         [HttpGet("GetById/{id}")]
-        public async Task<ActionResult<DiscountCode>> GetDiscountCodeById(int id)
+        public async Task<ActionResult<Discount>> GetDiscountCodeById(int id)
         {
             try
             {
@@ -58,7 +58,7 @@ namespace Pro219.API.Controllers
         }
 
         [HttpGet("GetByCode/{code}")]
-        public async Task<ActionResult<DiscountCode>> GetDiscountCodeByCode(string code)
+        public async Task<ActionResult<Discount>> GetDiscountCodeByCode(string code)
         {
             try
             {
@@ -76,7 +76,7 @@ namespace Pro219.API.Controllers
         }
 
         [HttpPost("Add")]
-        public async Task<ActionResult<DiscountCode>> AddDiscountCode([FromBody] DiscountCode discountCode)
+        public async Task<ActionResult<Discount>> AddDiscountCode([FromBody] Discount discountCode)
         {
             try
             {
@@ -101,7 +101,7 @@ namespace Pro219.API.Controllers
 
         [HttpPut("Update")]
         [Authorize(Roles = "Admin,Manager,Staff")]
-        public async Task<ActionResult<DiscountCode>> UpdateDiscountCode([FromBody] DiscountCodeUpdateDTO discountCodeDTO)
+        public async Task<ActionResult<Discount>> UpdateDiscountCode([FromBody] DiscountCodeUpdateDTO discountCodeDTO)
         {
             try
             {
@@ -110,7 +110,7 @@ namespace Pro219.API.Controllers
                     return BadRequest(Constant.ErrorCode.DataRequired);
                 }
 
-                var discountCode = new DiscountCode
+                var discountCode = new Discount
                 {
                     DiscountId = discountCodeDTO.DiscountId,
                     Code = discountCodeDTO.Code,
@@ -143,7 +143,7 @@ namespace Pro219.API.Controllers
 
         [HttpDelete("Delete/{id}")]
         [Authorize(Roles = "Admin,Manager,Staff")]
-        public async Task<ActionResult<DiscountCode>> DeleteDiscountCode(int id)
+        public async Task<ActionResult<Discount>> DeleteDiscountCode(int id)
         {
             try
             {

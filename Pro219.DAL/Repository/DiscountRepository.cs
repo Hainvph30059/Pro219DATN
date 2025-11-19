@@ -8,16 +8,16 @@ using System.Threading.Tasks;
 
 namespace Pro219.DAL.Repository
 {
-    public class DiscountCodeRepository
+    public class DiscountRepository
     {
         ClothesDbContext _context;
 
-        public DiscountCodeRepository()
+        public DiscountRepository()
         {
             _context = new ClothesDbContext();
         }
 
-        public async Task<List<DiscountCode>> GetAllDiscountCodes()
+        public async Task<List<Discount>> GetAllDiscountCodes()
         {
             try
             {
@@ -32,7 +32,7 @@ namespace Pro219.DAL.Repository
             }
         }
 
-        public async Task<DiscountCode> GetDiscountCodeById(int id)
+        public async Task<Discount> GetDiscountCodeById(int id)
         {
             try
             {
@@ -47,7 +47,7 @@ namespace Pro219.DAL.Repository
             }
         }
 
-        public async Task<DiscountCode> GetDiscountCodeByCode(string code)
+        public async Task<Discount> GetDiscountCodeByCode(string code)
         {
             try
             {
@@ -61,7 +61,7 @@ namespace Pro219.DAL.Repository
             }
         }
 
-        public async Task<DiscountCode> AddDiscountCode(DiscountCode discountCode)
+        public async Task<Discount> AddDiscountCode(Discount discountCode)
         {
             try
             {
@@ -77,7 +77,7 @@ namespace Pro219.DAL.Repository
             }
         }
 
-        public async Task<DiscountCode> UpdateDiscountCode(DiscountCode discountCode)
+        public async Task<Discount> UpdateDiscountCode(Discount discountCode)
         {
             try
             {
@@ -107,7 +107,7 @@ namespace Pro219.DAL.Repository
             }
         }
 
-        public async Task<DiscountCode> DeleteDiscountCode(int id, string? updateBy = null)
+        public async Task<Discount> DeleteDiscountCode(int id, string? updateBy = null)
         {
             try
             {

@@ -22,14 +22,14 @@ namespace Pro219.API.Controllers
         }
 
         [HttpGet("GetAll")]
-        public async Task<ActionResult<List<Sale>>> GetAllSales()
+        public async Task<ActionResult<List<SaleOff>>> GetAllSales()
         {
             try
             {
                 var result = await saleRepository.GetAllSales();
                 if (result == null)
                 {
-                    return Ok(new List<Sale>());
+                    return Ok(new List<SaleOff>());
                 }
                 return Ok(result);
             }
@@ -40,7 +40,7 @@ namespace Pro219.API.Controllers
         }
 
         [HttpGet("GetById/{id}")]
-        public async Task<ActionResult<Sale>> GetSaleById(int id)
+        public async Task<ActionResult<SaleOff>> GetSaleById(int id)
         {
             try
             {
@@ -58,7 +58,7 @@ namespace Pro219.API.Controllers
         }
 
         [HttpPost("Add")]
-        public async Task<ActionResult<Sale>> AddSale([FromBody] Sale sale)
+        public async Task<ActionResult<SaleOff>> AddSale([FromBody] SaleOff sale)
         {
             try
             {
@@ -83,7 +83,7 @@ namespace Pro219.API.Controllers
 
         [HttpPut("Update")]
         [Authorize(Roles = "Admin,Manager,Staff")]
-        public async Task<ActionResult<Sale>> UpdateSale([FromBody] SaleUpdateDTO saleDTO)
+        public async Task<ActionResult<SaleOff>> UpdateSale([FromBody] SaleUpdateDTO saleDTO)
         {
             try
             {
@@ -92,7 +92,7 @@ namespace Pro219.API.Controllers
                     return BadRequest(Constant.ErrorCode.DataRequired);
                 }
 
-                var sale = new Sale
+                var sale = new SaleOff
                 {
                     Id = saleDTO.Id,
                     Name = saleDTO.Name,
@@ -125,7 +125,7 @@ namespace Pro219.API.Controllers
 
         [HttpDelete("Delete/{id}")]
         [Authorize(Roles = "Admin,Manager,Staff")]
-        public async Task<ActionResult<Sale>> DeleteSale(int id)
+        public async Task<ActionResult<SaleOff>> DeleteSale(int id)
         {
             try
             {

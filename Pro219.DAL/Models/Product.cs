@@ -49,12 +49,11 @@ namespace Pro219.DAL.Models
         public virtual Brand Brand { get; set; } = null!;
 
         [ForeignKey("SaleId")]
-        public virtual Sale? Sale { get; set; }
+        public virtual SaleOff? Sale { get; set; }
 
         // Navigation properties
         public virtual ICollection<ProductImage> ProductImages { get; set; } = new List<ProductImage>();
         public virtual ICollection<ProductVariant> ProductVariants { get; set; } = new List<ProductVariant>();
-        public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
     }
 }
 

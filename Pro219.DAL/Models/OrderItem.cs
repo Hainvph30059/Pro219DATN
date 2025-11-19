@@ -42,6 +42,7 @@ namespace Pro219.DAL.Models
         // Foreign key navigation properties
         [ForeignKey("OrderId")]
         public virtual Order Order { get; set; } = null!;
+        public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
 
         [ForeignKey("ProductVariantId")]
         public virtual ProductVariant ProductVariant { get; set; } = null!;

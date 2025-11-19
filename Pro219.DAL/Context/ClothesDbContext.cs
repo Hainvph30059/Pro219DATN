@@ -22,19 +22,18 @@ namespace Pro219.DAL.Context
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Cart> Carts { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
-        public DbSet<DiscountCode> DiscountCodes { get; set; }
+        public DbSet<Discount> DiscountCodes { get; set; }
         public DbSet<PaymentMethod> PaymentMethods { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Brand> Brands { get; set; }
-        public DbSet<Sale> Sales { get; set; }
+        public DbSet<SaleOff> Sales { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductImage> ProductImages { get; set; }
         public DbSet<ProductVariant> ProductVariants { get; set; }
         public DbSet<Color> Colors { get; set; }
         public DbSet<Size> Sizes { get; set; }
-        public DbSet<InventoryLog> InventoryLogs { get; set; }
         public DbSet<Wishlist> Wishlists { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -51,15 +50,15 @@ namespace Pro219.DAL.Context
           
             // Customer relationships
             modelBuilder.Entity<Customer>()
-                .HasMany(c => c.Addresses)
-                .WithOne(a => a.Customer)
-                .HasForeignKey(a => a.CustomerId)
+                .HasOne(c => c.Cart)
+                .WithOne(cart => cart.Customer)
+                .HasForeignKey<Cart>(cart => cart.CustomerId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Customer>()
-                .HasMany(c => c.Carts)
-                .WithOne(cart => cart.Customer)
-                .HasForeignKey(cart => cart.CustomerId)
+                .HasMany(c => c.Addresses)
+                .WithOne(a => a.Customer)
+                .HasForeignKey(a => a.CustomerId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Customer>()
@@ -96,7 +95,7 @@ namespace Pro219.DAL.Context
                 .OnDelete(DeleteBehavior.Restrict);
 
             // DiscountCode relationships
-            modelBuilder.Entity<DiscountCode>()
+            modelBuilder.Entity<Discount>()
                 .HasMany(dc => dc.Orders)
                 .WithOne(o => o.DiscountCode)
                 .HasForeignKey(o => o.DiscountId)
@@ -123,6 +122,12 @@ namespace Pro219.DAL.Context
                 .HasForeignKey(oi => oi.ProductVariantId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<OrderItem>()
+                .HasMany(oi => oi.Reviews)
+                .WithOne(r => r.OrderItem)
+                .HasForeignKey(r => r.OrderItemId)
+                .OnDelete(DeleteBehavior.SetNull);
+
             // Category relationships (self-referencing)
             modelBuilder.Entity<Category>()
                 .HasMany(c => c.SubCategories)
@@ -144,7 +149,7 @@ namespace Pro219.DAL.Context
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Sale relationships
-            modelBuilder.Entity<Sale>()
+            modelBuilder.Entity<SaleOff>()
                 .HasMany(s => s.Products)
                 .WithOne(p => p.Sale)
                 .HasForeignKey(p => p.SaleId)
@@ -163,12 +168,7 @@ namespace Pro219.DAL.Context
                 .HasForeignKey(pv => pv.ProductId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<Product>()
-                .HasMany(p => p.Reviews)
-                .WithOne(r => r.Product)
-                .HasForeignKey(r => r.ProductId)
-                .OnDelete(DeleteBehavior.Restrict);
-
+          
             // ProductImage relationships
             // Note: Changed to Restrict to avoid multiple cascade paths
             // ProductImage -> Product is Cascade, so images will be deleted when Product is deleted
@@ -192,11 +192,7 @@ namespace Pro219.DAL.Context
                 .HasForeignKey(pv => pv.SizeId)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            modelBuilder.Entity<ProductVariant>()
-                .HasMany(pv => pv.InventoryLogs)
-                .WithOne(il => il.ProductVariant)
-                .HasForeignKey(il => il.VariantId)
-                .OnDelete(DeleteBehavior.Cascade);
+         
 
             // Wishlist relationships
             modelBuilder.Entity<Wishlist>()
@@ -217,7 +213,7 @@ namespace Pro219.DAL.Context
                 .IsUnique()
                 .HasFilter("[Email] IS NOT NULL");
 
-            modelBuilder.Entity<DiscountCode>()
+            modelBuilder.Entity<Discount>()
                 .HasIndex(dc => dc.Code)
                 .IsUnique();
 
@@ -227,6 +223,10 @@ namespace Pro219.DAL.Context
 
             modelBuilder.Entity<ProductVariant>()
                 .HasIndex(pv => pv.SKU)
+                .IsUnique();
+
+            modelBuilder.Entity<Cart>()
+                .HasIndex(c => c.CustomerId)
                 .IsUnique();
 
             // Seed Data
@@ -282,10 +282,10 @@ namespace Pro219.DAL.Context
             );
 
             // Sales
-            modelBuilder.Entity<Sale>().HasData(
-                new Sale { Id = 1, Name = "Khuyến mãi mùa hè", Description = "Giảm giá mùa hè cho tất cả sản phẩm", Type = "Percentage", SaleValue = 20, StartDate = seedDate, EndDate = seedDate.AddMonths(3), IsActive = true, UpdateBy = "admin", Delete = false, CreateAt = seedDate, Status = 1 },
-                new Sale { Id = 2, Name = "Khuyến mãi mùa đông", Description = "Giảm giá mùa đông", Type = "Percentage", SaleValue = 15, StartDate = seedDate.AddMonths(6), EndDate = seedDate.AddMonths(9), IsActive = false, UpdateBy = "admin", Delete = false, CreateAt = seedDate, Status = 1 },
-                new Sale { Id = 3, Name = "Khuyến mãi Black Friday", Description = "Siêu sale Black Friday", Type = "Percentage", SaleValue = 30, StartDate = seedDate.AddMonths(10), EndDate = seedDate.AddMonths(11), IsActive = false, UpdateBy = "admin", Delete = false, CreateAt = seedDate, Status = 1 }
+            modelBuilder.Entity<SaleOff>().HasData(
+                new SaleOff { Id = 1, Name = "Khuyến mãi mùa hè", Description = "Giảm giá mùa hè cho tất cả sản phẩm", Type = "Percentage", SaleValue = 20, StartDate = seedDate, EndDate = seedDate.AddMonths(3), IsActive = true, UpdateBy = "admin", Delete = false, CreateAt = seedDate, Status = 1 },
+                new SaleOff { Id = 2, Name = "Khuyến mãi mùa đông", Description = "Giảm giá mùa đông", Type = "Percentage", SaleValue = 15, StartDate = seedDate.AddMonths(6), EndDate = seedDate.AddMonths(9), IsActive = false, UpdateBy = "admin", Delete = false, CreateAt = seedDate, Status = 1 },
+                new SaleOff { Id = 3, Name = "Khuyến mãi Black Friday", Description = "Siêu sale Black Friday", Type = "Percentage", SaleValue = 30, StartDate = seedDate.AddMonths(10), EndDate = seedDate.AddMonths(11), IsActive = false, UpdateBy = "admin", Delete = false, CreateAt = seedDate, Status = 1 }
             );
 
             // Customers
@@ -342,12 +342,7 @@ namespace Pro219.DAL.Context
             );
 
             // CartItems
-            modelBuilder.Entity<CartItem>().HasData(
-                new CartItem { Id = 1, CartId = 1, VariantId = 1, Quantity = 2, UnitPrice = 299000m, IsSelectedForCheckout = true, AddedAt = seedDate, Delete = false, CreateAt = seedDate, Status = 1 },
-                new CartItem { Id = 2, CartId = 1, VariantId = 4, Quantity = 1, UnitPrice = 799000m, IsSelectedForCheckout = false, AddedAt = seedDate, Delete = false, CreateAt = seedDate, Status = 1 },
-                new CartItem { Id = 3, CartId = 2, VariantId = 6, Quantity = 1, UnitPrice = 399000m, IsSelectedForCheckout = true, AddedAt = seedDate, Delete = false, CreateAt = seedDate, Status = 1 },
-                new CartItem { Id = 4, CartId = 3, VariantId = 7, Quantity = 1, UnitPrice = 499000m, IsSelectedForCheckout = true, AddedAt = seedDate, Delete = false, CreateAt = seedDate, Status = 1 }
-            );
+           
 
             // PaymentMethods
             modelBuilder.Entity<PaymentMethod>().HasData(
@@ -358,10 +353,10 @@ namespace Pro219.DAL.Context
             );
 
             // DiscountCodes
-            modelBuilder.Entity<DiscountCode>().HasData(
-                new DiscountCode { DiscountId = 1, Code = "MUAHHE20", DiscountType = "Percentage", Value = 20, MinOrderValue = 500000, StartDate = seedDate, EndDate = seedDate.AddMonths(3), IsActive = true, UpdateBy = "admin", Delete = false, CreateAt = seedDate, Status = 1 },
-                new DiscountCode { DiscountId = 2, Code = "CHAO10", DiscountType = "Percentage", Value = 10, MinOrderValue = 300000, StartDate = seedDate, EndDate = seedDate.AddMonths(6), IsActive = true, UpdateBy = "admin", Delete = false, CreateAt = seedDate, Status = 1 },
-                new DiscountCode { DiscountId = 3, Code = "BLACKFRIDAY30", DiscountType = "Percentage", Value = 30, MinOrderValue = 1000000, StartDate = seedDate.AddMonths(10), EndDate = seedDate.AddMonths(11), IsActive = false, UpdateBy = "admin", Delete = false, CreateAt = seedDate, Status = 1 }
+            modelBuilder.Entity<Discount>().HasData(
+                new Discount { DiscountId = 1, Code = "MUAHHE20", DiscountType = "Percentage", Value = 20, MinOrderValue = 500000, StartDate = seedDate, EndDate = seedDate.AddMonths(3), IsActive = true, UpdateBy = "admin", Delete = false, CreateAt = seedDate, Status = 1 },
+                new Discount { DiscountId = 2, Code = "CHAO10", DiscountType = "Percentage", Value = 10, MinOrderValue = 300000, StartDate = seedDate, EndDate = seedDate.AddMonths(6), IsActive = true, UpdateBy = "admin", Delete = false, CreateAt = seedDate, Status = 1 },
+                new Discount { DiscountId = 3, Code = "BLACKFRIDAY30", DiscountType = "Percentage", Value = 30, MinOrderValue = 1000000, StartDate = seedDate.AddMonths(10), EndDate = seedDate.AddMonths(11), IsActive = false, UpdateBy = "admin", Delete = false, CreateAt = seedDate, Status = 1 }
             );
 
             // Orders
@@ -384,19 +379,7 @@ namespace Pro219.DAL.Context
                 new Review { UniqueID = 1, ProductId = 1, CustomerId = 1, Title = "Chất lượng tốt", Content = "Áo rất mềm mại và thoáng mát, chất lượng đúng như mô tả. Tôi rất hài lòng với sản phẩm này!", Overall = 5, CreatedAt = seedDate, Delete = false, Status = 1 },
                 new Review { UniqueID = 2, ProductId = 2, CustomerId = 2, Title = "Vừa vặn hoàn hảo", Content = "Quần jean vừa vặn, chất liệu tốt, mặc rất đẹp. Sẽ mua thêm màu khác!", Overall = 5, CreatedAt = seedDate.AddDays(2), Delete = false, Status = 1 },
                 new Review { UniqueID = 3, ProductId = 3, CustomerId = 1, Title = "Phù hợp tập thể thao", Content = "Áo thấm hút mồ hôi tốt, mặc tập gym rất thoải mái. Đáng giá tiền!", Overall = 4, CreatedAt = seedDate.AddDays(3), Delete = false, Status = 1 }
-            );
-
-            // InventoryLogs
-            modelBuilder.Entity<InventoryLog>().HasData(
-                new InventoryLog { InventoryLogId = 1, VariantId = 1, ChangeQuantity = 50, Reason = "Nhập kho ban đầu", CreateAt = seedDate, Delete = false, Status = 1 },
-                new InventoryLog { InventoryLogId = 2, VariantId = 2, ChangeQuantity = 30, Reason = "Nhập kho ban đầu", CreateAt = seedDate, Delete = false, Status = 1 },
-                new InventoryLog { InventoryLogId = 3, VariantId = 3, ChangeQuantity = 40, Reason = "Nhập kho ban đầu", CreateAt = seedDate, Delete = false, Status = 1 },
-                new InventoryLog { InventoryLogId = 4, VariantId = 4, ChangeQuantity = 25, Reason = "Nhập kho ban đầu", CreateAt = seedDate, Delete = false, Status = 1 },
-                new InventoryLog { InventoryLogId = 5, VariantId = 5, ChangeQuantity = 20, Reason = "Nhập kho ban đầu", CreateAt = seedDate, Delete = false, Status = 1 },
-                new InventoryLog { InventoryLogId = 6, VariantId = 6, ChangeQuantity = 35, Reason = "Nhập kho ban đầu", CreateAt = seedDate, Delete = false, Status = 1 },
-                new InventoryLog { InventoryLogId = 7, VariantId = 7, ChangeQuantity = 15, Reason = "Nhập kho ban đầu", CreateAt = seedDate, Delete = false, Status = 1 },
-                new InventoryLog { InventoryLogId = 8, VariantId = 8, ChangeQuantity = 18, Reason = "Nhập kho ban đầu", CreateAt = seedDate, Delete = false, Status = 1 }
-            );
+            );           
 
             // Wishlists
             modelBuilder.Entity<Wishlist>().HasData(

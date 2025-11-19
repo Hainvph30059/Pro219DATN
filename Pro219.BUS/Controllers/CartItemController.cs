@@ -117,7 +117,6 @@ namespace Pro219.API.Controllers
                     VariantId = cartItemDTO.VariantId,
                     Quantity = cartItemDTO.Quantity,
                     UnitPrice = cartItemDTO.UnitPrice,
-                    IsSelectedForCheckout = cartItemDTO.IsSelectedForCheckout,
                     Status = cartItemDTO.Status,
                     UpdateBy = User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
                     UpdateAt = DateTime.Now,

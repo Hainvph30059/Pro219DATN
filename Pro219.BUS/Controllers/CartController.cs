@@ -114,7 +114,6 @@ namespace Pro219.API.Controllers
                 {
                     Id = cartDTO.Id,
                     CustomerId = cartDTO.CustomerId,
-                    SessionId = cartDTO.SessionId,
                     Status = cartDTO.Status,
                     UpdateBy = User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
                     UpdateAt = DateTime.Now,

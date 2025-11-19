@@ -68,7 +68,7 @@ namespace Pro219.DAL.Models
         public virtual Address ShippingAddress { get; set; } = null!;
 
         [ForeignKey("DiscountId")]
-        public virtual DiscountCode? DiscountCode { get; set; }
+        public virtual Discount? DiscountCode { get; set; }
 
         [ForeignKey("PaymentMethodId")]
         public virtual PaymentMethod? PaymentMethod { get; set; }

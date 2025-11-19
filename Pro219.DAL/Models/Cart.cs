@@ -10,10 +10,7 @@ namespace Pro219.DAL.Models
         public int Id { get; set; }
 
         [Required]
-        public int CustomerId { get; set; }
-
-        [MaxLength(100)]
-        public string? SessionId { get; set; }
+        public int CustomerId { get; set; }      
 
         public byte? Status { get; set; }
 

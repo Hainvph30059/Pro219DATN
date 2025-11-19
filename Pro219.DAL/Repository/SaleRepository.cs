@@ -17,7 +17,7 @@ namespace Pro219.DAL.Repository
             _context = new ClothesDbContext();
         }
 
-        public async Task<List<Sale>> GetAllSales()
+        public async Task<List<SaleOff>> GetAllSales()
         {
             try
             {
@@ -32,7 +32,7 @@ namespace Pro219.DAL.Repository
             }
         }
 
-        public async Task<Sale> GetSaleById(int id)
+        public async Task<SaleOff> GetSaleById(int id)
         {
             try
             {
@@ -47,7 +47,7 @@ namespace Pro219.DAL.Repository
             }
         }
 
-        public async Task<Sale> AddSale(Sale sale)
+        public async Task<SaleOff> AddSale(SaleOff sale)
         {
             try
             {
@@ -63,7 +63,7 @@ namespace Pro219.DAL.Repository
             }
         }
 
-        public async Task<Sale> UpdateSale(Sale sale)
+        public async Task<SaleOff> UpdateSale(SaleOff sale)
         {
             try
             {
@@ -92,7 +92,7 @@ namespace Pro219.DAL.Repository
             }
         }
 
-        public async Task<Sale> DeleteSale(int id, string? updateBy = null)
+        public async Task<SaleOff> DeleteSale(int id, string? updateBy = null)
         {
             try
             {

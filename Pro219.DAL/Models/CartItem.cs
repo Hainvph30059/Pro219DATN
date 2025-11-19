@@ -22,10 +22,6 @@ namespace Pro219.DAL.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal UnitPrice { get; set; }
 
-        public bool IsSelectedForCheckout { get; set; }
-
-        public DateTime AddedAt { get; set; }
-
         public bool? Delete { get; set; }
 
         public DateTime? CreateAt { get; set; }

@@ -15,6 +15,8 @@ namespace Pro219.DAL.Models
         [Required]
         public int CustomerId { get; set; }
 
+        public int? OrderItemId { get; set; }
+
         [Required]
         [MaxLength(200)]
         public string Title { get; set; } = string.Empty;
@@ -39,8 +41,8 @@ namespace Pro219.DAL.Models
         public string? UpdateBy { get; set; }
 
         // Foreign key navigation properties
-        [ForeignKey("ProductId")]
-        public virtual Product Product { get; set; } = null!;
+        [ForeignKey("OrderItemId")]
+        public virtual OrderItem? OrderItem { get; set; }
 
         [ForeignKey("CustomerId")]
         public virtual Customer Customer { get; set; } = null!;

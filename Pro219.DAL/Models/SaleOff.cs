@@ -3,26 +3,26 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Pro219.DAL.Models
 {
-    [Table("Coupon")]
-    public class DiscountCode
+    [Table("Sale")]
+    public class SaleOff
     {
         [Key]
-        public int DiscountId { get; set; }
+        public int Id { get; set; }
+
+        [Required]
+        [MaxLength(200)]
+        public string Name { get; set; } = string.Empty;
+
+        [MaxLength(1000)]
+        public string? Description { get; set; }
 
         [Required]
         [MaxLength(50)]
-        public string Code { get; set; } = string.Empty;
-
-        [Required]
-        [MaxLength(20)]
-        public string DiscountType { get; set; } = string.Empty; // Percentage, FixedAmount
+        public string Type { get; set; } = string.Empty; // e.g., "Percentage", "FixedAmount"
 
         [Required]
         [Column(TypeName = "decimal(18,2)")]
-        public decimal Value { get; set; }
-
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal? MinOrderValue { get; set; }
+        public decimal SaleValue { get; set; }
 
         public DateTime StartDate { get; set; }
 
@@ -44,7 +44,7 @@ namespace Pro219.DAL.Models
         public string? UpdateBy { get; set; }
 
         // Navigation properties
-        public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
+        public virtual ICollection<Product> Products { get; set; } = new List<Product>();
     }
 }
 

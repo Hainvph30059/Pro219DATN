@@ -87,7 +87,6 @@ namespace Pro219.DAL.Repository
                 if (existingCart == null || existingCart.Delete == true) return null;
 
                 existingCart.CustomerId = cart.CustomerId;
-                existingCart.SessionId = cart.SessionId;
                 existingCart.Status = cart.Status;
                 existingCart.UpdateAt = DateTime.Now;
                 if (!string.IsNullOrEmpty(cart.UpdateBy))

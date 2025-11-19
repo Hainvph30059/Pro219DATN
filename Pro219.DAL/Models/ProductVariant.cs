@@ -57,7 +57,6 @@ namespace Pro219.DAL.Models
         // Navigation properties
         public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
         public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
-        public virtual ICollection<InventoryLog> InventoryLogs { get; set; } = new List<InventoryLog>();
         public virtual ICollection<ProductImage> ProductImages { get; set; } = new List<ProductImage>();
         public virtual ICollection<Wishlist> Wishlists { get; set; } = new List<Wishlist>();
     }
