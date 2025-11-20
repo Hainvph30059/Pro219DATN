@@ -23,6 +23,7 @@ namespace Pro219.DAL.Repository
             {
                 var sizes = await _context.Sizes
                     .Where(x => x.Delete != true)
+                    .OrderByDescending(x => x.Id)
                     .ToListAsync();
                 return sizes;
             }

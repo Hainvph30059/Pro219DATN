@@ -142,6 +142,42 @@ namespace Pro219.API.Controllers
                 return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
+
+        [HttpGet("GetLatestProduct")]
+        public async Task<ActionResult<List<Product>>> GetLatestProducts()
+        {
+            try
+            {
+                var result = await productRepository.GetLatestProducts();
+                if (result == null)
+                {
+                    return Ok(new List<Product>());
+                }
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, Constant.ErrorCode.OtherError);
+            }
+        }
+
+        [HttpGet("GetBestSellProduct")]
+        public async Task<ActionResult<List<Product>>> GetBestSellProducts()
+        {
+            try
+            {
+                var result = await productRepository.GetBestSellProduct();
+                if (result == null)
+                {
+                    return Ok(new List<Product>());
+                }
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, Constant.ErrorCode.OtherError);
+            }
+        }
     }
 }
 
