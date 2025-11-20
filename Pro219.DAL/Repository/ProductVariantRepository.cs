@@ -92,7 +92,7 @@ namespace Pro219.DAL.Repository
                 existingVariant.SKU = variant.SKU;
                 existingVariant.StockQuantity = variant.StockQuantity;
                 existingVariant.Price = variant.Price;
-                existingVariant.ArrivalTime = variant.ArrivalTime;
+                existingVariant.ArrivalDate = variant.ArrivalDate;
                 existingVariant.IsActive = variant.IsActive;
                 existingVariant.Status = variant.Status;
                 existingVariant.UpdateBy = variant.UpdateBy;

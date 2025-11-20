@@ -27,7 +27,7 @@ namespace Pro219.DAL.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal Price { get; set; }
 
-        public int? ArrivalTime { get; set; } // Days
+        public DateTime? ArrivalDate { get; set; } // Days
 
         public bool IsActive { get; set; }
 
