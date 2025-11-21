@@ -1,0 +1,119 @@
+﻿@page "/product/detail"
+@layout MainLayout
+
+<PageTitle>@Constant.PageTitleUser Product Detail</PageTitle>
+
+<section class="mx-auto mb-10 mt-4 w-full max-w-screen-xl">
+    <div class="mt-2 flex h-full w-full gap-4">
+        <div class="w-[calc(100%-27rem)]">
+            <MudCarousel Class="mud-width-full !aspect-square" ShowBullets="false" EnableSwipeGesture="false" AutoCycle="false" TData="object">
+                <MudCarouselItem Color="@Color.Primary">
+                    <div class="d-flex" style="height:100%">
+                        <MudIcon Class="mx-auto my-auto" Icon="@Icons.Custom.Brands.MudBlazor" Size="@Size.Large" />
+                    </div>
+                </MudCarouselItem>
+                <MudCarouselItem Color="@Color.Secondary">
+                    <div class="d-flex" style="height:100%">
+                        <MudIcon Class="mx-auto my-auto" Icon="@Icons.Custom.Brands.MudBlazor" Size="@Size.Large" />
+                    </div>
+                </MudCarouselItem>
+                <MudCarouselItem>
+                    <div class="d-flex" style="height:100%">
+                        <MudIcon Class="mx-auto my-auto" Icon="@Icons.Custom.Brands.MudBlazor" Color="@Color.Primary" Size="@Size.Large" />
+                    </div>
+                </MudCarouselItem>
+            </MudCarousel>
+        </div>
+        <div class="h-fit w-[26rem] flex-shrink-0 p-3 shadow">
+            <h1 class="mb-2 text-base font-medium">Áo Len XL.6.5059 - Ghi Nhạt - XL</h1>
+            <span class="text-sm font-medium">Còn hàng</span>
+
+            <MudDivider Class="!my-2.5 !border-dotted" />
+
+            <span class="text-xl font-bold">179,000đ</span>
+
+            <div class="mt-2">
+                <p class="mb-2 text-sm font-medium uppercase">Màu sắc</p>
+                <div class="flex flex-wrap items-center gap-2">
+                    <div class="h-6 w-6 rounded-full bg-black"></div>
+                    <div class="h-6 w-6 rounded-full bg-black"></div>
+                    <div class="h-6 w-6 rounded-full bg-black"></div>
+                    <div class="h-6 w-6 rounded-full bg-black"></div>
+                </div>
+            </div>
+
+            <div class="mt-2">
+                <p class="mb-2 text-sm font-medium uppercase">Kích thước</p>
+                <div class="flex flex-wrap items-center gap-2">
+                    <div class="flex h-9 w-9 items-center justify-center border">XL</div>
+                    <div class="flex h-9 w-9 items-center justify-center border">XL</div>
+                    <div class="flex h-9 w-9 items-center justify-center border">XL</div>
+                    <div class="flex h-9 w-9 items-center justify-center border">XL</div>
+                </div>
+            </div>
+
+            <div class="my-4 flex">
+                <div class="flex h-[1.875rem] w-[1.875rem] cursor-pointer items-center justify-center border-y border-l">
+                    <MudIcon Class="!h-4 !w-4" Icon="@Icons.Material.Filled.Remove" Size="Size.Small" />
+                </div>
+
+                <span class="flex h-[1.875rem] w-10 items-baseline justify-center border bg-gray-50 p-1">1</span>
+
+                <div class="flex h-[1.875rem] w-[1.875rem] cursor-pointer items-center justify-center border-y border-r">
+                    <MudIcon Class="!h-4 !w-4" Icon="@Icons.Material.Filled.Add" Size="Size.Small" />
+                </div>
+            </div>
+
+            <div class="flex justify-between">
+                <button class="w-[49%] bg-black py-3 uppercase text-white">Thêm Giỏ Hàng</button>
+                <button class="w-[49%] bg-black py-3 uppercase text-white">Mua Ngay</button>
+            </div>
+
+            <div class="mt-2">
+                <button class="w-full border border-solid border-slate-200 py-3"><MudIcon Icon="@Icons.Material.Filled.FavoriteBorder" /> Yêu Thích</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="mx-auto mb-10 max-w-screen-xl pt-10">
+    <h2 class="w-fit border-b-4 border-solid border-black text-base font-bold uppercase">Sản phẩm bán chạy</h2>
+    <MudCarousel Class="mud-width-full mt-4 h-[24rem]" ShowBullets="false" EnableSwipeGesture="false" AutoCycle="false" TData="object">
+        <MudCarouselItem>
+            <div class="flex justify-between">
+                <ProductItem />
+                <ProductItem />
+                <ProductItem />
+                <ProductItem />
+            </div>
+        </MudCarouselItem>
+        <MudCarouselItem>
+            <div class="flex justify-between">
+                <ProductItem />
+                <ProductItem />
+                <ProductItem />
+                <ProductItem />
+            </div>
+        </MudCarouselItem>
+        <MudCarouselItem>
+            <div class="flex justify-between">
+                <ProductItem />
+                <ProductItem />
+                <ProductItem />
+                <ProductItem />
+            </div>
+        </MudCarouselItem>
+        <MudCarouselItem>
+            <div class="flex justify-between">
+                <ProductItem />
+                <ProductItem />
+                <ProductItem />
+                <ProductItem />
+            </div>
+        </MudCarouselItem>
+    </MudCarousel>
+</section>
+
+<section class="mx-auto mb-6 max-w-screen-xl pt-10">
+    <img src="/Assets/Images/user-home-banner-2.jpg" alt="banner" />
+</section>
