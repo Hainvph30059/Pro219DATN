@@ -3,6 +3,31 @@
 
 <PageTitle>@Constant.PageTitleUser Home</PageTitle>
 
-<div class="w-full">
-    <img src="/Assets/Images/screencapture-atino-vn-2025-11-14-22_15_47.png" />
-</div>
+
+<section class="mx-auto w-full max-w-[120rem]">
+    <img  src="/Assets/Images/user-home-banner-1.png" alt="banner" />
+</section>
+
+<section class="my-8 px-8 pt-8">
+    <h2 class="text-center text-3xl font-bold uppercase">Sản phẩm mới</h2>
+    <div class="mt-8 grid grid-cols-4 gap-2 px-4">
+        @for(var i = 0; i < 8; i++)
+        {
+            <ProductItem />
+        }
+    </div>
+</section>
+
+<section class="my-8 px-8">
+    <h2 class="text-center text-3xl font-bold uppercase">Sản phẩm bán chạy</h2>
+    <div class="mt-8 grid grid-cols-4 gap-2">
+        @for (var i = 0; i < 8; i++)
+        {
+            <ProductItem />
+        }
+    </div>
+</section>
+
+<section class="mx-auto my-8 w-full max-w-[120rem]">
+    <img src="/Assets/Images/user-home-banner-2.jpg" alt="banner" />
+</section>
