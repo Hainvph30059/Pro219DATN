@@ -19,16 +19,19 @@
 } else
 {   
     <CascadingValue Value="_currentUserInfo" Name="@Constant.CascadingNameParams.UserInfo">
-        <div>
-            <Header OnLoggedOut="HandleLogout" FirstLogin="_firstLogin" />
+        <MudLayout>
+            <Header OnLoggedOut="HandleLogout" OnOpenCart="HandleOpenCart" FirstLogin="_firstLogin" />
 
             <main class="min-h-[calc(100lvh-26.625rem)] pt-20">
                 @Body
             </main>
 
             <Footer />
-        </div>
+
+            <CartDrawer />
+        </MudLayout>
     </CascadingValue>
+
 
     <div id="blazor-error-ui">
         An unhandled error has occurred.
@@ -142,6 +145,11 @@
         }
     }
 
+    protected override void OnInitialized()
+    {
+        _drawerService.OnChange += StateHasChanged;
+    }
+
     private async void HandleLocationChanged(object sender, LocationChangedEventArgs e)
     {
         await PerformAuthCheckAndNavigate(isInitialLoad: false);
@@ -164,6 +172,11 @@
 
         _isLoading = false;
         StateHasChanged();
+    }
+
+    public void HandleOpenCart()
+    {
+        _drawerService.OpenDrawer();
     }
 
     public async Task ClearLocalStorageAndNavigate(string route)

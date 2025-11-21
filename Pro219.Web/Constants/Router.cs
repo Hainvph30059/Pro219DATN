@@ -14,6 +14,9 @@
             public const string Login = "/login";
             public const string ForgotPassword = "/forgot-password";
             public const string ChangePassword = "/change-password";
+
+            // Cart
+            public const string CartDetail = "/cart-detail";
         }
 
         public static class Admin

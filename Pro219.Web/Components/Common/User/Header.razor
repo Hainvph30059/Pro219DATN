@@ -92,9 +92,6 @@
                                 <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:text-black">Thông tin tài khoản</a>
                             </li>
                             <li>
-                                <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:text-black">Giỏ Hàng</a>
-                            </li>
-                            <li>
                                 <a href="#" class="block w-full whitespace-nowrap px-1.5 py-2 text-sm font-medium text-[#666666] hover:text-black">Yêu Thích</a>
                             </li>
                             <MudDivider />
@@ -112,7 +109,7 @@
             </div>
 
         <MudBadge Content="@_countCart" Color="Color.Error" Overlap="true" Bordered="true">
-            <MudIcon Icon="@Icons.Material.Filled.ShoppingCart" Class="cursor-pointer" />
+                <MudIcon @onclick="OnOpenCart" Icon="@Icons.Material.Filled.ShoppingCart" Class="cursor-pointer" />
         </MudBadge>
         </div>
     </nav>
@@ -124,6 +121,9 @@
 
     [Parameter]
     public EventCallback OnLoggedOut { get; set; }
+
+    [Parameter]
+    public EventCallback OnOpenCart { get; set; }
 
     [Parameter]
     public bool FirstLogin { get; set; }

@@ -1,0 +1,64 @@
+﻿<MudDrawer @bind-Open="@_drawerService.IsOpen" Width="350px" Class="px-2" Height="100lvh" Anchor="Anchor.End" Elevation="1" Variant="@DrawerVariant.Temporary">
+    <MudDrawerHeader Class="flex-col">
+        <MudText Typo="Typo.h6">Giỏ hàng</MudText>
+        <MudText Class="text-xs text-slate-500">Giỏ hàng của bạn có 4 sản phẩm</MudText>
+    </MudDrawerHeader>
+    
+    <div>
+        <MudDivider Class="!my-4" />
+
+        @for(int i = 0; i < 5; i++)
+        {
+            <div class="max-h-[calc(100lvh-15.9375rem)]">
+                <div class="flex items-center gap-2">
+                    <div class="h-full max-h-[6.25rem] w-full max-w-[6.25rem] flex-shrink-0">
+                        <a>
+                            <img src="https://pos.nvncdn.com/f4d87e-8901/ps/Ao-Len-XL-6-5059-Ghi-Nhat-M.jpg?v=1761532678" alt="product" />
+                        </a>
+                    </div>
+
+                    <div class="flex flex-col">
+                        <p class="whitespace-pre-wrap text-sm">Áo Len XL.6.5059 - Ghi Nhạt - XL</p>
+                        <span class="whitespace-pre-wrap text-sm font-medium">179,000đ x 3</span>
+                        <button class="w-fit p-2 text-xs text-slate-500 hover:text-red-500">Xóa</button>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <MudDivider Class="!my-4 border-2 !border-black" />
+        <div class="flex justify-between gap-2">
+            <span class="flex-shrink-0 text-sm font-bold uppercase">Tổng tiền tạm tính:</span>
+            <span class="whitespace-pre-wrap text-sm font-medium">179,000đ</span>
+        </div>
+
+        <button class="my-4 w-full bg-black py-3 text-base text-white shadow">Tiến Hành Đặt Hàng</button>
+
+        <button @onclick="HandleRedirect" class="mx-auto flex w-fit items-center text-sm">Xem Chi tiết Giỏ Hàng <MudIcon Class="ml-2" Icon="@Icons.Material.Filled.ArrowForward" Size="Size.Medium" /></button>
+    </div>
+</MudDrawer>
+
+
+@code {
+    protected override void OnInitialized()
+    {
+        _drawerService.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        _drawerService.OnChange -= StateHasChanged;
+    }
+
+    void HandleRedirect()
+    {
+        _drawerService.CloseDrawer();
+
+        navigation.NavigateTo(RouterConst.User.CartDetail);
+    }
+
+    public void HandleOpenCart()
+    {
+        _drawerService.OpenDrawer();
+    }
+}
