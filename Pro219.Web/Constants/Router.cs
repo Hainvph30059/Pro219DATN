@@ -16,7 +16,10 @@
             public const string ChangePassword = "/change-password";
 
             // Cart
-            public const string CartDetail = "/cart-detail";
+            public const string CartDetail = "/cart/detail";
+
+            // Product
+            public const string ProductDetail = "/product/detail";
         }
 
         public static class Admin
