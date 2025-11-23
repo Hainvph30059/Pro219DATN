@@ -46,6 +46,7 @@
             // Category
             public const string Category = "/admin/categories";
             public const string CreateCategory = "/admin/categories/create";
+            public const string CreateChildCategory = "/categories/:id/child";
             public const string EditCategory = "/admin/categories/edit";
 
             // Size
