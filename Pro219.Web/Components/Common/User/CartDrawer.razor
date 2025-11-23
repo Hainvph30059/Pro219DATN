@@ -1,7 +1,7 @@
 ﻿<MudDrawer @bind-Open="@_drawerService.IsOpen" Width="350px" Class="px-2" Height="100lvh" Anchor="Anchor.End" Elevation="1" Variant="@DrawerVariant.Temporary">
-    <MudDrawerHeader Class="flex-col">
-        <MudText Typo="Typo.h6">Giỏ hàng</MudText>
-        <MudText Class="text-xs text-slate-500">Giỏ hàng của bạn có 4 sản phẩm</MudText>
+    <MudDrawerHeader Class="!items-center !justify-between">
+        <h1 class="text-lg">Giỏ hàng</h1>
+        <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Inherit" Edge="Edge.End" OnClick="@_drawerService.CloseDrawer" />
     </MudDrawerHeader>
     
     <div>
