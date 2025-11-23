@@ -4,8 +4,8 @@
 <PageTitle>@Constant.PageTitleUser Product Detail</PageTitle>
 
 <section class="mx-auto mb-10 mt-4 w-full max-w-screen-xl">
-    <div class="mt-2 flex h-full w-full gap-4">
-        <div class="w-[calc(100%-27rem)]">
+    <div class="mt-2 flex h-full w-full flex-col gap-4 md:flex-row lg:flex-row">
+        <div class="w-full md:w-[calc(100%-27rem)] lg:w-[calc(100%-27rem)]">
             <MudCarousel Class="mud-width-full !aspect-square" ShowBullets="false" EnableSwipeGesture="false" AutoCycle="false" TData="object">
                 <MudCarouselItem Color="@Color.Primary">
                     <div class="d-flex" style="height:100%">
@@ -24,7 +24,7 @@
                 </MudCarouselItem>
             </MudCarousel>
         </div>
-        <div class="h-fit w-[26rem] flex-shrink-0 p-3 shadow">
+        <div class="h-fit w-full flex-shrink-0 p-3 shadow md:w-[26rem] lg:w-[26rem]">
             <h1 class="mb-2 text-base font-medium">Áo Len XL.6.5059 - Ghi Nhạt - XL</h1>
             <span class="text-sm font-medium">Còn hàng</span>
 
@@ -78,7 +78,7 @@
 
 <section class="mx-auto mb-10 max-w-screen-xl pt-10">
     <h2 class="w-fit border-b-4 border-solid border-black text-base font-bold uppercase">Sản phẩm bán chạy</h2>
-    <MudCarousel Class="mud-width-full mt-4 h-[24rem]" ShowBullets="false" EnableSwipeGesture="false" AutoCycle="false" TData="object">
+    <MudCarousel Class="mud-width-full mt-4 h-[24rem] md:h-[19.25rem] sm:h-[15rem]" ShowBullets="false" EnableSwipeGesture="false" AutoCycle="false" TData="object">
         <MudCarouselItem>
             <div class="flex justify-between">
                 <ProductItem />
