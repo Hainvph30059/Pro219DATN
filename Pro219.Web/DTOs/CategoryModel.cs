@@ -7,6 +7,8 @@ namespace Pro219.Web.DTOs
     {
         public int Id { get; set; }
 
+        public string VirtualId { get; set; }
+
         public int? ParentCategoryId { get; set; }
 
         [Required(ErrorMessage = Constant.MessageValid.Required)]

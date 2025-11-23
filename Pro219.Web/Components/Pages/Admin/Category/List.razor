@@ -26,7 +26,8 @@
                 <MudTd DataLabel="Mô tả">@context.Description</MudTd>
                 <MudTd DataLabel="Trạng thái">@((context.Status == Constant.StatusDefault.Active) ? "Hoạt Động" : "Không Hoạt Động")</MudTd>
                 <MudTd DataLabel="Thao tác">
-                    <MudIconButton Icon="@Icons.Material.Filled.BorderColor" aria-label="update" OnClick="@(() => HandleRedirect(context.Id))"></MudIconButton>
+                    <MudButton Icon="@Icons.Material.Filled.BorderColor" aria-label="update" OnClick="@(() => HandleRedirect(context.Id, true))">Thêm danh mục con</MudButton>
+                    <MudIconButton Icon="@Icons.Material.Filled.BorderColor" aria-label="update" OnClick="@(() => HandleRedirect(context.Id, false))"></MudIconButton>
                     <MudIconButton Icon="@Icons.Material.Filled.Delete" aria-label="delete" OnClick="@(() => OpenDialogDelete(context.Id))"></MudIconButton>
                 </MudTd>
             </RowTemplate>
@@ -94,9 +95,16 @@
         StateHasChanged();
     }
 
-    void HandleRedirect(int id)
+    void HandleRedirect(int id, bool isChildCategory)
     {
-        navigation.NavigateTo($"{ RouterConst.Admin.EditCategory}/{id}");
+        if (isChildCategory)
+        {
+            navigation.NavigateTo(RouterConst.Admin.CreateChildCategory.Replace(":id", id.ToString()));
+        } 
+        else
+        {
+            navigation.NavigateTo($"{RouterConst.Admin.EditCategory}/{id}");
+        }
     }
 
     async Task OpenDialogDelete(int id)
