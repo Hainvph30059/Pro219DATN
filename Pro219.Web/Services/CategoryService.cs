@@ -1,4 +1,5 @@
-﻿using Pro219.DAL.Models;
+﻿using Pro219.API.DTOs;
+using Pro219.DAL.Models;
 using Pro219.Web.Constants;
 using Pro219.Web.DTOs;
 
@@ -29,6 +30,25 @@ namespace Pro219.Web.Services
                 var result = await response.Content.ReadAsStringAsync();
                 var errorMess = Constant.Errors[result];
                 return ServiceResult<List<Category>>.Failure(result, errorMess, response.StatusCode.ToString());
+            }
+        }
+
+        public async Task<ServiceResult<List<Web.DTOs.CategoryDTO>>> GetAllParentAndChild()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, "/Category/GetAllCategoriesWithSubCategories");
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<List<Web.DTOs.CategoryDTO>>();
+                return ServiceResult<List<Web.DTOs.CategoryDTO>>.Success(result);
+            }
+            else
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                var errorMess = Constant.Errors[result];
+                return ServiceResult<List<Web.DTOs.CategoryDTO>>.Failure(result, errorMess, response.StatusCode.ToString());
             }
         }
 
