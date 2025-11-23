@@ -39,7 +39,8 @@ namespace Pro219.DAL.Context
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Data Source=localhost;Initial Catalog=ClothesStore;TrustServerCertificate=True;User Id=sa; Password=123456");
+            //optionsBuilder.UseSqlServer("Data Source=localhost;Initial Catalog=ClothesStore;TrustServerCertificate=True;User Id=sa; Password=123456");
+            optionsBuilder.UseSqlServer("Data Source=XPK4\\SQLEXPRESS;Initial Catalog=ClothesStore;TrustServerCertificate=True;User Id=sa; Password=123456");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
