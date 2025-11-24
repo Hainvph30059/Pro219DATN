@@ -16,6 +16,7 @@ namespace Pro219.API.Controllers
     public class AccessController : ControllerBase
     {
         CustomerRepository _customerRepository;
+        CartRepository cartRepository;
         UserRepository _userRepository;
 
         private readonly IConfiguration _configuration;
@@ -26,6 +27,7 @@ namespace Pro219.API.Controllers
             _configuration = configuration;
             _customerRepository = customerRepository;
             _userRepository = userRepository;
+            cartRepository = new CartRepository();
         }
 
         [HttpPost("LoginCustomer")]
@@ -40,6 +42,7 @@ namespace Pro219.API.Controllers
                 var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, loginModel.Username),
+                  new Claim(ClaimTypes.SerialNumber, customer.Id.ToString()),
                 new Claim(ClaimTypes.Role, "Customer"),
                  new Claim(ClaimTypes.Email, customer.Email),
                   new Claim(ClaimTypes.Name, customer.FullName),
@@ -87,6 +90,7 @@ namespace Pro219.API.Controllers
                 var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, loginModel.Username),
+                   new Claim(ClaimTypes.SerialNumber, user.ToString()),
                 new Claim(ClaimTypes.Role, user.Role),
                  new Claim(ClaimTypes.Name, user.UserName)
             };
@@ -149,6 +153,7 @@ namespace Pro219.API.Controllers
 
                 var userInfo = new
                 {
+                    id = User.FindFirst(ClaimTypes.SerialNumber)?.Value,
                     username = User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
                     role = User.FindFirst(ClaimTypes.Role)?.Value,
                     email = User.FindFirst(ClaimTypes.Email)?.Value,
@@ -187,6 +192,14 @@ namespace Pro219.API.Controllers
             if (user == null)
             {
                 Customer a = _customerRepository.AddCustomer(cus).Result;
+                var customerCart = new Cart
+                {
+                    CustomerId = a.Id,
+                    Status = 1,
+                    CreateAt = DateTime.Now,
+                    Delete = false
+                };
+                customerCart = await cartRepository.AddCart(customerCart);
                 return Ok(a);
             }
             else
@@ -240,7 +253,7 @@ namespace Pro219.API.Controllers
             else
             {
                 _customerRepository = new CustomerRepository();
-                var customer = await _customerRepository.FindCustomerByEmailAndPhone(userName,userName);
+                var customer = await _customerRepository.FindCustomerByEmailAndPhone(userName, userName);
 
                 if (customer == null)
                 {
@@ -263,7 +276,7 @@ namespace Pro219.API.Controllers
                 return Ok(true);
             }
 
-              
+
         }
     }
 
