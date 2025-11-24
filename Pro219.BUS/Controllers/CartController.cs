@@ -15,10 +15,14 @@ namespace Pro219.API.Controllers
     public class CartController : ControllerBase
     {
         CartRepository cartRepository;
+        CartItemRepository cartItemRepository;
+        ProductVariantRepository productVariantRepository;
+        
 
         public CartController()
         {
             cartRepository = new CartRepository();
+
         }
 
         [HttpGet("GetAll")]
@@ -98,6 +102,98 @@ namespace Pro219.API.Controllers
                 return StatusCode(500, Constant.ErrorCode.OtherError);
             }
         }
+
+        [HttpPost("AddToCart")]
+        public async Task<ActionResult<CartItem>> AddProductToCart([FromBody] AddToCartDTO addToCartDto)
+        {
+            try
+            {
+                if (addToCartDto == null)
+                {
+                    return BadRequest(Constant.ErrorCode.DataRequired);
+                }
+
+                productVariantRepository = new ProductVariantRepository();
+                cartItemRepository = new CartItemRepository();
+                var productVariant = await productVariantRepository.GetProductVariantById(addToCartDto.VariantId);
+                if (productVariant == null)
+                {
+                    return NotFound(Constant.ErrorCode.DataNotFound);
+                }
+
+                if (productVariant.StockQuantity < addToCartDto.Quantity)
+                {
+                    return BadRequest(Constant.ErrorCode.OutOfStock);
+                }
+
+                string userId = User.FindFirst(ClaimTypes.SerialNumber)?.Value;
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    var newCartItem = new CartItem
+                    {
+                        VariantId = addToCartDto.VariantId,
+                        Quantity = addToCartDto.Quantity,
+                        UnitPrice = productVariant.Price,
+                        AddedAt = DateTime.Now,
+                        CreateAt = DateTime.Now,
+                        UpdateBy = "Guest",
+                        Status = 1
+                    };
+                    return Ok(newCartItem);
+                }
+                else
+                {
+                    var customerCart = await cartRepository.GetCartByCustomerId(int.Parse(userId));
+                    if (customerCart == null)
+                    {
+                        return BadRequest(Constant.ErrorCode.DatabaseError);
+                    }
+
+                    var cartItem = await cartRepository.GetCartItemByProductVariantId(customerCart.Id, addToCartDto.VariantId);
+
+                    if(cartItem != null)
+                    {
+                        cartItem.Quantity += addToCartDto.Quantity;
+                        cartItem.UpdateAt = DateTime.Now;
+                        cartItem.UpdateBy = userId;
+                        var updatedCartItem = await cartItemRepository.UpdateCartItem(cartItem);
+                        if (updatedCartItem == null)
+                        {
+                            return StatusCode(500, Constant.ErrorCode.DatabaseError);
+                        }
+                        return Ok(updatedCartItem);
+                    }
+                    else
+                    {
+                        var newCartItem = new CartItem
+                        {
+                            CartId = customerCart.Id,
+                            VariantId = addToCartDto.VariantId,
+                            Quantity = addToCartDto.Quantity,
+                            UnitPrice = productVariant.Price,
+                            AddedAt = DateTime.Now,
+                            CreateAt = DateTime.Now,
+                            UpdateBy = userId,
+                            Status = 1
+                        };
+                        var addedCartItem = await cartItemRepository.AddCartItem(newCartItem);
+                        if (addedCartItem == null)
+                        {
+                            return StatusCode(500, Constant.ErrorCode.DatabaseError);
+                        }
+                        return Ok(addedCartItem);
+                    }                    
+
+                }
+                return StatusCode(500, Constant.ErrorCode.OtherError);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, Constant.ErrorCode.OtherError);
+            }
+        }
+
 
         [HttpPut("Update")]
         [Authorize(Roles = "Admin,Manager,Staff")]

@@ -20,9 +20,9 @@ namespace Pro219.DAL.Models
 
         [Required]
         [Column(TypeName = "decimal(18,2)")]
-        public decimal UnitPrice { get; set; }
+        public decimal? UnitPrice { get; set; }
 
-        public bool IsSelectedForCheckout { get; set; }
+        public bool? IsSelectedForCheckout { get; set; }
 
         public DateTime AddedAt { get; set; }
 

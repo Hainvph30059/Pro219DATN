@@ -16,10 +16,9 @@ namespace Pro219.API.DTOs
         [Required]
         public int Quantity { get; set; }
 
-        [Required]
-        public decimal UnitPrice { get; set; }
+        public decimal? UnitPrice { get; set; }
 
-        public bool IsSelectedForCheckout { get; set; }
+        public bool? IsSelectedForCheckout { get; set; }
 
         public byte? Status { get; set; }
 

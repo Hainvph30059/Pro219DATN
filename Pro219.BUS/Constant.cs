@@ -22,7 +22,9 @@
 
             public const string OtherError = "other_error";
             public const string DatabaseError = "database_error";
-            
+
+            public const string OutOfStock = "out_of_stock";
+
         }
     }
 }
