@@ -16,4 +16,8 @@
     <ProjectReference Include="..\Pro219.DAL\Pro219.DAL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\Assets\Images\Products\" />
+  </ItemGroup>
+
 </Project>

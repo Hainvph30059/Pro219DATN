@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pro219.API.DTOs;
 using Pro219.DAL.Models;
@@ -141,6 +141,124 @@ namespace Pro219.API.Controllers
             {
                 return StatusCode(500, Constant.ErrorCode.OtherError);
             }
+        }
+
+        [HttpGet("product-show")]
+        public async Task<IActionResult> GetTopNewest()
+        {
+            var products = await productRepository.GetTopProductAsync();
+
+            if (products == null || !products.Any())
+                return NoContent();
+
+            var result = products.Select(p => new ProductShowDto
+            {
+                Id = p.Id,
+                ProductName = p.Name,
+                Price = p.BasePrice,
+
+                Images = p.ProductImages
+                    .Where(img => img.Delete != true && img.ProductVariantId == null)
+                    .Select(img => img.ImageUrl).ToList(),
+
+                Colors = p.ProductVariants
+                    .Where(v => v.Color != null)
+                    .Select(v => new ColorDto
+                    {
+                        Name = v.Color.Name,
+                        HexCode = v.Color.HexCode
+                    })
+                    .Distinct()
+                    .ToList()
+            });
+
+            return Ok(result);
+        }
+
+        [HttpGet("best-seller")]
+        public async Task<IActionResult> GetBestSeller()
+        {
+            var products = await productRepository.GetTopBestSellerAsync();
+
+            if (products == null || !products.Any())
+                return NoContent();
+
+            var result = products.Select(p => new ProductShowDto
+            {
+                Id = p.Id,
+                ProductName = p.Name,
+                Price = p.BasePrice,
+                Images = p.ProductImages
+                    .Where(img => img.Delete != true)
+                    .Select(img => img.ImageUrl)
+                    .ToList(),
+                Colors = p.ProductVariants
+                    .Where(v => v.Color != null)
+                    .Select(v => new ColorDto
+                    {
+                        Name = v.Color.Name,
+                        HexCode = v.Color.HexCode
+                    })
+                    .Distinct()
+                    .ToList()
+            }).ToList();
+
+            return Ok(result);
+        }
+
+        [HttpGet("detail/{id}")]
+        public async Task<IActionResult> GetProductDetail(int id)
+        {
+            var product = await productRepository.GetProductDetailAsync(id); 
+            if (product == null) return NotFound();
+
+            var activeVariants = product.ProductVariants
+                .Where(v => v.Delete != true && v.IsActive == true)
+                .ToList();
+
+            var result = new ProductDetailDto
+            {
+                Id = product.Id,
+                ProductName = product.Name,
+                BasePrice = product.BasePrice,
+                Description = product.Description,
+                Images = product.ProductImages
+                            .Where(i => i.Delete != true)
+                            .Select(i => i.ImageUrl).ToList(),
+
+                Variants = activeVariants.Select(v => new ProductVariantDto
+                {
+                    VariantId = v.Id,
+                    ColorId = v.ColorId ?? 1,
+                    SizeId = v.SizeId ?? 1,
+                    ColorName = v.Color?.Name ?? "N/A",
+                    HexCode = v.Color?.HexCode ?? "#000",
+                    SizeName = v.Size?.Name ?? "FreeSize",
+                    StockQuantity = v.StockQuantity,
+                    VariantPrice = v.Price 
+                }).ToList(),
+
+                UniqueColors = activeVariants
+                    .Where(v => v.Color != null)
+                    .GroupBy(v => v.Color.Id) 
+                    .Select(g => new ColorDto
+                    {
+                        Id = g.Key,
+                        Name = g.First().Color.Name,
+                        HexCode = g.First().Color.HexCode
+                    }).ToList(),
+
+                UniqueSizes = activeVariants
+                    .Where(v => v.Size != null)
+                    .GroupBy(v => v.Size.Id)
+                    .Select(g => new SizeDto
+                    {
+                        Id = g.Key,
+                        Name = g.First().Size.Name,
+                    }).ToList(),
+            };
+
+            return Ok(result);
         }
     }
 }
