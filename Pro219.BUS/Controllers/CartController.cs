@@ -108,7 +108,7 @@ namespace Pro219.API.Controllers
         {
             try
             {
-                if (addToCartDto == null)
+                if (addToCartDto == null || addToCartDto.Quantity<=0)
                 {
                     return BadRequest(Constant.ErrorCode.DataRequired);
                 }
