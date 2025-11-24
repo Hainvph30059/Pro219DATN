@@ -105,6 +105,20 @@ namespace Pro219.DAL.Repository
             }
         }
 
+        public async Task<CartItem> GetCartItemByProductVariantId(int cartId, int variantId)
+        {
+            try
+            {
+                var cartItem = await _context.CartItems
+                    .FirstOrDefaultAsync(ci => ci.CartId == cartId && ci.VariantId == variantId && ci.Delete != true);
+                return cartItem;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
         public async Task<Cart> DeleteCart(int id, string updateBy = null)
         {
             try
