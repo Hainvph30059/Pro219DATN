@@ -15,10 +15,12 @@ namespace Pro219.API.Controllers
     public class ProductVariantController : ControllerBase
     {
         ProductVariantRepository productVariantRepository;
+        ProductRepository productRepository;
 
         public ProductVariantController()
         {
             productVariantRepository = new ProductVariantRepository();
+            productRepository = new ProductRepository();
         }
 
         [HttpGet("GetAll")]
@@ -83,6 +85,15 @@ namespace Pro219.API.Controllers
                 if (variant == null)
                 {
                     return BadRequest(Constant.ErrorCode.DataRequired);
+                }
+                if (variant.Price == null)
+                {
+                    var product = await productRepository.GetProductById(variant.ProductId);
+                    if (product == null)
+                    {
+                        return BadRequest(Constant.ErrorCode.DataRequired);
+                    }
+                    variant.Price = product.BasePrice;
                 }
 
                 var result = await productVariantRepository.AddProductVariant(variant);
