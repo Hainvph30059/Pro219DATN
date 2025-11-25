@@ -143,6 +143,7 @@ namespace Pro219.API.Controllers
             }
         }
 
+
         [HttpGet("product-show")]
         public async Task<IActionResult> GetTopNewest()
         {

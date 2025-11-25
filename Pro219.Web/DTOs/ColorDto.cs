@@ -1,6 +1,7 @@
 ﻿
 namespace Pro219.Web.DTOs
 {
+
     public class ColorDto
     {
         public int Id { get; set; }

@@ -1,5 +1,6 @@
 ﻿namespace Pro219.API.DTOs
 {
+
     public class ProductDetailDto
     {
         public int Id { get; set; }

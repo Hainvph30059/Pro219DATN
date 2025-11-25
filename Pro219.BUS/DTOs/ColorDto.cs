@@ -1,5 +1,6 @@
 ﻿namespace Pro219.API.DTOs
 {
+
     public class ColorDto
     {
         public int Id { get; set; }
