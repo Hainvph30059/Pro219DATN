@@ -122,7 +122,6 @@ namespace Pro219.DAL.Repository
                 return null;
             }
         }
-
         public async Task<List<Product>> GetTopProductAsync()
         {
             return await _context.Products
@@ -188,7 +187,6 @@ namespace Pro219.DAL.Repository
                 return null;
             }
         }
-
 
     }
 }
