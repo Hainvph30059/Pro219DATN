@@ -122,5 +122,71 @@ namespace Pro219.DAL.Repository
                 return null;
             }
         }
+        public async Task<List<Product>> GetTopProductAsync()
+        {
+            return await _context.Products
+                .Include(p => p.ProductImages)
+                .Include(p => p.ProductVariants)
+                    .ThenInclude(v => v.Color)
+                .Where(p => p.Delete == false && p.Status == 1)
+                .OrderByDescending(p => p.CreatedAt)
+                .Take(8)
+                .ToListAsync();
+        }
+
+        public async Task<List<Product>> GetTopBestSellerAsync()
+        {
+            var topProductIds = await _context.OrderItems
+                .Where(oi => oi.ProductVariant != null)
+                .GroupBy(oi => oi.ProductVariant.ProductId)
+                .Select(g => new
+                {
+                    ProductId = g.Key,
+                    TotalSold = g.Sum(x => x.Quantity)
+                })
+                .OrderByDescending(x => x.TotalSold)
+                .Take(8)
+                .Select(x => x.ProductId)
+                .ToListAsync();
+
+            if (!topProductIds.Any())
+                return new List<Product>();
+
+            var products = await _context.Products
+                .Where(p => topProductIds.Contains(p.Id))
+                .Include(p => p.ProductImages)
+                .Include(p => p.ProductVariants)
+                    .ThenInclude(v => v.Color)
+                .ToListAsync();
+
+            return products;
+        }
+
+        public async Task<Product> GetProductDetailAsync(int id)
+        {
+            try
+            {
+                var product = await _context.Products
+                    .Include(p => p.ProductImages)
+
+                    .Include(p => p.ProductVariants.Where(v => v.Delete != true && v.IsActive == true))
+                        .ThenInclude(v => v.Color)
+
+                    .Include(p => p.ProductVariants.Where(v => v.Delete != true && v.IsActive == true))
+                        .ThenInclude(v => v.Size)
+
+                    .FirstOrDefaultAsync(p => p.Id == id);
+
+                if (product != null && product.Delete == true)
+                    return null;
+
+                return product;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
     }
 }
