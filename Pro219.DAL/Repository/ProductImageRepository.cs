@@ -145,6 +145,62 @@ namespace Pro219.DAL.Repository
                 return null;
             }
         }
+
+        public async Task<List<ProductImage>> AddRangeProductImages(List<ProductImage> images)
+        {
+            try
+            {
+                foreach (var image in images)
+                {
+                    image.CreateAt = DateTime.Now;
+                    image.Delete = false;
+                }
+
+                _context.ProductImages.AddRange(images);
+
+                await _context.SaveChangesAsync();
+
+                return images;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        public async Task<List<ProductImage>> DeleteRangeProductImages(List<int> ids, string? updateBy = null)
+        {
+            try
+            {
+                var imagesToDelete = await _context.ProductImages
+                    .Where(x => ids.Contains(x.Id) && x.Delete != true)
+                    .ToListAsync();
+
+                if (!imagesToDelete.Any()) return new List<ProductImage>();
+
+                DateTime now = DateTime.Now;
+
+                foreach (var image in imagesToDelete)
+                {
+                    image.Delete = true;
+                    image.DeleteAt = now;
+                    image.UpdateAt = now;
+                    if (updateBy != null)
+                    {
+                        image.UpdateBy = updateBy;
+                    }
+                }
+
+                _context.ProductImages.UpdateRange(imagesToDelete);
+                await _context.SaveChangesAsync();
+
+                return imagesToDelete;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
     }
 }
 

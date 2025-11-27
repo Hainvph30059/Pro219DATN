@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\Assets\Images\Products\**" />
+    <Content Remove="wwwroot\Assets\Images\Products\**" />
+    <EmbeddedResource Remove="wwwroot\Assets\Images\Products\**" />
+    <None Remove="wwwroot\Assets\Images\Products\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
     <PackageReference Include="MudBlazor" Version="8.14.0" />
   </ItemGroup>
@@ -17,7 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\Assets\Images\Products\" />
+    <Folder Include="wwwroot\Uploads\Images\ProductVariants\" />
+    <Folder Include="wwwroot\Uploads\Images\Products\" />
   </ItemGroup>
 
 </Project>

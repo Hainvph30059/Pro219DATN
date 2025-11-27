@@ -22,6 +22,7 @@
         {
             public const string Password = "Mật khẩu phải có từ 8 đến 16 ký tự chữ và số, bao gồm cả chữ hoa, chữ thường, số và ký hiệu.";
             public const string Required = "Không được để trống.";
+            public const string Max2000 = "Tối đa 2000 kí tự.";
             public const string Max1000 = "Tối đa 1000 kí tự.";
             public const string Max255 = "Tối đa 255 kí tự.";
             public const string Max200 = "Tối đa 200 kí tự.";
@@ -86,6 +87,7 @@
             { ErrorCode.DataRequired, "Thiếu dữ liệu gửi đi." },
             { ErrorCode.DatabaseError, "Lỗi database." },
             { ErrorCode.OtherError, "Đã có lỗi xảy ra." },
+            { "", "Đã có lỗi xảy ra." },
         };
 
         public static class ErrorSatusCode

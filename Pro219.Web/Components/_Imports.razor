@@ -19,6 +19,7 @@
 @using Pro219.Web.Constants
 @using System.Text.Json
 @using Pro219.Web.DTOs
+@using System.Globalization;
 @inject IJSRuntime JS
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject NavigationManager navigation
@@ -34,5 +35,6 @@
 @inject SizeService _sizeService
 @inject CustomerService _customerService
 @inject DrawerService _drawerService
+@inject ProductImageService _productImageService
 @inject ISnackbar _snackbar
 @inject IDialogService _dialogService
