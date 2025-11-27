@@ -35,7 +35,7 @@ namespace Pro219.DAL.Models
 
         // Foreign key navigation properties
         [ForeignKey("ProductId")]
-        public virtual Product Product { get; set; } = null!;
+        public virtual Product? Product { get; set; } = null!;
 
         [ForeignKey("ProductVariantId")]
         public virtual ProductVariant? ProductVariant { get; set; }

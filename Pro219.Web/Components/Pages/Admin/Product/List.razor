@@ -9,14 +9,142 @@
         <a href="@RouterConst.Admin.CreateProduct" class="leading-[1.5rem] h-10 rounded-lg bg-admin-default px-6 py-2 text-white">Tạo mới</a>
     </div>
 
-    <div class="h-[calc(100lvh-9.25rem)] mt-6 w-full rounded-xl border border-slate-200 bg-white shadow-sm">
+    <div class="mt-6 w-full overscroll-x-auto rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
+        <MudTable Bordered Items="@_products" Loading="@_loading" Class="w-full" Dense="true" Hover="true" Virtualize="true" FixedHeader="true" HorizontalScrollbar="true" Height="calc(100lvh - 16.5rem)">
+            <HeaderContent>
+                <MudTh hidden><MudTableSortLabel SortLabel="Id" T="string" hidden>STT</MudTableSortLabel></MudTh>
+                <MudTh Class="whitespace-nowrap"><MudTableSortLabel SortLabel="Tên" T="string">Tên</MudTableSortLabel></MudTh>
+                <MudTh Class="whitespace-nowrap"><MudTableSortLabel SortLabel="Giá mặc định" T="string">Giá mặc định</MudTableSortLabel></MudTh>
+                <MudTh Class="whitespace-nowrap"><MudTableSortLabel SortLabel="Danh mục" T="string">Danh mục</MudTableSortLabel></MudTh>
+                <MudTh Class="whitespace-nowrap"><MudTableSortLabel SortLabel="Thương hiệu" T="string">Thương hiệu</MudTableSortLabel></MudTh>
+                <MudTh Class="whitespace-nowrap"><MudTableSortLabel SortLabel="Mô tả" T="string">Mô tả</MudTableSortLabel></MudTh>
+                <MudTh Class="whitespace-nowrap"><MudTableSortLabel SortLabel="Trạng thái" T="string">Trạng thái</MudTableSortLabel></MudTh>
+                <MudTh Class="whitespace-nowrap"><MudTableSortLabel SortLabel="Thao tác" T="string">Thao tác</MudTableSortLabel></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Id" hidden>@context.Id</MudTd>
+                <MudTd DataLabel="Tên">@context.Name</MudTd>
+                <MudTd DataLabel="Giá mặc định">@context.BasePrice.ToString("C", vietnameseCulture)</MudTd>
+                <MudTd DataLabel="Danh mục">@_categories.FirstOrDefault(x => x.Id == context.CategoryId)?.Name</MudTd>
+                <MudTd DataLabel="Thương hiệu">@_brands.FirstOrDefault(x => x.Id == context.CategoryId)?.Name</MudTd>
+                <MudTd DataLabel="Mô tả">@context.Description</MudTd>
+                <MudTd DataLabel="Trạng thái">@((context.Status == Constant.StatusDefault.Active) ? "Hoạt Động" : "Không Hoạt Động")</MudTd>
+                <MudTd DataLabel="Thao tác">
+                    <MudTooltip Text="Thêm sản phẩm con"><MudIconButton OnClick="@(() => HandleRedirect(context.Id, true))" Icon="@Icons.Material.Filled.Add" /></MudTooltip>
+                    <MudTooltip Text="Chi tiết sản phẩm"><MudIconButton Icon="@Icons.Material.Filled.Menu" /></MudTooltip>
+                    <MudIconButton Icon="@Icons.Material.Filled.BorderColor" aria-label="update" OnClick="@(() => HandleRedirect(context.Id, false))"></MudIconButton>
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" aria-label="delete" OnClick="@(() => OpenDialogDelete(context.Id))"></MudIconButton>
+                </MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText>Không có dữ liệu.</MudText>
+            </NoRecordsContent>
+            <LoadingContent>
+                <div class="flex w-full flex-col gap-3">
+                    @{
+                        for (var i = 0; i < Constant.DefaultSkeletons; i++)
+                        {
+                            <div class="flex items-center justify-between gap-2">
+                                <MudSkeleton Width="100%" Height="3rem" />
+                                <MudSkeleton Width="100%" Height="3rem" />
+                                <MudSkeleton Width="100%" Height="3rem" />
+                                <MudSkeleton Width="100%" Height="3rem" />
+                                <MudSkeleton Width="100%" Height="3rem" />
+                                <MudSkeleton Width="100%" Height="3rem" />
+                            </div>
+                        }
+                    }
+                </div>
+            </LoadingContent>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
     </div>
 </div>
 
 @code {
+    private List<DAL.Models.Product> _products = [];
+    private List<DAL.Models.Category> _categories = [];
+    private List<DAL.Models.Brand> _brands = [];
+
+    CultureInfo vietnameseCulture = new CultureInfo("vi-VN");
+
+    private readonly DialogOptions _maxWidth = new() { MaxWidth = MaxWidth.Large, FullWidth = true };
+    private bool _loading = true;
+
     private List<BreadcrumbItem> _items =
     [
         new("Trang Chủ", href: RouterConst.Admin.Home),
         new("Sản Phẩm", href: "#", disabled: true),
     ];
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await LoadData();
+        }
+        catch (Exception e)
+        {
+            _loading = false;
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    async Task LoadData()
+    {
+        var resProduct = await _productService.GetAll();
+        var dataProduct = resProduct.Data;
+        if (resProduct.IsSuccess && dataProduct != null)
+        {
+            _products = dataProduct;
+        }
+
+        var resCatgegory = await _categoryService.GetAll();
+        var dataCatgegory = resCatgegory.Data;
+        if (resCatgegory.IsSuccess && dataCatgegory != null)
+        {
+            _categories = dataCatgegory;
+        }
+
+        var resBrand = await _brandService.GetAll();
+        var dataBrand = resBrand.Data;
+        if (resBrand.IsSuccess && dataBrand != null)
+        {
+            _brands = dataBrand;
+        }
+    }
+
+    void HandleRedirect(int id, bool isProductVariant)
+    {
+        if (isProductVariant)
+        {
+            navigation.NavigateTo(RouterConst.Admin.CreateChildProduct.Replace(":id", id.ToString()));
+        }
+        else
+        {
+            navigation.NavigateTo(RouterConst.Admin.EditProduct.Replace(":id", id.ToString()));
+        }
+    }
+
+    async Task OpenDialogDelete(int id)
+    {
+        var deleteParaeters = new DialogParameters<Admin.Product.ConfirmDeleteDialog>
+        {
+            {x => x.id, id}
+        };
+
+        var dialog = await _dialogService.ShowAsync<Admin.Product.ConfirmDeleteDialog>("Options Dialog", deleteParaeters, _maxWidth);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await LoadData();
+            StateHasChanged();
+        }
+    }
 }

@@ -1,17 +1,231 @@
 ﻿@page "/admin/products/create"
 @layout AdminLayout
+@inject ISnackbar Snackbar
+@inject NavigationManager navigation
 
 <div class="p-6">
     <MudBreadcrumbs Class="!p-0 !text-sm" Items="_items" Separator=">"></MudBreadcrumbs>
 
     <h1 class="leading-[3rem] h-12 text-3xl font-bold text-admin-default">Tạo sản phẩm</h1>
+
+    <div class="mx-auto mt-6 w-full rounded-lg bg-white p-8 shadow-sm">
+        <EditForm Model="_model" OnValidSubmit="OnSubmit" class="mx-auto flex w-full flex-col gap-4">
+            <DataAnnotationsValidator />
+
+            <div class="mx-auto flex w-full max-w-[64.5rem] gap-6 rounded-lg bg-slate-100 px-6 py-4">
+                <span Class="w-44 flex-shrink-0 pt-4 text-base font-medium text-gray-900">Tên</span>
+                <MudTextField @bind-Value="@_model.Name" For="@(() => _model.Name)" Placeholder="Áo polo" Variant="Variant.Outlined" FullWidth Style="background-color: white" />
+            </div>
+
+            <div class="mx-auto flex w-full max-w-[64.5rem] gap-6 rounded-lg bg-slate-100 px-6 py-4">
+                <span Class="w-44 flex-shrink-0 pt-4 text-base font-medium text-gray-900">Giá mặc định</span>
+                <MudNumericField @bind-Value="@_model.BasePrice" For="@(() => _model.BasePrice)" Placeholder="179000" Variant="Variant.Outlined" Style="background-color: white" FullWidth />
+            </div>
+
+            <div class="mx-auto flex w-full max-w-[64.5rem] gap-6 rounded-lg bg-slate-100 px-6 py-4">
+                <span Class="w-44 flex-shrink-0 pt-4 text-base font-medium text-gray-900">Danh mục</span>
+                <MudSelect T="int" @bind-Value="@_model.CategoryId" For="@(() => _model.CategoryId)" Placeholder="Áo polo" Variant="Variant.Outlined" Style="background-color: white" FullWidth>
+                    <MudSelectItem Value="0">Vui lòng chọn</MudSelectItem>
+                    @foreach (var item in _categories)
+                    {
+                        <MudSelectItem Value="@item.Id">@item.Name</MudSelectItem>
+                    }
+                </MudSelect>
+            </div>
+
+            <div class="mx-auto flex w-full max-w-[64.5rem] gap-6 rounded-lg bg-slate-100 px-6 py-4">
+                <span Class="w-44 flex-shrink-0 pt-4 text-base font-medium text-gray-900">Thương hiệu</span>
+                <MudSelect T="int" @bind-Value="@_model.BrandId" For="@(() => _model.BrandId)" Placeholder="Nike" Variant="Variant.Outlined" Style="background-color: white" FullWidth>
+                    <MudSelectItem Value="0">Vui lòng chọn</MudSelectItem>
+                    @foreach (var item in _brands)
+                    {
+                        <MudSelectItem Value="@item.Id">@item.Name</MudSelectItem>
+                    }
+                </MudSelect>
+            </div>
+
+            <div class="mx-auto flex w-full max-w-[64.5rem] gap-6 rounded-lg bg-slate-100 px-6 py-4">
+                <span Class="w-44 flex-shrink-0 pt-4 text-base font-medium text-gray-900">Mô tả</span>
+                <MudTextField @bind-Value="@_model.Description" For="@(() => _model.Description)" Placeholder="mô tả sản phẩm" Variant="Variant.Outlined" Style="background-color: white" FullWidth Lines="3" />
+            </div>
+
+            <div class="mx-auto flex w-full max-w-[64.5rem] gap-6 rounded-lg bg-slate-100 px-6 py-4">
+                <span Class="w-44 flex-shrink-0 pt-2 text-base font-medium text-gray-900">Ảnh</span>
+                <div class="flex flex-col gap-4">
+                    <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles">
+                        <ActivatorContent>
+                            <MudButton Variant="Variant.Filled"
+                                       Color="Color.Primary"
+                                       ButtonType="ButtonType.Button"
+                                       StartIcon="@Icons.Material.Filled.CloudUpload"
+                                       Disabled="@(_imagesWithUrls.Count >= 2)">
+                                Thêm Ảnh (@_imagesWithUrls.Count/2)
+                            </MudButton>
+                        </ActivatorContent>
+                    </MudFileUpload>
+
+                    @if (_imagesWithUrls != null)
+                    {
+                        <div class="flex gap-4">
+                            @foreach (var item in _imagesWithUrls)
+                            {
+                                <div class="center; relative flex max-w-40 items-center overflow-hidden rounded-lg border-2 border-gray-300 justify-content:">
+                                    <MudImage Src="@item.Url" Alt="@item.File.Name" ObjectFit="ObjectFit.Cover" Class="h-full w-full" />
+                                    <MudIconButton Icon="@Icons.Material.Filled.Close" Size="Size.Small" OnClick="@(() => HandleRemoveImages(item.File))"
+                                                   Class="absolute top-1 right-1 text-white !p-0" />
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="mx-auto flex w-full max-w-[64.5rem] gap-6 rounded-lg bg-slate-100 px-6 py-4">
+                <span Class="w-44 flex-shrink-0 pt-4 text-base font-medium text-gray-900">Trạng thái</span>
+
+                <MudRadioGroup @bind-Value="@_isActive" For="@(() => _isActive)">
+                    <MudRadio Value="1" Color="Color.Primary">Hoạt động</MudRadio>
+                    <MudRadio Value="0" Color="Color.Primary">Ngừng Hoạt động</MudRadio>
+                </MudRadioGroup>
+            </div>
+
+            <div class="flex items-center justify-center gap-4">
+                <MudButton OnClick="@(() => navigation.NavigateTo(RouterConst.Admin.Product))" Color="Color.Surface" Variant="Variant.Filled" ButtonType="ButtonType.Button" Class="w-fit px-10">Quay lại</MudButton>
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Class="w-fit px-10">Tạo</MudButton>
+            </div>
+        </EditForm>
+    </div>
 </div>
 
 @code {
+    [Inject]
+    public IWebHostEnvironment WebHostEnvironment { get; set; }
+
+    ProductModel _model = new ProductModel();
+    List<DAL.Models.Category> _categories = new List<DAL.Models.Category>();
+    List<DAL.Models.Brand> _brands = new List<DAL.Models.Brand>();
+
+    List<DAL.Models.ProductImage> _productImages = new List<DAL.Models.ProductImage>();
+    IList<ImageFileDTO> _imagesWithUrls = new List<ImageFileDTO>();
+    private int _isActive = 1;
+    private int MaxAllowedSize = 1024 * 1024 * 5;
+
     private List<BreadcrumbItem> _items =
     [
         new("Trang Chủ", href: RouterConst.Admin.Home),
-        new("Sản Phẩm", href: RouterConst.Admin.Brand),
-        new("Tạo Sản Phẩm", href: "#", disabled: true),
+    new("Sản Phẩm", href: RouterConst.Admin.Product),
+    new("Tạo Sản Phẩm", href: "#", disabled: true),
     ];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var resCategory = await _categoryService.GetAll();
+        var resBrand = await _brandService.GetAll();
+
+        var dataCategory = resCategory.Data;
+        var dataBrand = resBrand.Data;
+
+        if(resCategory.IsSuccess && dataCategory != null)
+        {
+            _categories = dataCategory;
+        }
+        if (resBrand.IsSuccess && dataBrand != null)
+        {
+            _brands = dataBrand;
+        }
+    }
+
+    private async Task UploadFiles(IBrowserFile file)
+    {
+        if (file.Size > MaxAllowedSize)
+        {
+            _snackbar.Add("Ảnh không được quá 5mb", Severity.Warning);
+            return;
+        }
+
+        var url = await Task.Run(async () =>
+        {   
+            using var stream = file.OpenReadStream(MaxAllowedSize);
+            using var memoryStream = new MemoryStream();
+            await stream.CopyToAsync(memoryStream);
+
+            var base64String = Convert.ToBase64String(memoryStream.ToArray());
+            return $"data:{file.ContentType};base64,{base64String}";
+        });
+
+        _imagesWithUrls.Add(new ImageFileDTO { File = file, Url = url });
+        StateHasChanged();
+    }
+
+    private void HandleRemoveImages(IBrowserFile file)
+    {
+        var itemToRemove = _imagesWithUrls.FirstOrDefault(i => i.File == file);
+        if (itemToRemove != null)
+        {
+            _imagesWithUrls.Remove(itemToRemove);
+            StateHasChanged();
+            _snackbar.Add($"Đã xóa ảnh: {file.Name}", Severity.Info);
+        }
+    }
+
+
+    async Task OnSubmit()
+    {
+        if (_imagesWithUrls.Count <= 0)
+        {
+            _snackbar.Add("Vui lòng thêm ít nhất 1 ảnh", Severity.Warning);
+            return;
+        }
+
+        _model.Status = (byte)_isActive;
+        var result = await _productService.Create(_model);
+
+        if (result.IsSuccess && result.Data != null && result.Data.Id > 0)
+        {
+            try
+            {
+                var productId = result.Data.Id;
+                var contentRootPath = WebHostEnvironment.WebRootPath;
+                var productImagesPath = Path.Combine(contentRootPath, "Uploads", "Images", "Products", productId.ToString());
+
+                if (!Directory.Exists(productImagesPath))
+                {
+                    Directory.CreateDirectory(productImagesPath);
+                }
+
+                foreach (var image in _imagesWithUrls)
+                {
+                    var fileName = Path.GetFileName(image.File.Name);
+                    var filePath = Path.Combine(productImagesPath, fileName);
+
+                    await using Stream fileStream = image.File.OpenReadStream(MaxAllowedSize);
+                    await using FileStream fs = File.Create(filePath);
+                    await fileStream.CopyToAsync(fs);
+
+                    DAL.Models.ProductImage productImage = new DAL.Models.ProductImage
+                    {
+                        ProductId = productId,
+                        ImageUrl = "/Uploads/Images/Products/" + productId.ToString() + "/" + fileName,
+                        IsMain = true,
+                        Status = 1,
+                    };
+                    _productImages.Add(productImage);
+                }
+
+                if (_productImages.Any())
+                {
+                    await _productImageService.CreateAny(_productImages);
+                }
+
+                _imagesWithUrls.Clear();
+                _productImages.Clear();
+                _snackbar.Add("Tạo sản phẩm thành công", Severity.Success);
+                navigation.NavigateTo(RouterConst.Admin.Product);
+            }
+            catch (Exception ex)
+            {
+                _snackbar.Add($"Tạo sản phẩm thành công, nhưng lỗi lưu ảnh: {ex.Message}", Severity.Warning);
+            }
+        }
+    }
 }

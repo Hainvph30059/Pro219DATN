@@ -43,10 +43,10 @@ namespace Pro219.DAL.Models
 
         // Foreign key navigation properties
         [ForeignKey("CategoryId")]
-        public virtual Category Category { get; set; } = null!;
+        public virtual Category? Category { get; set; } = null!;
 
         [ForeignKey("BrandId")]
-        public virtual Brand Brand { get; set; } = null!;
+        public virtual Brand? Brand { get; set; } = null!;
 
         [ForeignKey("SaleId")]
         public virtual Sale? Sale { get; set; }

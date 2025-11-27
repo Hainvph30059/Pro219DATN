@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pro219.API.DTOs;
 using Pro219.DAL.Models;
@@ -117,6 +117,31 @@ namespace Pro219.API.Controllers
             }
         }
 
+        [HttpPost("AddRange")]
+        public async Task<ActionResult<List<ProductImage>>> AddRangeProductImages([FromBody] List<ProductImage> images)
+        {
+            try
+            {
+                if (images == null || images.Count == 0)
+                {
+                    return BadRequest(Constant.ErrorCode.DataRequired);
+                }
+
+                var result = await productImageRepository.AddRangeProductImages(images);
+
+                if (result == null)
+                {
+                    return StatusCode(500, Constant.ErrorCode.DatabaseError);
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, Constant.ErrorCode.OtherError);
+            }
+        }
+
         [HttpPut("Update")]
         [Authorize(Roles = "Admin,Manager,Staff")]
         public async Task<ActionResult<ProductImage>> UpdateProductImage([FromBody] ProductImageUpdateDTO imageDTO)
@@ -165,6 +190,38 @@ namespace Pro219.API.Controllers
                 var updateBy = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 var result = await productImageRepository.DeleteProductImage(id, updateBy);
                 if (result == null)
+                {
+                    return NotFound(Constant.ErrorCode.DataNotFound);
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, Constant.ErrorCode.OtherError);
+            }
+        }
+
+        [HttpDelete("DeleteAny")]
+        [Authorize(Roles = "Admin,Manager,Staff")]
+        public async Task<ActionResult<List<ProductImage>>> DeleteRangeProductImages([FromBody] List<int> ids)
+        {
+            try
+            {
+                if (ids == null || ids.Count == 0)
+                {
+                    return BadRequest(Constant.ErrorCode.DataRequired);
+                }
+
+                var updateBy = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var result = await productImageRepository.DeleteRangeProductImages(ids, updateBy);
+
+                if (result == null)
+                {
+                    return StatusCode(500, Constant.ErrorCode.DatabaseError);
+                }
+
+                if (result.Count == 0)
                 {
                     return NotFound(Constant.ErrorCode.DataNotFound);
                 }

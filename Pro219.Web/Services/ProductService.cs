@@ -4,6 +4,7 @@ using Pro219.DAL.Models;
 using Pro219.Web.Constants;
 using Pro219.Web.DTOs;
 using System.Net.Http.Json;
+using static MudBlazor.Icons.Custom;
 using static System.Net.WebRequestMethods;
 
 namespace Pro219.Web.Services
@@ -15,6 +16,116 @@ namespace Pro219.Web.Services
         public ProductService(HttpClient httpClient)
         {
             _httpClient = httpClient;
+        }
+
+        public async Task<ServiceResult<List<Product>>> GetAll()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, "/Product/GetAll");
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<List<Product>>();
+                return ServiceResult<List<Product>>.Success(result);
+            }
+            else
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                var errorMess = Constant.Errors[result];
+                return ServiceResult<List<Product>>.Failure(result, errorMess, response.StatusCode.ToString());
+            }
+        }
+
+        public async Task<ServiceResult<Product>> GetById(int id)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/Product/GetById/{id}");
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<Product>();
+                return ServiceResult<Product>.Success(result);
+            }
+            else
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                var errorMess = Constant.Errors[result];
+                return ServiceResult<Product>.Failure(result, errorMess, response.StatusCode.ToString());
+            }
+        }
+
+        public async Task<ServiceResult<Product>> Create(ProductModel product)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Post, "/Product/Add");
+
+            request.Content = JsonContent.Create(product);
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<Product>();
+                return ServiceResult<Product>.Success(result);
+            }
+            else
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                var errorMess = Constant.Errors[result ?? ""];
+                return ServiceResult<Product>.Failure(result, errorMess, response.StatusCode.ToString());
+            }
+        }
+
+        public async Task<ServiceResult<Product>> Update(ProductModel product, string token)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Put, "/Product/Update");
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                var formatToken = token.Trim('"');
+                request.Headers.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", formatToken);
+            }
+
+            request.Content = JsonContent.Create(product);
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<Product>();
+                return ServiceResult<Product>.Success(result);
+            }
+            else
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                var errorMess = Constant.Errors[result ?? ""];
+                return ServiceResult<Product>.Failure(result, errorMess, response.StatusCode.ToString());
+            }
+        }
+
+        public async Task<bool> Delete(int id, string token)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Delete, $"/Product/Delete/{id}");
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                var formatToken = token.Trim('"');
+                request.Headers.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", formatToken);
+            }
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public async Task<List<ProductShowDto>> GetTopNewestProductAsync()
