@@ -75,6 +75,24 @@ namespace Pro219.API.Controllers
             }
         }
 
+        [HttpGet("GetOnlyByProductId/{productId}")]
+        public async Task<ActionResult<List<ProductImage>>> GetOnlyProductImagesByProductId(int productId)
+        {
+            try
+            {
+                var result = await productImageRepository.GetOnlyProductImagesByProductId(productId);
+                if (result == null)
+                {
+                    return Ok(new List<ProductImage>());
+                }
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, Constant.ErrorCode.OtherError);
+            }
+        }
+
         [HttpGet("GetByVariantId/{variantId}")]
         public async Task<ActionResult<List<ProductImage>>> GetProductImagesByVariantId(int variantId)
         {
