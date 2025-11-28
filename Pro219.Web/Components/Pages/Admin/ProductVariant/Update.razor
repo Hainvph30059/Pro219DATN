@@ -1,4 +1,4 @@
-﻿@page "/admin/product-variant/{productVariantId:int}/edit"
+﻿@page "/admin/product-variants/{productVariantId:int}/edit"
 @layout AdminLayout
 
 <div class="p-6">
@@ -96,7 +96,7 @@
             </div>
 
             <div class="flex items-center justify-center gap-4">
-                <MudButton OnClick="@(() => navigation.NavigateTo(RouterConst.Admin.Product))" Color="Color.Surface" Variant="Variant.Filled" ButtonType="ButtonType.Button" Class="w-fit px-10">Quay lại</MudButton>
+                <MudButton OnClick="@(() => navigation.NavigateTo(RouterConst.Admin.ProductVariant))" Color="Color.Surface" Variant="Variant.Filled" ButtonType="ButtonType.Button" Class="w-fit px-10">Quay lại</MudButton>
                 <MudButton Color="Color.Primary" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Class="w-fit px-10">Tạo</MudButton>
             </div>
         </EditForm>
@@ -126,7 +126,7 @@
     private List<BreadcrumbItem> _items =>
     [
         new("Trang Chủ", href: RouterConst.Admin.Home),
-        new("Sản Phẩm", href: RouterConst.Admin.Product),
+        new("Sản Phẩm Chi Tiết", href: RouterConst.Admin.ProductVariant),
         new("Chỉnh Sửa Sản Phẩm", href: "#", disabled: true),
     ];
 
@@ -315,7 +315,7 @@
                 }
 
                 _snackbar.Add("Cập nhật sản phẩm chi tiết thành công", Severity.Success);
-                navigation.NavigateTo(RouterConst.Admin.Product);
+                navigation.NavigateTo(RouterConst.Admin.ProductVariant);
             }
             catch (Exception ex)
             {

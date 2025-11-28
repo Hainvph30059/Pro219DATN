@@ -1,4 +1,4 @@
-﻿@page "/admin/{productId:int}/product-variant/create"
+﻿@page "/admin/{productId:int}/product-variants/create"
 @layout AdminLayout
 @inject ISnackbar Snackbar
 @inject NavigationManager navigation
@@ -90,7 +90,7 @@
             </div>
 
             <div class="flex items-center justify-center gap-4">
-                <MudButton OnClick="@(() => navigation.NavigateTo(RouterConst.Admin.Product))" Color="Color.Surface" Variant="Variant.Filled" ButtonType="ButtonType.Button" Class="w-fit px-10">Quay lại</MudButton>
+                <MudButton OnClick="@(() => navigation.NavigateTo(RouterConst.Admin.ProductVariant))" Color="Color.Surface" Variant="Variant.Filled" ButtonType="ButtonType.Button" Class="w-fit px-10">Quay lại</MudButton>
                 <MudButton Color="Color.Primary" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Class="w-fit px-10">Tạo</MudButton>
             </div>
         </EditForm>
@@ -115,8 +115,8 @@
     private List<BreadcrumbItem> _items =
     [
         new("Trang Chủ", href: RouterConst.Admin.Home),
-    new("Sản Phẩm", href: RouterConst.Admin.Product),
-    new("Tạo Sản Phẩm Chi Tiết", href: "#", disabled: true),
+        new("Sản Phẩm Chi Tiết", href: RouterConst.Admin.ProductVariant),
+        new("Tạo Sản Phẩm Chi Tiết", href: "#", disabled: true),
     ];
 
     protected override async Task OnInitializedAsync()
@@ -231,7 +231,7 @@
                 _imagesWithUrls.Clear();
                 _productImages.Clear();
                 _snackbar.Add("Tạo sản phẩm thành công", Severity.Success);
-                navigation.NavigateTo(RouterConst.Admin.Product);
+                navigation.NavigateTo(RouterConst.Admin.ProductVariant);
             }
             catch (Exception ex)
             {

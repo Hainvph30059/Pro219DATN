@@ -11,6 +11,7 @@ namespace Pro219.Web.DTOs
         [MaxLength(100, ErrorMessage = Constant.MessageValid.Max100)]
         public string Name { get; set; } = string.Empty;
 
+        [Required(ErrorMessage = Constant.MessageValid.Required)]
         [RegularExpression(Constant.Regex.HexColor, ErrorMessage = Constant.MessageValid.HexColor)]
         public string HexCode { get; set; }
 

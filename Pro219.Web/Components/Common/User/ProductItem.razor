@@ -21,7 +21,7 @@
                     @foreach (var c in Item.Colors)
                     {
                         <MudTooltip Text="@c.Name" Arrow="true" Placement="Placement.Top">
-                            <div class="h-6 w-6 rounded-full border border-gray-300 shadow-sm cursor-pointer"
+                            <div class="h-6 w-6 cursor-pointer rounded-full border border-gray-300 shadow-sm"
                                  style="background-color: @c.HexCode">
                             </div>
                         </MudTooltip>
@@ -35,7 +35,7 @@
     </div>
 
     <div class="w-full">
-        <p class="line-clamp-1 text-center text-sm font-bold">@Item.Price.ToString("#,##0")đ</p>
+        <p class="line-clamp-1 text-center text-sm font-bold">@Item.Price.ToString("C", vietnameseCulture)</p>
     </div>
 
     <div class="invisible absolute -bottom-10 left-0 z-10 flex w-full items-center justify-between gap-4 bg-black py-2.5 opacity-0 group-hover:visible group-hover:opacity-100">
@@ -47,10 +47,24 @@
 }
 else
 {
-    <MudSkeleton Width="100%" Height="300px" />
+    <div class="mb-10 lg:p-2.5">
+        <MudSkeleton SkeletonType = "SkeletonType.Rectangle" Width="100%" Height="300px" Class="p-2.5" />
+        <div class="my-2.5 flex w-full justify-center gap-1">
+            <MudSkeleton SkeletonType = "SkeletonType.Circle" Width="24px" Height="24px" />
+            <MudSkeleton SkeletonType = "SkeletonType.Circle" Width="24px" Height="24px" />
+            <MudSkeleton SkeletonType = "SkeletonType.Circle" Width="24px" Height="24px" />
+        </div>
+        <div class="w-full">
+            <MudSkeleton SkeletonType = "SkeletonType.Text" Width="80%" Class="mx-auto text-center" />
+        </div>
+        <div class="w-full">
+            <MudSkeleton SkeletonType = "SkeletonType.Text" Width="40%" Class="mx-auto text-center" />
+        </div>
+    </div>
 }
 @code {
     [Parameter]
     public ProductShowDto? Item { get; set; } = null!;
 
+    CultureInfo vietnameseCulture = new CultureInfo("vi-VN");
 }
