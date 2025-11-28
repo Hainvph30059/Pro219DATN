@@ -62,6 +62,21 @@ namespace Pro219.DAL.Repository
             }
         }
 
+        public async Task<List<ProductImage>> GetOnlyProductImagesByProductId(int productId)
+        {
+            try
+            {
+                var images = await _context.ProductImages
+                    .Where(x => x.ProductId == productId && x.Delete != true && x.ProductVariantId == null)
+                    .ToListAsync();
+                return images;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
         public async Task<List<ProductImage>> GetProductImagesByVariantId(int variantId)
         {
             try

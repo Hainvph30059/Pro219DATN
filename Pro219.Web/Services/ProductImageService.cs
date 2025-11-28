@@ -33,6 +33,44 @@ namespace Pro219.Web.Services
             }
         }
 
+        public async Task<ServiceResult<List<ProductImage>>> GetAllOnlyPoductByProductId(int productId)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/ProductImage/GetOnlyByProductId/{productId}");
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<List<ProductImage>>();
+                return ServiceResult<List<ProductImage>>.Success(result);
+            }
+            else
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                var errorMess = Constant.Errors[result];
+                return ServiceResult<List<ProductImage>>.Failure(result, errorMess, response.StatusCode.ToString());
+            }
+        }
+
+        public async Task<ServiceResult<List<ProductImage>>> GetAllByProductVariantId(int productVariantId)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/ProductImage/GetByVariantId/{productVariantId}");
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<List<ProductImage>>();
+                return ServiceResult<List<ProductImage>>.Success(result);
+            }
+            else
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                var errorMess = Constant.Errors[result];
+                return ServiceResult<List<ProductImage>>.Failure(result, errorMess, response.StatusCode.ToString());
+            }
+        }
+
         public async Task<ServiceResult<List<ProductImage>>> CreateAny(List<ProductImage> productImage)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, "/ProductImage/AddRange");

@@ -36,6 +36,7 @@ builder.Services.AddScoped<SizeService>();
 builder.Services.AddScoped<CustomerService>();
 builder.Services.AddScoped<DrawerService>();
 builder.Services.AddScoped<ProductImageService>();
+builder.Services.AddScoped<ProductVariantService>(); 
 
 builder.Services.AddScoped(http => new HttpClient
 {
