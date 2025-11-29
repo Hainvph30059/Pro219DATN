@@ -35,6 +35,7 @@
 
             // Product
             public const string Product = "/admin/products";
+            public const string ProductDetail = "/admin/products/:id/detail";
             public const string CreateProduct = "/admin/products/create";
             public const string EditProduct = "/admin/products/:id/edit";
 

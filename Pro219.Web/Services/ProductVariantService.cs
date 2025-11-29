@@ -33,6 +33,25 @@ namespace Pro219.Web.Services
             }
         }
 
+        public async Task<ServiceResult<List<ProductVariant>>> GetAllByProduct(int productId)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/ProductVariant/GetByProductId/{productId}");
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<List<ProductVariant>>();
+                return ServiceResult<List<ProductVariant>>.Success(result);
+            }
+            else
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                var errorMess = Constant.Errors[result];
+                return ServiceResult<List<ProductVariant>>.Failure(result, errorMess, response.StatusCode.ToString());
+            }
+        }
+
         public async Task<ServiceResult<ProductVariant>> GetById(int id)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, $"/ProductVariant/GetById/{id}");

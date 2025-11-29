@@ -1,0 +1,263 @@
+﻿@page "/admin/products/{id:int}/detail"
+@layout AdminLayout
+
+<div class="p-6">
+    <MudBreadcrumbs Class="!p-0 !text-sm" Items="_items" Separator=">"></MudBreadcrumbs>
+
+    <h1 class="leading-[3rem] h-12 text-3xl font-bold text-admin-default">Chi tiết sản phẩm</h1>
+
+    <div class="mt-6 space-y-6 rounded-[8px] bg-white p-8 shadow-[0_4px_12px_0_rgba(13,10,44,0.06)]">
+        <div class="mx-auto flex max-w-[1032px] flex-col gap-4">
+            <div class="flex w-full flex-col gap-2 rounded-lg bg-slate-100 p-4">
+                <div class="flex gap-5 bg-white px-4 py-4">
+                    <label class="w-[10rem] flex-shrink-0 whitespace-pre-wrap text-base font-normal text-slate-600">Tên</label>
+                    <div class="my-[1px] block self-stretch border-r border-slate-400" />
+                    <span class="w-full whitespace-pre-wrap break-words text-base font-normal text-slate-900 sm:max-w-[calc(100%-201px)]">@_productDetail?.Name</span>
+                </div>
+                <div class="flex gap-5 bg-white px-4 py-4">
+                    <label class="w-[10rem] flex-shrink-0 whitespace-pre-wrap text-base font-normal text-slate-600">Danh mục</label>
+                    <div class="my-[1px] block self-stretch border-r border-slate-400" />
+                    <span class="w-full whitespace-pre-wrap break-words text-base font-normal text-slate-900 sm:max-w-[calc(100%-201px)]">@_categorieDetail?.Name</span>
+                </div>
+                <div class="flex gap-5 bg-white px-4 py-4">
+                    <label class="w-[10rem] flex-shrink-0 whitespace-pre-wrap text-base font-normal text-slate-600">Thương Hiệu</label>
+                    <div class="my-[1px] block self-stretch border-r border-slate-400" />
+                    <span class="w-full whitespace-pre-wrap break-words text-base font-normal text-slate-900 sm:max-w-[calc(100%-201px)]">@_brandDetail?.Name</span>
+                </div>
+                <div class="flex gap-5 bg-white px-4 py-4">
+                    <label class="w-[10rem] flex-shrink-0 whitespace-pre-wrap text-base font-normal text-slate-600">Giá mặc định</label>
+                    <div class="my-[1px] block self-stretch border-r border-slate-400" />
+                    <span class="w-full whitespace-pre-wrap break-words text-base font-normal text-slate-900 sm:max-w-[calc(100%-201px)]">@_productDetail?.BasePrice.ToString("C", vietnameseCulture)</span>
+                </div>
+                <div class="flex gap-5 bg-white px-4 py-4">
+                    <label class="w-[10rem] flex-shrink-0 whitespace-pre-wrap text-base font-normal text-slate-600">Mô tả</label>
+                    <div class="my-[1px] block self-stretch border-r border-slate-400" />
+                    <span class="w-full whitespace-pre-wrap break-words text-base font-normal text-slate-900 sm:max-w-[calc(100%-201px)]">@_productDetail?.Description</span>
+                </div>
+                <div class="flex gap-5 bg-white px-4 py-4">
+                    <label class="w-[10rem] flex-shrink-0 whitespace-pre-wrap text-base font-normal text-slate-600">Ảnh</label>
+                    <div class="my-[1px] block self-stretch border-r border-slate-400" />
+                    <span class="flex w-full flex-wrap gap-2 text-base font-normal text-slate-900 sm:max-w-[calc(100%-201px)]">
+                        @if(_onlyProductImages.Count > 0)
+                        {
+                            foreach(var i in _onlyProductImages)
+                            {
+                                <MudImage Src="@i.ImageUrl" Alt="image" Width="200" />
+                            }
+                        }
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="w mt-4 flex items-center justify-center gap-4">
+            <MudButton Color="Color.Error" Variant="Variant.Filled" Class="!px-8 !py-2" OnClick="@(() => OpenDialogDelete(id))">Xóa</MudButton>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" Class="!px-8 !py-2" OnClick="@(() => navigation.NavigateTo(RouterConst.Admin.EditProduct.Replace(":id", id.ToString())))">Sửa</MudButton>
+        </div>
+
+        <MudDivider Class="my-6" />
+
+        <MudTable Bordered Items="@_productVariants" Loading="@_loading" Class="w-full" Dense="true" Hover="true" Virtualize="true" FixedHeader="true" HorizontalScrollbar="true" Height="30rem">
+            <HeaderContent>
+                <MudTh hidden><MudTableSortLabel SortLabel="Id" T="string" hidden>STT</MudTableSortLabel></MudTh>
+                <MudTh Class="whitespace-nowrap"><MudTableSortLabel SortLabel="Ảnh" T="string">Ảnh</MudTableSortLabel></MudTh>
+                <MudTh Class="whitespace-nowrap"><MudTableSortLabel SortLabel="SKU" T="string">SKU</MudTableSortLabel></MudTh>
+                <MudTh Class="whitespace-nowrap"><MudTableSortLabel SortLabel="Giá" T="string">Giá</MudTableSortLabel></MudTh>
+                <MudTh Class="whitespace-nowrap"><MudTableSortLabel SortLabel="Màu sắc" T="string">Màu sắc</MudTableSortLabel></MudTh>
+                <MudTh Class="whitespace-nowrap"><MudTableSortLabel SortLabel="Kích thước" T="string">Kích thước</MudTableSortLabel></MudTh>
+                <MudTh Class="whitespace-nowrap"><MudTableSortLabel SortLabel="Số lượng" T="string">Số lượng</MudTableSortLabel></MudTh>
+                <MudTh Class="whitespace-nowrap"><MudTableSortLabel SortLabel="Trạng thái" T="string">Trạng thái</MudTableSortLabel></MudTh>
+                <MudTh Class="whitespace-nowrap"><MudTableSortLabel SortLabel="Thao tác" T="string">Thao tác</MudTableSortLabel></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Id" hidden>@context.Id</MudTd>
+                <MudTd DataLabel="Tên"><MudImage Src="@_productImages.FirstOrDefault(pi => pi.ProductVariantId == context.Id)?.ImageUrl" Alt="image" Width="150" /></MudTd>
+                <MudTd DataLabel="SKU">@context.SKU</MudTd>
+                <MudTd DataLabel="Giá">@context.Price.ToString("C", vietnameseCulture)</MudTd>
+                <MudTd DataLabel="Màu sắc">@_colors.FirstOrDefault(x => x.Id == context.ColorId)?.Name</MudTd>
+                <MudTd DataLabel="Kích thước">@_sizes.FirstOrDefault(x => x.Id == context.SizeId)?.Name</MudTd>
+                <MudTd DataLabel="Số lượng">@context.StockQuantity</MudTd>
+                <MudTd DataLabel="Trạng thái">@((context.IsActive == true) ? "Hoạt Động" : "Không Hoạt Động")</MudTd>
+                <MudTd DataLabel="Thao tác">
+                    <MudIconButton Icon="@Icons.Material.Filled.BorderColor" aria-label="update" OnClick="@(() => navigation.NavigateTo(RouterConst.Admin.UpdateProductVariant.Replace(":id", context.Id.ToString())))"></MudIconButton>
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" aria-label="delete" OnClick="@(() => OpenDialogDeleteProductVariant(context.Id))"></MudIconButton>
+                </MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText>Không có dữ liệu.</MudText>
+            </NoRecordsContent>
+            <LoadingContent>
+                <div class="flex w-full flex-col gap-3">
+                    @{
+                        for (var i = 0; i < Constant.DefaultSkeletons; i++)
+                        {
+                            <div class="flex items-center justify-between gap-2">
+                                <MudSkeleton Width="100%" Height="3rem" />
+                                <MudSkeleton Width="100%" Height="3rem" />
+                                <MudSkeleton Width="100%" Height="3rem" />
+                                <MudSkeleton Width="100%" Height="3rem" />
+                                <MudSkeleton Width="100%" Height="3rem" />
+                                <MudSkeleton Width="100%" Height="3rem" />
+                                <MudSkeleton Width="100%" Height="3rem" />
+                                <MudSkeleton Width="100%" Height="3rem" />
+                            </div>
+                        }
+                    }
+                </div>
+            </LoadingContent>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int id { get; set; }
+    private DAL.Models.Product _productDetail = new DAL.Models.Product();
+    private List<DAL.Models.ProductVariant> _productVariants = [];
+    private List<DAL.Models.ProductImage> _productImages = [];
+    private List<DAL.Models.ProductImage> _onlyProductImages = [];
+    private DAL.Models.Category _categorieDetail = new DAL.Models.Category();
+    private DAL.Models.Brand _brandDetail = new DAL.Models.Brand();
+    private List<DAL.Models.Color> _colors = [];
+    private List<DAL.Models.Size> _sizes = [];
+
+    CultureInfo vietnameseCulture = new CultureInfo("vi-VN");
+
+    private readonly DialogOptions _maxWidth = new() { MaxWidth = MaxWidth.Large, FullWidth = true };
+    private bool _loading = true;
+
+    private List<BreadcrumbItem> _items =
+    [
+        new("Trang Chủ", href: RouterConst.Admin.Home),
+    new("Sản Phẩm Chi Tiết", href: "#", disabled: true),
+    ];
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await LoadData();
+        }
+        catch (Exception e)
+        {
+            _loading = false;
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    async Task LoadData()
+    {
+        var resProductDetail = await _productService.GetById(id);
+        var dataProductDetail = resProductDetail.Data;
+        if (resProductDetail.IsSuccess && dataProductDetail != null)
+        {
+            _productDetail = dataProductDetail;
+
+            if (_productDetail?.Id != null)
+            {
+                var resProductVariant = await _productVariantService.GetAllByProduct(_productDetail.Id);
+                var dataProductVariant = resProductVariant.Data;
+                if (resProductVariant.IsSuccess && dataProductVariant != null)
+                {
+                    _productVariants = dataProductVariant;
+                }
+            }
+
+
+            if(_productDetail?.BrandId != null)
+            {
+                var resBrand = await _brandService.GetById(_productDetail.BrandId);
+                var dataBrand = resBrand.Data;
+                if (resBrand.IsSuccess && dataBrand != null)
+                {
+                    _brandDetail = dataBrand;
+                }
+            }
+
+            if (_productDetail?.CategoryId != null)
+            {
+                var resCategory = await _categoryService.GetById(_productDetail.CategoryId);
+                var dataCategory = resCategory.Data;
+                if (resCategory.IsSuccess && dataCategory != null)
+                {
+                    _categorieDetail = dataCategory;
+                }
+
+            }
+
+            var resSize = await _sizeService.GetAll();
+            var dataSize = resSize.Data;
+            if (resSize.IsSuccess && dataSize != null)
+            {
+                _sizes = dataSize;
+            }
+
+            var resColor = await _colorService.GetAll();
+            var dataColor = resColor.Data;
+            if (resColor.IsSuccess && dataColor != null)
+            {
+                _colors = dataColor;
+            }
+
+            var resProductImage = await _productImageService.GetAll();
+            var dataProductImage = resProductImage.Data;
+            if (resProductImage.IsSuccess && dataProductImage != null)
+            {
+                _productImages = dataProductImage;
+                _onlyProductImages = dataProductImage.Where(pi => pi.ProductId == _productDetail?.Id && pi.ProductVariantId == null).ToList();
+            }
+        }
+    }
+
+    void HandleRedirect(int id, bool isProductVariant)
+    {
+        if (isProductVariant)
+        {
+            navigation.NavigateTo(RouterConst.Admin.CreateProductVariant.Replace(":productId", id.ToString()));
+        }
+        else
+        {
+            navigation.NavigateTo(RouterConst.Admin.EditProduct.Replace(":id", id.ToString()));
+        }
+    }
+
+    async Task OpenDialogDeleteProductVariant(int id)
+    {
+        var deleteParaeters = new DialogParameters<Admin.ProductVariant.ConfirmDeleteDialog>
+        {
+            {x => x.id, id}
+        };
+
+        var dialog = await _dialogService.ShowAsync<Admin.ProductVariant.ConfirmDeleteDialog>("Options Dialog", deleteParaeters, _maxWidth);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await LoadData();
+            StateHasChanged();
+        }
+    }
+
+    async Task OpenDialogDelete(int id)
+    {
+        var deleteParaeters = new DialogParameters<Admin.Product.ConfirmDeleteDialog>
+        {
+            {x => x.id, id}
+        };
+
+        var dialog = await _dialogService.ShowAsync<Admin.Product.ConfirmDeleteDialog>("Options Dialog", deleteParaeters, _maxWidth);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await LoadData();
+            StateHasChanged();
+        }
+    }
+}

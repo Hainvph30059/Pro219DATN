@@ -14,6 +14,25 @@ namespace Pro219.Web.Services
             _httpClient = httpClient;
         }
 
+        public async Task<ServiceResult<List<ProductImage>>> GetAll()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/ProductImage/GetAll");
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<List<ProductImage>>();
+                return ServiceResult<List<ProductImage>>.Success(result);
+            }
+            else
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                var errorMess = Constant.Errors[result];
+                return ServiceResult<List<ProductImage>>.Failure(result, errorMess, response.StatusCode.ToString());
+            }
+        }
+
         public async Task<ServiceResult<List<ProductImage>>> GetAllByProductId(int productId)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, $"/ProductImage/GetByProductId/{productId}");

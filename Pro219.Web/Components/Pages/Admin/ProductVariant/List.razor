@@ -10,6 +10,7 @@
         <MudTable Bordered Items="@_productVariants" Loading="@_loading" Class="w-full" Dense="true" Hover="true" Virtualize="true" FixedHeader="true" HorizontalScrollbar="true" Height="calc(100lvh - 16.5rem)">
             <HeaderContent>
                 <MudTh hidden><MudTableSortLabel SortLabel="Id" T="string" hidden>STT</MudTableSortLabel></MudTh>
+                <MudTh Class="whitespace-nowrap"><MudTableSortLabel SortLabel="Ảnh" T="string">Ảnh</MudTableSortLabel></MudTh>
                 <MudTh Class="whitespace-nowrap"><MudTableSortLabel SortLabel="Sản phẩm chứa" T="string">Sản phẩm chứa</MudTableSortLabel></MudTh>
                 <MudTh Class="whitespace-nowrap"><MudTableSortLabel SortLabel="SKU" T="string">SKU</MudTableSortLabel></MudTh>
                 <MudTh Class="whitespace-nowrap"><MudTableSortLabel SortLabel="Giá" T="string">Giá</MudTableSortLabel></MudTh>
@@ -21,6 +22,7 @@
             </HeaderContent>
             <RowTemplate>
                 <MudTd DataLabel="Id" hidden>@context.Id</MudTd>
+                <MudTd DataLabel="Ảnh"><MudImage Src="@_productImages.FirstOrDefault(pi => pi.ProductVariantId == context.Id)?.ImageUrl" Width="100" /></MudTd>
                 <MudTd DataLabel="Sản phẩm chứa">@_products.FirstOrDefault(p => p.Id == context.ProductId)?.Name</MudTd>
                 <MudTd DataLabel="SKU">@context.SKU</MudTd>
                 <MudTd DataLabel="Giá">@context.Price.ToString("C", vietnameseCulture)</MudTd>
@@ -63,6 +65,7 @@
 @code {
     private List<DAL.Models.Product> _products = [];
     private List<DAL.Models.ProductVariant> _productVariants = [];
+    private List<DAL.Models.ProductImage> _productImages = [];
     private List<DAL.Models.Size> _sizes = [];
     private List<DAL.Models.Color> _colors = [];
 
@@ -120,6 +123,13 @@
         if (resColor.IsSuccess && dataColor != null)
         {
             _colors = dataColor;
+        }
+
+        var resProductImage = await _productImageService.GetAll();
+        var dataProductImage = resProductImage.Data;
+        if (resProductImage.IsSuccess && dataProductImage != null)
+        {
+            _productImages = dataProductImage;
         }
     }
 

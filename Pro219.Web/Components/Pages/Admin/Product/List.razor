@@ -13,6 +13,7 @@
         <MudTable Bordered Items="@_products" Loading="@_loading" Class="w-full" Dense="true" Hover="true" Virtualize="true" FixedHeader="true" HorizontalScrollbar="true" Height="calc(100lvh - 16.5rem)">
             <HeaderContent>
                 <MudTh hidden><MudTableSortLabel SortLabel="Id" T="string" hidden>STT</MudTableSortLabel></MudTh>
+                <MudTh Class="whitespace-nowrap"><MudTableSortLabel SortLabel="Ảnh" T="string">Ảnh</MudTableSortLabel></MudTh>
                 <MudTh Class="whitespace-nowrap"><MudTableSortLabel SortLabel="Tên" T="string">Tên</MudTableSortLabel></MudTh>
                 <MudTh Class="whitespace-nowrap"><MudTableSortLabel SortLabel="Giá mặc định" T="string">Giá mặc định</MudTableSortLabel></MudTh>
                 <MudTh Class="whitespace-nowrap"><MudTableSortLabel SortLabel="Danh mục" T="string">Danh mục</MudTableSortLabel></MudTh>
@@ -23,7 +24,8 @@
             </HeaderContent>
             <RowTemplate>
                 <MudTd DataLabel="Id" hidden>@context.Id</MudTd>
-                <MudTd DataLabel="Tên">@context.Name</MudTd>
+                <MudTd DataLabel="Ảnh"><MudImage Src="@_productImages.FirstOrDefault(pi => pi.ProductVariantId == context.Id)?.ImageUrl" Width="100" /></MudTd>
+                <MudTd DataLabel="Ảnh">@context.Name</MudTd>
                 <MudTd DataLabel="Giá mặc định">@context.BasePrice.ToString("C", vietnameseCulture)</MudTd>
                 <MudTd DataLabel="Danh mục">@_categories.FirstOrDefault(x => x.Id == context.CategoryId)?.Name</MudTd>
                 <MudTd DataLabel="Thương hiệu">@_brands.FirstOrDefault(x => x.Id == context.CategoryId)?.Name</MudTd>
@@ -31,7 +33,7 @@
                 <MudTd DataLabel="Trạng thái">@((context.Status == Constant.StatusDefault.Active) ? "Hoạt Động" : "Không Hoạt Động")</MudTd>
                 <MudTd DataLabel="Thao tác">
                     <MudTooltip Text="Thêm sản phẩm con"><MudIconButton OnClick="@(() => HandleRedirect(context.Id, true))" Icon="@Icons.Material.Filled.Add" /></MudTooltip>
-                    <MudTooltip Text="Chi tiết sản phẩm"><MudIconButton Icon="@Icons.Material.Filled.Menu" /></MudTooltip>
+                    <MudTooltip Text="Chi tiết sản phẩm"><MudIconButton OnClick="@(() => navigation.NavigateTo(RouterConst.Admin.ProductDetail.Replace(":id", context.Id.ToString())))" Icon="@Icons.Material.Filled.Menu" /></MudTooltip>
                     <MudIconButton Icon="@Icons.Material.Filled.BorderColor" aria-label="update" OnClick="@(() => HandleRedirect(context.Id, false))"></MudIconButton>
                     <MudIconButton Icon="@Icons.Material.Filled.Delete" aria-label="delete" OnClick="@(() => OpenDialogDelete(context.Id))"></MudIconButton>
                 </MudTd>
@@ -65,6 +67,7 @@
 
 @code {
     private List<DAL.Models.Product> _products = [];
+    private List<DAL.Models.ProductImage> _productImages = [];
     private List<DAL.Models.Category> _categories = [];
     private List<DAL.Models.Brand> _brands = [];
 
@@ -116,6 +119,13 @@
         if (resBrand.IsSuccess && dataBrand != null)
         {
             _brands = dataBrand;
+        }
+
+        var resProductImage = await _productImageService.GetAll();
+        var dataProductImage = resProductImage.Data;
+        if (resProductImage.IsSuccess && dataProductImage != null)
+        {
+            _productImages = dataProductImage;
         }
     }
 
