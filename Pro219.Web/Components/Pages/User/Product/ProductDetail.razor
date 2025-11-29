@@ -1,15 +1,15 @@
-﻿@page "/product/detail/{Id:int}"
+﻿@page "/product/detail/{id:int}"
 @layout MainLayout
 @inject ISnackbar Snackbar
 @inject ProductService ProductService
 @using Pro219.Web.DTOs
 @using MudBlazor
 
-<PageTitle>@Constant.PageTitleUser @(_product?.ProductName ?? "Chi tiết sản phẩm")</PageTitle>
+<PageTitle>@Constant.PageTitleUser @(_product?.Name ?? "Chi tiết sản phẩm")</PageTitle>
 
 @if (_product == null)
 {
-    <div class="d-flex justify-center mt-10">
+    <div class="d-flex mt-10 justify-center">
         <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
     </div>
 }
@@ -19,18 +19,27 @@ else
         <div class="mt-2 flex h-full w-full flex-col gap-4 md:flex-row lg:flex-row">
             <div class="w-full md:w-[calc(100%-27rem)] lg:w-[calc(100%-27rem)]">
                 <MudCarousel Class="mud-width-full !aspect-square" ShowBullets="true" AutoCycle="false" TData="string">
-                    @foreach (var img in _product.Images)
+                    @if (_images.Any()) {
+                        @foreach (var item in _images)
+                        { 
+                            <MudCarouselItem>
+                                <div class="d-flex" style="height:100%">
+                                    <img src="@item" alt="image" class="mx-auto my-auto h-full w-full object-contain" />
+                                </div>
+                            </MudCarouselItem>
+                        }
+                    } else
                     {
                         <MudCarouselItem>
                             <div class="d-flex" style="height:100%">
-                                <img src="@img" alt="@_product.ProductName" class="mx-auto my-auto object-contain h-full w-full" />
+                                <img src="@Constant.DefaultImages" alt="image" class="mx-auto my-auto h-full w-full object-contain" />
                             </div>
                         </MudCarouselItem>
                     }
                 </MudCarousel>
             </div>
             <div class="h-fit w-full flex-shrink-0 p-3 shadow md:w-[26rem] lg:w-[26rem]">
-                <h1 class="mb-2 text-base font-medium">@_product.ProductName</h1>
+                <h1 class="mb-2 text-base font-medium">@_product?.Name</h1>
                 @if (IsOutOfStock())
                 {
                     <span class="text-sm font-medium text-red-500">Hết hàng</span>
@@ -43,18 +52,21 @@ else
                 <MudDivider Class="!my-2.5 !border-dotted" />
 
                 <span class="text-xl font-bold">
-                    @FormatCurrency(_currentPrice)
+                    @_currentPrice.ToString("C", vietnameseCulture)
                 </span>
 
                 <div class="mt-2">
                     <p class="mb-2 text-sm font-medium uppercase">Màu sắc:  <span class="font-bold">@_selectedColorName</span></p>
                     <div class="flex flex-wrap items-center gap-2">
-                        @foreach (var color in _product.UniqueColors)
+                        @if(_product.AvailableColors != null && _product.AvailableColors.Any())
                         {
-                            <button @onclick="() => SelectColor(color)"
-                                 class="h-9 w-9 rounded-full cursor-pointer border border-slate-400"
-                                 style="background-color: @color.HexCode;">
-                            </button>
+                            @foreach (var color in _product.AvailableColors)
+                            {
+                                <button @onclick="() => SelectColor(color)"
+                                     class="h-9 w-9 rounded-full cursor-pointer !border border-solid border-slate-400"
+                                     style="background-color: @color.HexCode;">
+                                </button>
+                            }
                         }
                     </div>
                 </div>
@@ -62,14 +74,17 @@ else
                 <div class="mt-2">
                     <p class="mb-2 text-sm font-medium uppercase">Kích thước</p>
                     <div class="flex flex-wrap items-center gap-2">
-                        @foreach (var size in _product.UniqueSizes)
+                        @if(_product.AvailableSizes != null && _product.AvailableSizes.Any())
                         {
-                            var isAvaliable = IsSizeAvailableForColor(size.Id);
-                            <button @onclick="() => SelectSize(size.Id)"
-                                    disabled="@isAvaliable"
-                                    class="flex h-9 w-9 items-center justify-center border @(GetSizeClass(size.Id))">
-                                @size.Name
-                            </button>
+                            @foreach (var size in _product.AvailableSizes)
+                            {
+                                var isAvaliable = IsSizeAvailableForColor(size.Id);
+                                <button @onclick="() => SelectSize(size.Id)"
+                                        disabled="@isAvaliable"
+                                        class="flex h-9 w-9 items-center justify-center border @(GetSizeClass(size.Id))">
+                                    @size.Name
+                                </button>
+                            }
                         }
                     </div>
                 </div>
@@ -83,7 +98,7 @@ else
                 </div>
 
                 <div class="flex justify-between">
-                    <button class="w-[49%] bg-black py-3 uppercase text-white">Thêm Giỏ Hàng</button>
+                    <button class="w-[49%] bg-black py-3 uppercase text-white" @onclick="AddToCart">Thêm Giỏ Hàng</button>
                     <button class="w-[49%] bg-black py-3 uppercase text-white">Mua Ngay</button>
                 </div>
 
@@ -140,16 +155,20 @@ else
 </section>
 
 @code {
-    [Parameter] public int Id { get; set; }
+    [Parameter] public int id { get; set; }
 
-    private ProductDetailDto? _product;
+    private DAL.Repository.ProductRepository.ProductDetailDto? _product = new DAL.Repository.ProductRepository.ProductDetailDto();
+    private DAL.Repository.ProductRepository.ProductVariantDto? _foundVariant;
+
+    private List<string> _images = [];
+    CultureInfo vietnameseCulture = new CultureInfo("vi-VN");
+
     private int _selectedColorId = 0;
     private string _selectedColorName = "";
     private int _selectedSizeId= 0;
     private int _quantity = 1;
     private decimal _currentPrice = 0;
 
-    private ProductVariantDto? _foundVariant;
 
     private bool _disableAction => _foundVariant == null || _foundVariant.StockQuantity < 1;
 
@@ -160,19 +179,63 @@ else
 
     private async Task LoadData()
     {
-        var res = await ProductService.GetProductDetail(Id);
-        if (res.Data != null)
+        var res = await _productService.GetDetail(id);
+        if (res.IsSuccess && res.Data != null)
         {
             _product = res.Data;
+            _images = _product.ImageUrls;
+            if (res.Data.Variants.Any())
+            {
+                foreach(var item in res.Data.Variants)
+                {
+                    _images.AddRange(item.VariantImageUrls.ToList());
+                }
+            }
             _currentPrice = _product.BasePrice;
+        } else
+        {
+            _snackbar.Add(res.ErrorMessage, Severity.Error);
+            navigation.NavigateTo(RouterConst.User.Home);
         }
     }
 
-    private void SelectColor(ColorDto color)
+    private void SelectColor(DAL.Repository.ProductRepository.ColorDto color)
     {
-        if (_selectedColorId != 0) _selectedSizeId = 0;
+        if (_selectedColorId != color.Id) _selectedSizeId = 0;
         _selectedColorName = color.Name;
         _selectedColorId = color.Id;
+        _images.Clear();
+
+        if(_product.Variants != null && _product.Variants.Any())
+        {
+            var detail = _product.Variants.Where(pv => pv.ColorId == color.Id).FirstOrDefault();
+
+            if(detail != null && detail.VariantImageUrls != null && detail.VariantImageUrls.Any())
+            {
+                _images.AddRange(detail.VariantImageUrls);
+            } else
+            {
+                if(_product.ImageUrls != null && _product.ImageUrls.Any())
+                {
+                    _images.AddRange(_product.ImageUrls);
+                } else
+                {
+                    _images.Add(Constant.DefaultImages);
+                }
+            }
+        } else
+        {
+            if (_product.ImageUrls != null && _product.ImageUrls.Any())
+            {
+                _images.AddRange(_product.ImageUrls);
+            }
+            else
+            {
+                _images.Add(Constant.DefaultImages);
+            }
+        }
+
+        StateHasChanged();
     }
 
     private void SelectSize(int sizeId)
@@ -191,9 +254,12 @@ else
 
         if (_foundVariant != null)
         {
-            _currentPrice = _foundVariant.VariantPrice ?? _product.BasePrice;
+            if (_foundVariant?.Price != null)
+            {
+                _currentPrice = _foundVariant.Price;
+            }
 
-            if (_foundVariant.StockQuantity < _quantity) _quantity = 1;
+            if (_foundVariant?.StockQuantity < _quantity) _quantity = 1;
         }
     }
 
@@ -201,10 +267,12 @@ else
     {
         if (sizeId == 0 || _selectedColorId == 0) return true;
 
-        return _product.Variants.Any(v => 
+        var result = _product.Variants.Any(v => 
             v.ColorId == _selectedColorId && 
             v.SizeId == sizeId &&
             v.StockQuantity > 0);
+
+            return !result;
     }
 
     private string GetColorClass(string colorName)
@@ -218,15 +286,15 @@ else
         return "";
     }
 
-    private string FormatCurrency(decimal price)
-    {
-        return string.Format(new System.Globalization.CultureInfo("vi-VN"), "{0:C0}", price);
-    }
-
     private bool IsOutOfStock()
     {
+        if (_product == null) return false;
         if (_foundVariant != null) return _foundVariant.StockQuantity <= 0;
-        return !_product.Variants.Any(v => v.StockQuantity > 0);
+        if (_product.Variants != null && _product.Variants.Any())
+        {
+            return !_product.Variants.Any(v => v.StockQuantity > 0);
+        }
+        return false;
     }
 
     private void IncreaseQuantity()
@@ -252,7 +320,6 @@ else
         }
 
         Snackbar.Add($"Đã thêm {_quantity} sản phẩm vào giỏ hàng!", Severity.Success);
-        Console.WriteLine($"Add VariantId: {_foundVariant.VariantId}, Qty: {_quantity}");
     }
 
     private void BuyNow()

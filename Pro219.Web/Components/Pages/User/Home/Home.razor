@@ -10,9 +10,95 @@
 <section class="my-8 px-0 pt-8 lg:px-8">
     <h2 class="text-center text-xl font-bold uppercase md:text-2xl lg:text-3xl">Sản phẩm mới</h2>
     <div class="mt-8 grid gap-2 px-4 xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 sm:px-2">
-        @for(var i = 0; i < 8; i++)
+        @if (_productNews.Any())
         {
-            <ProductItem />
+            @foreach (var item in _productNews)
+            {
+                <div accesskey="@item.Id" class="w-full">
+                    <div data-animation="1" class="group relative mb-10 lg:p-2.5">
+                        <div class="group relative overflow-hidden px-2.5 text-center">
+                            <a href="@RouterConst.User.Home" class="block transition">
+                                @if (item.ImageUrls.Any())
+                                {
+                                    <picture class="flex h-full items-center justify-center transition duration-700 ease-in-out group-hover:invisible group-hover:opacity-0">
+                                        <img class="overflow-clip" src="@item.ImageUrls[0]" />
+                                    </picture>
+
+                                    if (item.ImageUrls.Count > 1)
+                                    {
+                                        <picture accesskey="@item.Id" class="invisible absolute bottom-0 left-0 right-0 top-0 flex items-center justify-center opacity-0 transition duration-700 ease-in-out group-hover:visible group-hover:opacity-100">
+                                            <img class="overflow-clip" src="@item?.ImageUrls[1]" />
+                                        </picture>
+                                    }
+                                    else
+                                    {
+                                        <picture class="invisible absolute bottom-0 left-0 right-0 top-0 flex items-center justify-center opacity-0 transition duration-700 ease-in-out group-hover:visible group-hover:opacity-100">
+                                            <img class="overflow-clip" src="/Assets/Images/default-image.png" />
+                                        </picture>
+                                    }
+                                }
+                                else
+                                {
+                                    <picture class="flex h-full items-center justify-center transition duration-700 ease-in-out group-hover:invisible group-hover:opacity-0">
+                                        <img class="overflow-clip" src="/Assets/Images/default-image.png" />
+                                    </picture>
+                                    <picture class="invisible absolute bottom-0 left-0 right-0 top-0 flex items-center justify-center opacity-0 transition duration-700 ease-in-out group-hover:visible group-hover:opacity-100">
+                                        <img class="overflow-clip" src="/Assets/Images/default-image.png" />
+                                    </picture>
+                                }
+                            </a>
+                        </div>
+
+                        @if (item?.AvailableColors != null && item.AvailableColors.Any())
+                        {
+                            <div class="my-2.5 flex w-full justify-center gap-1">
+                                @foreach (var c in item.AvailableColors)
+                                {
+                                    <MudTooltip Text="@c.Name" Arrow="true" Placement="Placement.Top">
+                                        <div class="h-6 w-6 cursor-pointer rounded-full border border-gray-300 shadow-sm"
+                                             style="background-color: @c.HexCode">
+                                        </div>
+                                    </MudTooltip>
+                                }
+                            </div>
+                        }
+
+                        <div class="w-full">
+                            <p class="line-clamp-1 text-center text-sm">@item?.Name</p>
+                        </div>
+
+                        <div class="w-full">
+                            <p class="line-clamp-1 text-center text-sm font-bold">@item?.BasePrice.ToString("C", vietnameseCulture)</p>
+                        </div>
+
+                        <div class="invisible absolute -bottom-10 left-0 z-10 flex w-full items-center justify-between gap-4 bg-black py-2.5 opacity-0 group-hover:visible group-hover:opacity-100">
+                            <a class="flex w-[49%] justify-center text-white"><MudIcon Icon="@Icons.Material.Filled.ShoppingCart" Size="Size.Small" Class="!mr-1" /> Mua nhanh</a>
+                            <div class="h-5 w-[2%] border-r border-white" />
+                            <a href="/Product/detail/@item?.Id" class="flex w-[49%] justify-center text-white"><MudIcon Icon="@Icons.Material.Filled.RemoveRedEye" Size="Size.Small" Class="!mr-1" /> Xem chi tiết</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            for (var i = 0; i < 8; i++)
+            {
+                <div accesskey="" class="mb-10 lg:p-2.5">
+                    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="300px" Class="p-2.5" />
+                    <div class="my-2.5 flex w-full justify-center gap-1">
+                        <MudSkeleton SkeletonType="SkeletonType.Circle" Width="24px" Height="24px" />
+                        <MudSkeleton SkeletonType="SkeletonType.Circle" Width="24px" Height="24px" />
+                        <MudSkeleton SkeletonType="SkeletonType.Circle" Width="24px" Height="24px" />
+                    </div>
+                    <div class="w-full">
+                        <MudSkeleton SkeletonType="SkeletonType.Text" Width="80%" Class="mx-auto text-center" />
+                    </div>
+                    <div class="w-full">
+                        <MudSkeleton SkeletonType="SkeletonType.Text" Width="40%" Class="mx-auto text-center" />
+                    </div>
+                </div>
+            }
         }
     </div>
 </section>
@@ -20,9 +106,102 @@
 <section class="my-8 px-0 pt-8 lg:px-8">
     <h2 class="text-center text-xl font-bold uppercase md:text-2xl lg:text-3xl">Sản phẩm bán chạy</h2>
     <div class="mt-8 grid grid-cols-4 gap-2 px-4 xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 sm:px-2">
-        @for (var i = 0; i < 8; i++)
+
+    </div>
+</section>
+
+<section class="my-8 px-0 pt-8 lg:px-8">
+    <h2 class="text-center text-xl font-bold uppercase md:text-2xl lg:text-3xl">Sản được yêu thích nhất</h2>
+    <div class="mt-8 grid gap-2 px-4 xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 sm:px-2">
+        @if (_productFavourites.Any())
+        {   
+            @foreach (var item in _productFavourites)
+            {
+                <div accesskey="@item.Id" class="w-full">
+                    <div data-animation="1" class="group relative mb-10 lg:p-2.5">
+                        <div class="group relative overflow-hidden px-2.5 text-center">
+                            <a href="@RouterConst.User.Home" class="block transition">
+                                @if (item.ImageUrls.Any())
+                                {
+                                    <picture class="flex h-full items-center justify-center transition duration-700 ease-in-out group-hover:invisible group-hover:opacity-0">
+                                        <img class="overflow-clip" src="@item.ImageUrls[0]" />
+                                    </picture>
+
+                                    if (item.ImageUrls.Count > 1)
+                                    {
+                                        <picture accesskey="@item.Id" class="invisible absolute bottom-0 left-0 right-0 top-0 flex items-center justify-center opacity-0 transition duration-700 ease-in-out group-hover:visible group-hover:opacity-100">
+                                            <img class="overflow-clip" src="@item?.ImageUrls[1]" />
+                                        </picture>
+                                    }
+                                    else
+                                    {
+                                        <picture class="invisible absolute bottom-0 left-0 right-0 top-0 flex items-center justify-center opacity-0 transition duration-700 ease-in-out group-hover:visible group-hover:opacity-100">
+                                            <img class="overflow-clip" src="/Assets/Images/default-image.png" />
+                                        </picture>
+                                    }
+                                }
+                                else
+                                {
+                                    <picture class="flex h-full items-center justify-center transition duration-700 ease-in-out group-hover:invisible group-hover:opacity-0">
+                                        <img class="overflow-clip" src="/Assets/Images/default-image.png" />
+                                    </picture>
+                                    <picture class="invisible absolute bottom-0 left-0 right-0 top-0 flex items-center justify-center opacity-0 transition duration-700 ease-in-out group-hover:visible group-hover:opacity-100">
+                                        <img class="overflow-clip" src="/Assets/Images/default-image.png" />
+                                    </picture>
+                                }
+                            </a>
+                        </div>
+
+                        @if (item?.AvailableColors != null && item.AvailableColors.Any())
+                        {
+                            <div class="my-2.5 flex w-full justify-center gap-1">
+                                @foreach (var c in item.AvailableColors)
+                                {
+                                    <MudTooltip Text="@c.Name" Arrow="true" Placement="Placement.Top">
+                                        <div class="h-6 w-6 cursor-pointer rounded-full border border-gray-300 shadow-sm"
+                                             style="background-color: @c.HexCode">
+                                        </div>
+                                    </MudTooltip>
+                                }
+                            </div>
+                        }
+
+                        <div class="w-full">
+                            <p class="line-clamp-1 text-center text-sm">@item?.Name</p>
+                        </div>
+
+                        <div class="w-full">
+                            <p class="line-clamp-1 text-center text-sm font-bold">@item?.BasePrice.ToString("C", vietnameseCulture)</p>
+                        </div>
+
+                        <div class="invisible absolute -bottom-10 left-0 z-10 flex w-full items-center justify-between gap-4 bg-black py-2.5 opacity-0 group-hover:visible group-hover:opacity-100">
+                            <a class="flex w-[49%] justify-center text-white"><MudIcon Icon="@Icons.Material.Filled.ShoppingCart" Size="Size.Small" Class="!mr-1" /> Mua nhanh</a>
+                            <div class="h-5 w-[2%] border-r border-white" />
+                            <a href="/Product/detail/@item?.Id" class="flex w-[49%] justify-center text-white"><MudIcon Icon="@Icons.Material.Filled.RemoveRedEye" Size="Size.Small" Class="!mr-1" /> Xem chi tiết</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
         {
-            <ProductItem />
+            for (var i = 0; i < 8; i++)
+            {
+                <div accesskey="" class="mb-10 lg:p-2.5">
+                    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="300px" Class="p-2.5" />
+                    <div class="my-2.5 flex w-full justify-center gap-1">
+                        <MudSkeleton SkeletonType="SkeletonType.Circle" Width="24px" Height="24px" />
+                        <MudSkeleton SkeletonType="SkeletonType.Circle" Width="24px" Height="24px" />
+                        <MudSkeleton SkeletonType="SkeletonType.Circle" Width="24px" Height="24px" />
+                    </div>
+                    <div class="w-full">
+                        <MudSkeleton SkeletonType="SkeletonType.Text" Width="80%" Class="mx-auto text-center" />
+                    </div>
+                    <div class="w-full">
+                        <MudSkeleton SkeletonType="SkeletonType.Text" Width="40%" Class="mx-auto text-center" />
+                    </div>
+                </div>
+            }
         }
     </div>
 </section>
@@ -30,3 +209,26 @@
 <section class="mx-auto my-8 w-full max-w-[120rem]">
     <img src="/Assets/Images/user-home-banner-2.jpg" alt="banner" />
 </section>
+
+@code {
+    List<DAL.Repository.ProductRepository.ProductDetailDto> _productNews = [];
+    List<DAL.Repository.ProductRepository.ProductDetailDto> _productFavourites = [];
+
+    CultureInfo vietnameseCulture = new CultureInfo("vi-VN");
+
+    protected override async Task OnInitializedAsync()
+    {
+        var _resProductNew = await _productService.GetNewProducts();
+        var _resProductFavourites = await _productService.GetFavouriteProducts();
+
+        if(_resProductNew.IsSuccess && _resProductNew.Data != null)
+        {
+            _productNews = _resProductNew.Data;
+        }
+
+        if (_resProductFavourites.IsSuccess && _resProductFavourites.Data != null)
+        {
+            _productFavourites = _resProductFavourites.Data;
+        }
+    }
+}

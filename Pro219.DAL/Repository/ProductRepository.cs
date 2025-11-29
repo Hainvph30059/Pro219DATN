@@ -188,5 +188,219 @@ namespace Pro219.DAL.Repository
             }
         }
 
+        public async Task<List<ProductDetailDto>> GetAllAndDetailOptimized()
+        {
+            var productListDto = await _context.Products
+                // 1. Lọc sản phẩm
+                .Where(p => p.Delete == false && p.Status == 1)
+
+                // 2. Sử dụng Select để ÁNH XẠ sang DTO
+                .Select(p => new ProductDetailDto
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    BasePrice = p.BasePrice,
+                    Description = p.Description,
+
+                    CategoryName = p.Category.Name,
+                    BrandName = p.Brand.Name,
+                    SaleName = p.Sale != null ? p.Sale.Name : null,
+                    CreateAt = p.CreatedAt,
+
+                    // 🌟 TỔNG HỢP MÀU DUY NHẤT (trả về ColorDto) 🌟
+                    AvailableColors = p.ProductVariants
+                        .Where(pv => pv.Delete == false)
+                        .Select(pv => pv.Color) // Chọn đối tượng Color
+                        .Distinct() // Lọc đối tượng Color duy nhất (EF Core sẽ làm việc này dựa trên ID)
+                        .Select(c => new ColorDto // Ánh xạ sang ColorDto
+                        {
+                            Id = c.Id,
+                            Name = c.Name,
+                            HexCode = c.HexCode
+                        })
+                        .ToList(),
+
+                    // 🌟 TỔNG HỢP KÍCH THƯỚC DUY NHẤT (trả về SizeDto) 🌟
+                    AvailableSizes = p.ProductVariants
+                        .Where(pv => pv.Delete == false)
+                        .Select(pv => pv.Size) // Chọn đối tượng Size
+                        .Distinct() // Lọc đối tượng Size duy nhất
+                        .Select(s => new SizeDto // Ánh xạ sang SizeDto
+                        {
+                            Id = s.Id,
+                            Name = s.Name
+                        })
+                        .ToList(),
+
+                    // Xử lý HÌNH ẢNH CHUNG
+                    ImageUrls = p.ProductImages
+                        .Where(pi => pi.Delete == false && pi.ProductVariantId == null)
+                        .Select(pi => pi.ImageUrl)
+                        .ToList(),
+
+                    // Xử lý BIẾN THỂ (Cập nhật ánh xạ Color/Size chi tiết)
+                    Variants = p.ProductVariants
+                        .Where(pv => pv.Delete == false)
+                        .Select(pv => new ProductVariantDto
+                        {
+                            Id = pv.Id,
+                            SKU = pv.SKU,
+                            Price = pv.Price,
+                            StockQuantity = pv.StockQuantity,
+
+                            // CẬP NHẬT THUỘC TÍNH MÀU SẮC
+                            ColorId = pv.Color.Id,
+                            ColorName = pv.Color.Name,
+                            ColorHexCode = pv.Color.HexCode,
+
+                            // CẬP NHẬT THUỘC TÍNH KÍCH THƯỚC
+                            SizeId = pv.Size.Id,
+                            SizeName = pv.Size.Name,
+
+                            VariantImageUrls = p.ProductImages
+                                .Where(pi => pi.Delete == false && pi.ProductVariantId == pv.Id)
+                                .Select(pi => pi.ImageUrl)
+                                .ToList()
+                        }).ToList(),
+
+                    // Thống kê đánh giá
+                    ReviewCount = p.Reviews.Count(r => r.Status == 1),
+                    AverageRating = p.Reviews.Any(r => r.Status == 1)
+                                        ? (double?)p.Reviews.Where(r => r.Status == 1).Average(r => r.Overall)
+                                        : null
+                })
+                .ToListAsync();
+
+            return productListDto;
+        }
+
+        public async Task<ProductDetailDto> GetDetail(int id)
+        {
+            var productListDto = await _context.Products
+                // 1. Lọc sản phẩm
+                .Where(p => p.Delete == false && p.Status == 1 && p.Id == id)
+
+                // 2. Sử dụng Select để ÁNH XẠ sang DTO
+                .Select(p => new ProductDetailDto
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    BasePrice = p.BasePrice,
+                    Description = p.Description,
+
+                    CategoryName = p.Category.Name,
+                    BrandName = p.Brand.Name,
+                    SaleName = p.Sale != null ? p.Sale.Name : null,
+                    CreateAt = p.CreatedAt,
+
+                    // 🌟 TỔNG HỢP MÀU DUY NHẤT (trả về ColorDto) 🌟
+                    AvailableColors = p.ProductVariants
+                        .Where(pv => pv.Delete == false)
+                        .Select(pv => pv.Color) // Chọn đối tượng Color
+                        .Distinct() // Lọc đối tượng Color duy nhất (EF Core sẽ làm việc này dựa trên ID)
+                        .Select(c => new ColorDto // Ánh xạ sang ColorDto
+                        {
+                            Id = c.Id,
+                            Name = c.Name,
+                            HexCode = c.HexCode
+                        })
+                        .ToList(),
+
+                    // 🌟 TỔNG HỢP KÍCH THƯỚC DUY NHẤT (trả về SizeDto) 🌟
+                    AvailableSizes = p.ProductVariants
+                        .Where(pv => pv.Delete == false)
+                        .Select(pv => pv.Size) // Chọn đối tượng Size
+                        .Distinct() // Lọc đối tượng Size duy nhất
+                        .Select(s => new SizeDto // Ánh xạ sang SizeDto
+                        {
+                            Id = s.Id,
+                            Name = s.Name
+                        })
+                        .ToList(),
+
+                    // Xử lý HÌNH ẢNH CHUNG
+                    ImageUrls = p.ProductImages
+                        .Where(pi => pi.Delete == false && pi.ProductVariantId == null)
+                        .Select(pi => pi.ImageUrl)
+                        .ToList(),
+
+                    // Xử lý BIẾN THỂ (Cập nhật ánh xạ Color/Size chi tiết)
+                    Variants = p.ProductVariants
+                        .Where(pv => pv.Delete == false)
+                        .Select(pv => new ProductVariantDto
+                        {
+                            Id = pv.Id,
+                            SKU = pv.SKU,
+                            Price = pv.Price,
+                            StockQuantity = pv.StockQuantity,
+
+                            // CẬP NHẬT THUỘC TÍNH MÀU SẮC
+                            ColorId = pv.Color.Id,
+                            ColorName = pv.Color.Name,
+                            ColorHexCode = pv.Color.HexCode,
+
+                            // CẬP NHẬT THUỘC TÍNH KÍCH THƯỚC
+                            SizeId = pv.Size.Id,
+                            SizeName = pv.Size.Name,
+
+                            VariantImageUrls = p.ProductImages
+                                .Where(pi => pi.Delete == false && pi.ProductVariantId == pv.Id)
+                                .Select(pi => pi.ImageUrl)
+                                .ToList()
+                        }).ToList(),
+
+                    // Thống kê đánh giá
+                    ReviewCount = p.Reviews.Count(r => r.Status == 1),
+                    AverageRating = p.Reviews.Any(r => r.Status == 1)
+                                        ? (double?)p.Reviews.Where(r => r.Status == 1).Average(r => r.Overall)
+                                        : null
+                }).FirstOrDefaultAsync();
+
+            return productListDto;
+        }
+
+        public class ProductDetailDto
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public decimal BasePrice { get; set; }
+            public string Description { get; set; }
+            public string CategoryName { get; set; }
+            public string BrandName { get; set; }
+            public string SaleName { get; set; }
+            public List<ProductVariantDto> Variants { get; set; }
+            public List<string> ImageUrls { get; set; }
+            public int ReviewCount { get; set; }
+            public double? AverageRating { get; set; }
+            public List<ColorDto> AvailableColors { get; set; }
+            public List<SizeDto> AvailableSizes { get; set; }
+            public DateTime CreateAt { get; set; }
+        }
+        public class ProductVariantDto
+        {
+            public int Id { get; set; }
+            public string SKU { get; set; }
+            public decimal Price { get; set; }
+            public int StockQuantity { get; set; }
+            public string ColorName { get; set; }
+            public string SizeName { get; set; }
+            public List<string> VariantImageUrls { get; set; }
+            public int ColorId { get; set; }
+            public string ColorHexCode { get; set; }
+            public int SizeId { get; set; }
+        }
+
+        public class ColorDto
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public string HexCode { get; set; }
+        }
+
+        public class SizeDto
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+        }
     }
 }
