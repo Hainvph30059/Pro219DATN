@@ -56,6 +56,25 @@ namespace Pro219.Web.Services
             }
         }
 
+        public async Task<ServiceResult<DAL.Repository.ProductRepository.ProductDetailDto>> GetDetail(int id)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/Product/get-detail/{id}");
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<DAL.Repository.ProductRepository.ProductDetailDto>();
+                return ServiceResult<DAL.Repository.ProductRepository.ProductDetailDto>.Success(result);
+            }
+            else
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                var errorMess = Constant.Errors[result];
+                return ServiceResult<DAL.Repository.ProductRepository.ProductDetailDto>.Failure(result, errorMess, response.StatusCode.ToString());
+            }
+        }
+
         public async Task<ServiceResult<Product>> Create(ProductModel product)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, "/Product/Add");
@@ -140,6 +159,45 @@ namespace Pro219.Web.Services
                 Console.WriteLine($"Lỗi: {ex.Message}");
                 return new List<ProductShowDto>();
             }
+        }
+
+        public async Task<ServiceResult<List<DAL.Repository.ProductRepository.ProductDetailDto>>> GetNewProducts()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, "/Product/get-new-products");
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<List<DAL.Repository.ProductRepository.ProductDetailDto>>();
+                return ServiceResult<List<DAL.Repository.ProductRepository.ProductDetailDto>>.Success(result);
+            }
+            else
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                var errorMess = Constant.Errors[result];
+                return ServiceResult<List<DAL.Repository.ProductRepository.ProductDetailDto>>.Failure(result, errorMess, response.StatusCode.ToString());
+            }
+
+        }
+        public async Task<ServiceResult<List<DAL.Repository.ProductRepository.ProductDetailDto>>> GetFavouriteProducts()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, "/Product/get-favourite-products");
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<List<DAL.Repository.ProductRepository.ProductDetailDto>>();
+                return ServiceResult<List<DAL.Repository.ProductRepository.ProductDetailDto>>.Success(result);
+            }
+            else
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                var errorMess = Constant.Errors[result];
+                return ServiceResult<List<DAL.Repository.ProductRepository.ProductDetailDto>>.Failure(result, errorMess, response.StatusCode.ToString());
+            }
+
         }
 
         public async Task<List<ProductShowDto>> GetBestSellerAsync()

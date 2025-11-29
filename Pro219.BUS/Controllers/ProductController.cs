@@ -260,6 +260,62 @@ namespace Pro219.API.Controllers
 
             return Ok(result);
         }
+
+        [HttpGet("get-new-products")]
+        public async Task<ActionResult<List<DAL.Repository.ProductRepository.ProductDetailDto>>> GetNewProducts()
+        {
+            try
+            {
+                var result = await productRepository.GetAllAndDetailOptimized();
+                if (result == null)
+                {
+                    return BadRequest();
+                }
+                var order = result.OrderByDescending(p => p.CreateAt).ToList().Take(8);
+                return Ok(order);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, Constant.ErrorCode.OtherError);
+            }
+        }
+
+        [HttpGet("get-favourite-products")]
+        public async Task<ActionResult<List<DAL.Repository.ProductRepository.ProductDetailDto>>> GetFavouriteProducts()
+        {
+            try
+            {
+                var result = await productRepository.GetAllAndDetailOptimized();
+                if (result == null)
+                {
+                    return BadRequest();
+                }
+                var order = result.OrderByDescending(p => p.ReviewCount).ToList().Take(8);
+                return Ok(order);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, Constant.ErrorCode.OtherError);
+            }
+        }
+
+        [HttpGet("get-detail/{id}")]
+        public async Task<ActionResult<List<DAL.Repository.ProductRepository.ProductDetailDto>>> GetDetail(int id)
+        {
+            try
+            {
+                var result = await productRepository.GetDetail(id);
+                if (result == null)
+                {
+                    return NotFound();
+                }
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, Constant.ErrorCode.OtherError);
+            }
+        }
     }
 }
 

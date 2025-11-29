@@ -10,6 +10,7 @@
         public const string UserInfoLocalStorage = "userInfo";
         public const string UserFirstLoginLocalStorage = "firstLogin";
 
+        public const string DefaultImages = "/Assets/Images/default-image.png";
         public const int DefaultSkeletons = 10;
         public static class Regex
         {
