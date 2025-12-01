@@ -1,9 +1,25 @@
 ﻿using Pro219.DAL.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace Pro219.Web.DTOs
 {
-    public class CartDTO
+    public class CartItemUpdateDTO
     {
+        public int Id { get; set; }
+
+        public int CartId { get; set; }
+
+        public int VariantId { get; set; }
+
+        public int Quantity { get; set; }
+
+        public decimal? UnitPrice { get; set; }
+
+        public bool? IsSelectedForCheckout { get; set; }
+
+        public byte? Status { get; set; }
+
+        public bool? Delete { get; set; }
     }
 
     public class CartItemWithProductDTO : CartItem

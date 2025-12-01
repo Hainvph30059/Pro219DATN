@@ -6,34 +6,40 @@
 <section class="mx-auto my-4 w-full max-w-screen-xl pt-6">
     <div class="flex gap-2 sm:flex-col">
         <h1 class="text-xl font-bold uppercase md:text-2xl lg:text-3xl">Giỏ hàng của bạn</h1>
-        <span class="text-sm">(Có <span class="font-bold">1</span> sản phẩm trong giỏ hàng)</span>
+        <span class="text-sm">(Có <span class="font-bold">@_data.Sum(i => i.Quantity)</span> sản phẩm trong giỏ hàng)</span>
     </div>
     <div class="mt-2 flex h-full w-full flex-col gap-4 lg:flex-row">
         <div class="w-full lg:w-[calc(100%-22.875rem)]">
-            <div class="flex w-full flex-col items-start gap-4 py-5 lg:flex-row lg:items-center">
-                <div class="max-h-full max-w-full flex-shrink-0 lg:max-h-[7.5rem] lg:max-w-[7.5rem]">
-                    <a>
-                        <img src="https://pos.nvncdn.com/f4d87e-8901/ps/Ao-Len-XL-6-5059-Ghi-Nhat-M.jpg?v=1761532678" alt="product" />
-                    </a>
-                </div>
-                <div class="flex max-w-none flex-shrink-0 flex-col lg:max-w-[calc(100%-26.5rem)]">
-                    <a>Áo Len XL.6.5059 - Ghi Nhạt - XL</a>
-                    <button class="w-fit p-2 text-xs text-slate-500 hover:text-red-500">Xóa</button>
-                </div>
-                <div class="flex w-28">
-                    <div class="flex h-[1.875rem] w-[1.875rem] cursor-pointer items-center justify-center border-y border-l">
-                        <MudIcon Class="!h-4 !w-4" Icon="@Icons.Material.Filled.Remove" Size="Size.Small" />
+            @if (_data.Any())
+            {
+                foreach(var item in _data)
+                {
+                    <div class="flex w-full flex-col items-start gap-4 py-5 lg:flex-row lg:items-center">
+                        <div class="max-h-full max-w-full flex-shrink-0 lg:max-h-[7.5rem] lg:max-w-[7.5rem]">
+                            <a>
+                                <img src="@item.ImageUrl" alt="product" />
+                            </a>
+                        </div>
+                        <div class="flex max-w-none flex-shrink-0 flex-col lg:max-w-[calc(100%-26.5rem)]">
+                            <a>@item.productName - @item.ColorName - @item.SizeName</a>
+                            <button class="w-fit p-2 text-xs text-slate-500 hover:text-red-500" @onclick="@(() => Delete(item.Id))">Xóa</button>
+                        </div>
+                        <div class="flex w-28">
+                            <div class="flex h-[1.875rem] w-[1.875rem] cursor-pointer items-center justify-center border-y border-l">
+                                <MudIcon Class="!h-4 !w-4" Icon="@Icons.Material.Filled.Remove" Size="Size.Small" @onclick="@(() => UpdateQuantity(item, false))" />
+                            </div>
+
+                            <span class="flex h-[1.875rem] w-10 items-baseline justify-center border bg-gray-50 p-1">@item.Quantity</span>
+
+                            <div class="flex h-[1.875rem] w-[1.875rem] cursor-pointer items-center justify-center border-y border-r">
+                                <MudIcon Class="!h-4 !w-4" Icon="@Icons.Material.Filled.Add" Size="Size.Small" @onclick="@(() => UpdateQuantity(item, true))" />
+                            </div>
+                        </div>
+
+                        <span class="w-40 flex-shrink-0 whitespace-pre-wrap">@item.UnitPrice?.ToString("C", vietnameseCulture)</span>
                     </div>
-
-                    <span class="flex h-[1.875rem] w-10 items-baseline justify-center border bg-gray-50 p-1">1</span>
-
-                    <div class="flex h-[1.875rem] w-[1.875rem] cursor-pointer items-center justify-center border-y border-r">
-                        <MudIcon Class="!h-4 !w-4" Icon="@Icons.Material.Filled.Add" Size="Size.Small" />
-                    </div>
-                </div>
-
-                <span class="w-40 flex-shrink-0 whitespace-pre-wrap">179,000đ</span>
-            </div>
+                }
+            }
         </div>
 
         <div class="h-fit w-[21.875rem] flex-shrink-0 bg-gray-50 p-3 shadow">
@@ -43,18 +49,133 @@
 
             <div class="flex justify-between gap-2">
                 <span class="flex-shrink-0 text-sm font-bold uppercase">Tổng tiền:</span>
-                <span class="whitespace-pre-wrap text-sm font-medium">179,000đ</span>
+                <span class="whitespace-pre-wrap text-sm font-medium">@_data.Sum(i => i.Quantity * i.UnitPrice)?.ToString("C", vietnameseCulture)</span>
             </div>
 
             <MudDivider Class="my-4 !border-black" />
 
             <button class="mb-2 w-full bg-black py-3 text-sm text-white shadow">Tiến Hành Đặt Hàng</button>
 
-            <button class="w-full border-2 border-solid border-black bg-white py-3 text-sm shadow hover:bg-black hover:text-white">Mua thêm sản phẩm</button>
+            <button class="w-full border-2 border-solid border-black bg-white py-3 text-sm shadow hover:bg-black hover:text-white" @onclick="@(() => navigation.NavigateTo(RouterConst.User.Home))">Mua thêm sản phẩm</button>
         </div>
     </div>
 </section>
 
 @code {
+    private List<CartItemWithProductDTO> _data = [];
+    private string _cartId = "";
+    private string _token = "";
+    private int _parsedCartId = 0;
+    CultureInfo vietnameseCulture = new CultureInfo("vi-VN");
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            _token = await localStorage.GetItemAsStringAsync(Constant.TokenNameLocalStorage);
+            _cartId = await localStorage.GetItemAsStringAsync(Constant.AuthCartIdLocalStorage);
+
+            if(string.IsNullOrEmpty(_token))
+            {
+
+            } else
+            {
+                await LoadData();
+                StateHasChanged();
+            }
+        }
+    }
+
+    async Task LoadData()
+    {
+        if (!string.IsNullOrEmpty(_cartId))
+        {
+            bool isSuccess = int.TryParse(_cartId, out _parsedCartId);
+
+            if (isSuccess)
+            {
+                var result = await _cartItemService.GetAllCartItemWithDetailByCartId(_parsedCartId);
+
+                if (result.IsSuccess && result.Data != null)
+                {
+                    _data = result.Data;
+                }
+            }
+        }
+    }
+
+    private async Task UpdateQuantity(CartItemWithProductDTO item, bool isIncrease)
+    {
+        if (item == null) return;
+
+        if(isIncrease)
+        {
+            var newItem = new CartItemUpdateDTO()
+            {
+                Id = item.Id,
+                CartId = item.CartId,
+                VariantId = item.VariantId,
+                Quantity = item.Quantity + 1,
+                IsSelectedForCheckout = false,
+                UnitPrice = item.UnitPrice,
+                Status = item.Status,
+                Delete = item.Delete
+            };
+
+            var result = await _cartItemService.Update(newItem, _token);
+
+            if (result.IsSuccess)
+            {
+                await LoadData();
+                await _cartStateService.LoadCartDetailsAsync();
+                StateHasChanged();
+            } else
+            {
+                _snackbar.Add("Đã có lỗi xảy ra", Severity.Error);
+            }
+        } else
+        {
+            if (item.Quantity <= 1) return;
+            var newItem = new CartItemUpdateDTO()
+                {
+                    Id = item.Id,
+                    CartId = item.CartId,
+                    VariantId = item.VariantId,
+                    Quantity = item.Quantity - 1,
+                    IsSelectedForCheckout = false,
+                    UnitPrice = item.UnitPrice,
+                    Status = item.Status,
+                    Delete = item.Delete
+                };
+
+            var result = await _cartItemService.Update(newItem, _token);
+
+            if (result.IsSuccess)
+            {
+                await LoadData();
+                await _cartStateService.LoadCartDetailsAsync();
+                StateHasChanged();
+            }
+            else
+            {
+                _snackbar.Add("Đã có lỗi xảy ra", Severity.Error);
+            }
+        }
+    }
+
+    private async Task Delete(int id)
+    {
+        var result = await _cartItemService.Delete(id, _token);
+
+        if (result)
+        {
+            _snackbar.Add("Xóa thành công", Severity.Success);
+            await _cartStateService.LoadCartDetailsAsync();
+            StateHasChanged();
+        }
+        else
+        {
+            _snackbar.Add("Đã có lỗi xảy ra", Severity.Error);
+        }
+    }
 }
