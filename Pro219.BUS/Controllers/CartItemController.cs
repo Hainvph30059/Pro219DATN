@@ -190,7 +190,6 @@ namespace Pro219.API.Controllers
 
                 var variantMap = allProductVariants.ToDictionary(pv => pv.Id);
                 var productMap = allProducts.ToDictionary(p => p.Id);
-                var productImageMap = allProductImages.ToDictionary(p => p.Id);
                 var colorMap = allColors.ToDictionary(p => p.Id);
                 var sizeMap  = allSizes.ToDictionary(p => p.Id);
 
@@ -199,17 +198,16 @@ namespace Pro219.API.Controllers
                     variantMap.TryGetValue(cartItem.VariantId, out var productVariant);
 
                     Product product = null;
-                    ProductImage productImage = null;
                     Size size = null;
                     Color color = null;
                     if (productVariant != null)
                     {
                         productMap.TryGetValue(productVariant.ProductId, out product);
-                        productImageMap.TryGetValue(productVariant.Id, out productImage);
                         colorMap.TryGetValue(productVariant.ColorId ?? -1, out color);
                         sizeMap.TryGetValue(productVariant.SizeId ?? -1, out size);
                     }
 
+                    var image = allProductImages.Where(pi => pi.ProductVariantId == productVariant?.Id && pi.ProductId == product?.Id).FirstOrDefault();
                     return new CartItemWithProductDTO
                     {
                         Id = cartItem.Id,
@@ -219,7 +217,7 @@ namespace Pro219.API.Controllers
                         Quantity = cartItem.Quantity,
                         ColorName = color?.Name ?? "",
                         SizeName = size?.Name ?? "",
-                        ImageUrl = productImage?.ImageUrl ?? "/Assets/Images/default-image.png",
+                        ImageUrl = image != null ? image.ImageUrl : "/Assets/Images/default-image.png",
                         UnitPrice = cartItem.UnitPrice ?? product?.BasePrice ?? 0,
                     };
                 }).ToList();
