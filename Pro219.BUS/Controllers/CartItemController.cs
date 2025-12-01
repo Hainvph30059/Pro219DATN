@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pro219.API.DTOs;
 using Pro219.DAL.Models;
@@ -15,10 +15,20 @@ namespace Pro219.API.Controllers
     public class CartItemController : ControllerBase
     {
         CartItemRepository cartItemRepository;
+        ProductVariantRepository productVariantRepository;
+        ProductRepository productRepository;
+        ProductImageRepository productImageRepository;
+        SizeRepository sizeRepository;
+        ColorRepository colorRepository;
 
         public CartItemController()
         {
             cartItemRepository = new CartItemRepository();
+            productVariantRepository = new ProductVariantRepository();
+            productRepository = new ProductRepository();
+            productImageRepository = new ProductImageRepository();
+            sizeRepository = new SizeRepository();
+            colorRepository = new ColorRepository();
         }
 
         [HttpGet("GetAll")]
@@ -140,7 +150,7 @@ namespace Pro219.API.Controllers
         }
 
         [HttpDelete("Delete/{id}")]
-        [Authorize(Roles = "Admin,Manager,Staff")]
+        [Authorize(Roles = "Admin,Manager,Staff,Customer")]
         public async Task<ActionResult<CartItem>> DeleteCartItem(int id)
         {
             try
@@ -157,6 +167,68 @@ namespace Pro219.API.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, Constant.ErrorCode.OtherError);
+            }
+        }
+
+        [HttpGet("get-all-cart-item-with-detail/{cartId}")]
+        public async Task<ActionResult<IEnumerable<CartItemWithProductDTO>>> GetCartItemDetailBycartId(int cartId)
+        {
+            try
+            {
+                var cartItems = await cartItemRepository.GetCartItemsByCartId(cartId);
+
+                if (cartItems == null || !cartItems.Any())
+                {
+                    return Ok(Enumerable.Empty<CartItemWithProductDTO>());
+                }
+
+                var allProductVariants = await productVariantRepository.GetAllProductVariants();
+                var allProducts = await productRepository.GetAllProducts();
+                var allProductImages = await productImageRepository.GetAllProductImages();
+                var allSizes = await sizeRepository.GetAllSizes();
+                var allColors = await colorRepository.GetAllColors();
+
+                var variantMap = allProductVariants.ToDictionary(pv => pv.Id);
+                var productMap = allProducts.ToDictionary(p => p.Id);
+                var productImageMap = allProductImages.ToDictionary(p => p.Id);
+                var colorMap = allColors.ToDictionary(p => p.Id);
+                var sizeMap  = allSizes.ToDictionary(p => p.Id);
+
+                var resultDtoList = cartItems.Select(cartItem =>
+                {
+                    variantMap.TryGetValue(cartItem.VariantId, out var productVariant);
+
+                    Product product = null;
+                    ProductImage productImage = null;
+                    Size size = null;
+                    Color color = null;
+                    if (productVariant != null)
+                    {
+                        productMap.TryGetValue(productVariant.ProductId, out product);
+                        productImageMap.TryGetValue(productVariant.Id, out productImage);
+                        colorMap.TryGetValue(productVariant.ColorId ?? -1, out color);
+                        sizeMap.TryGetValue(productVariant.SizeId ?? -1, out size);
+                    }
+
+                    return new CartItemWithProductDTO
+                    {
+                        Id = cartItem.Id,
+                        CartId = cartItem.Id,
+                        productName = product?.Name ?? "",
+                        Quantity = cartItem.Quantity,
+                        ColorName = color?.Name ?? "",
+                        SizeName = size?.Name ?? "",
+                        ImageUrl = productImage?.ImageUrl ?? "/Assets/Images/default-image.png",
+                        UnitPrice = cartItem.UnitPrice ?? product?.BasePrice ?? 0,
+                    };
+                }).ToList();
+
+                return Ok(resultDtoList);
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error.");
             }
         }
     }

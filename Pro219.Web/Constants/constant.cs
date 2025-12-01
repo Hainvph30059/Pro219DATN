@@ -9,6 +9,8 @@
         public const string TokenExpiredLocalStorage = "expired";
         public const string UserInfoLocalStorage = "userInfo";
         public const string UserFirstLoginLocalStorage = "firstLogin";
+        public const string GuestCartLocalStorage = "GuestCartData";
+        public const string AuthCartIdLocalStorage = "AuthCartIdKey";
 
         public const string DefaultImages = "/Assets/Images/default-image.png";
         public const int DefaultSkeletons = 10;

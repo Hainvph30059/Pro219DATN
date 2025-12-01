@@ -88,7 +88,7 @@
                 }
             </div>
 
-        <MudBadge Content="@_countCart" Color="Color.Error" Overlap="true" Bordered="true">
+            <MudBadge Content="@_cartStateService.CartDetails.TotalItemCount" Color="Color.Error" Overlap="true" Bordered="true">
                 <MudIcon @onclick="OnOpenCart" Icon="@Icons.Material.Filled.ShoppingCart" Class="cursor-pointer" />
         </MudBadge>
         </div>
@@ -121,7 +121,7 @@
             }
         </div>
 
-        <MudBadge Content="@_countCart" Color="Color.Error" Overlap="true" Bordered="true">
+        <MudBadge Content="@_cartStateService.CartDetails.TotalItemCount" Color="Color.Error" Overlap="true" Bordered="true">
             <MudIcon @onclick="OnOpenCart" Icon="@Icons.Material.Filled.ShoppingCart" Class="cursor-pointer" />
         </MudBadge>
     </div>
@@ -193,6 +193,15 @@
         {
             _lstCategories = allCategories.Data;
         } 
+
+        await _cartStateService.LoadCartDetailsAsync();
+
+        _cartStateService.OnCountChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        _cartStateService.OnCountChange -= StateHasChanged;
     }
 
     private void HandleShowMenuChild()
@@ -277,38 +286,38 @@
     }
 
     public RenderFragment<List<CategoryDTO>> RenderDrawerItems => categories => (__builder) =>
-{
-    foreach (var category in categories)
     {
-        if (category.SubCategory?.Any() == true)
+        foreach (var category in categories)
         {
-            // Lấy trạng thái hiện tại từ Dictionary
-            var isExpanded = IsCategoryExpanded(category.Id);
+            if (category.SubCategory?.Any() == true)
+            {
+                // Lấy trạng thái hiện tại từ Dictionary
+                var isExpanded = IsCategoryExpanded(category.Id);
 
-            // Item cha trong Drawer
-            // Sửa OnClick để gọi hàm ToggleCategoryExpansion
-            <MudListItem T="string" OnClick="@(() => ToggleCategoryExpansion(category.Id))">
-                <div class="flex w-full items-center justify-between">
-                    <MudText Typo="Typo.subtitle2" Class="!font-semibold">@category.Name</MudText>
-                    @* Sửa Icon để hiển thị theo trạng thái isExpanded *@
-                    <MudIcon Icon="@(isExpanded ? Icons.Material.Filled.KeyboardArrowUp : Icons.Material.Filled.KeyboardArrowDown)" Size="Size.Small" />
-                </div>
-            </MudListItem>
+                // Item cha trong Drawer
+                // Sửa OnClick để gọi hàm ToggleCategoryExpansion
+                <MudListItem T="string" OnClick="@(() => ToggleCategoryExpansion(category.Id))">
+                    <div class="flex w-full items-center justify-between">
+                        <MudText Typo="Typo.subtitle2" Class="!font-semibold">@category.Name</MudText>
+                        @* Sửa Icon để hiển thị theo trạng thái isExpanded *@
+                        <MudIcon Icon="@(isExpanded ? Icons.Material.Filled.KeyboardArrowUp : Icons.Material.Filled.KeyboardArrowDown)" Size="Size.Small" />
+                    </div>
+                </MudListItem>
             
-            // MudCollapse cho cấp con
-            // Sửa Expanded để liên kết với trạng thái isExpanded
-            <MudCollapse Expanded="@isExpanded">
-                <MudList T="string" Class="ml-4">
-                    @RenderDrawerItems(category.SubCategory)
-                </MudList>
-            </MudCollapse>
+                // MudCollapse cho cấp con
+                // Sửa Expanded để liên kết với trạng thái isExpanded
+                <MudCollapse Expanded="@isExpanded">
+                    <MudList T="string" Class="ml-4">
+                        @RenderDrawerItems(category.SubCategory)
+                    </MudList>
+                </MudCollapse>
+            }
+            else // Item cuối (Leaf Item)
+            {
+                <MudListItem T="string" OnClick="() => NavigateAndCloseDrawer(category.Id)">
+                    <MudText Typo="Typo.body2">@category.Name</MudText>
+                </MudListItem>
+            }
         }
-        else // Item cuối (Leaf Item)
-        {
-            <MudListItem T="string" OnClick="() => NavigateAndCloseDrawer(category.Id)">
-                <MudText Typo="Typo.body2">@category.Name</MudText>
-            </MudListItem>
-        }
-    }
-};
+    };
 }

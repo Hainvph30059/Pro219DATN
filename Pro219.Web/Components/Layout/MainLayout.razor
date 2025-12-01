@@ -120,6 +120,16 @@
                     return;
                 }
 
+                var userCart = await _cartService.GetByCustomerId(getMe.Id);
+
+                if (userCart.IsSuccess && userCart.Data != null)
+                {
+
+                    await localStorage.SetItemAsStringAsync(Constant.AuthCartIdLocalStorage, userCart.Data.Id.ToString());
+                }
+
+                await _cartStateService.LoadCartDetailsAsync();
+
                 var userInfoJson = JsonSerializer.Serialize(getMe);
                 await localStorage.SetItemAsStringAsync(Constant.UserInfoLocalStorage, userInfoJson);
                 _currentUserInfo = getMe;
@@ -177,8 +187,9 @@
         StateHasChanged();
     }
 
-    public void HandleOpenCart()
+    public async void HandleOpenCart()
     {
+        await _cartStateService.LoadCartDetailsAsync(forceReload: true);
         _drawerService.OpenDrawer();
     }
 
@@ -187,7 +198,9 @@
         await localStorage.RemoveItemAsync(Constant.TokenNameLocalStorage);
         await localStorage.RemoveItemAsync(Constant.TokenExpiredLocalStorage);
         await localStorage.RemoveItemAsync(Constant.UserInfoLocalStorage);
-
+        await localStorage.RemoveItemAsync(Constant.AuthCartIdLocalStorage);
+        await _cartStateService.LoadCartDetailsAsync(forceReload: true);
+        _currentUserInfo = null;
         _isLoading = false;
         navigation.NavigateTo(route);
     }
