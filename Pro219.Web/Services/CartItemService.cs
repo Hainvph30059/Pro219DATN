@@ -13,7 +13,7 @@ namespace Pro219.Web.Services
             _httpClient = httpClient;
         }
 
-        public async Task<ServiceResult<List<CartDTO>>> GetAllCartItemWithDetailByCartId(int cartId)
+        public async Task<ServiceResult<List<CartItemWithProductDTO>>> GetAllCartItemWithDetailByCartId(int cartId)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, $"/CartItem/get-all-cart-item-with-detail/{cartId}");
 
@@ -21,16 +21,44 @@ namespace Pro219.Web.Services
 
             if (response.IsSuccessStatusCode)
             {
-                var result = await response.Content.ReadFromJsonAsync<List<CartDTO>>();
-                return ServiceResult<List<CartDTO>>.Success(result);
+                var result = await response.Content.ReadFromJsonAsync<List<CartItemWithProductDTO>>();
+                return ServiceResult<List<CartItemWithProductDTO>>.Success(result);
             }
             else
             {
                 var result = await response.Content.ReadAsStringAsync();
                 var errorMess = Constant.Errors[result];
-                return ServiceResult<List<CartDTO>>.Failure(result, errorMess, response.StatusCode.ToString());
+                return ServiceResult<List<CartItemWithProductDTO>>.Failure(result, errorMess, response.StatusCode.ToString());
             }
         }
+
+        public async Task<ServiceResult<CartItem>> Update(CartItemUpdateDTO cartItemUpdateDTO, string token)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Put, "/CartItem/Update");
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                var formatToken = token.Trim('"');
+                request.Headers.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", formatToken);
+            }
+
+            request.Content = JsonContent.Create(cartItemUpdateDTO);
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<CartItem>();
+                return ServiceResult<CartItem>.Success(result);
+            }
+            else
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                var errorMess = Constant.Errors[result ?? ""];
+                return ServiceResult<CartItem>.Failure(result, errorMess, response.StatusCode.ToString());
+            }
+        } 
 
         public async Task<bool> Delete(int id, string token)
         {

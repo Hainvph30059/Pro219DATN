@@ -110,7 +110,7 @@ namespace Pro219.API.Controllers
         }
 
         [HttpPut("Update")]
-        [Authorize(Roles = "Admin,Manager,Staff")]
+        [Authorize(Roles = "Admin,Manager,Staff,Customer")]
         public async Task<ActionResult<CartItem>> UpdateCartItem([FromBody] CartItemUpdateDTO cartItemDTO)
         {
             try
@@ -213,7 +213,8 @@ namespace Pro219.API.Controllers
                     return new CartItemWithProductDTO
                     {
                         Id = cartItem.Id,
-                        CartId = cartItem.Id,
+                        VariantId = cartItem.VariantId,
+                        CartId = cartItem.CartId,
                         productName = product?.Name ?? "",
                         Quantity = cartItem.Quantity,
                         ColorName = color?.Name ?? "",
