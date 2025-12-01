@@ -163,6 +163,7 @@ else
     private List<string> _images = [];
     CultureInfo vietnameseCulture = new CultureInfo("vi-VN");
 
+    private string _token = "";
     private int _selectedColorId = 0;
     private string _selectedColorName = "";
     private int _selectedSizeId= 0;
@@ -171,6 +172,14 @@ else
 
 
     private bool _disableAction => _foundVariant == null || _foundVariant.StockQuantity < 1;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            _token = await localStorage.GetItemAsStringAsync(Constant.TokenNameLocalStorage);
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -272,7 +281,7 @@ else
             v.SizeId == sizeId &&
             v.StockQuantity > 0);
 
-            return !result;
+        return !result;
     }
 
     private string GetColorClass(string colorName)
@@ -311,7 +320,7 @@ else
         _quantity--;
     }
 
-    private void AddToCart()
+    private async Task AddToCart()
     {
         if (_foundVariant == null)
         {
@@ -319,13 +328,21 @@ else
             return;
         }
 
-        Snackbar.Add($"Đã thêm {_quantity} sản phẩm vào giỏ hàng!", Severity.Success);
-    }
+        var item = new AddCartModel()
+        {
+            VariantId = _foundVariant.Id,
+            Quantity = _quantity
+        };
 
-    private void BuyNow()
-    {
-        AddToCart();
-        // Redirect tới trang thanh toán
-        // NavigationManager.NavigateTo("/checkout");
+        var result = await _cartService.AddToCart(item, _token);
+
+        if (result.IsSuccess)
+        {
+            _snackbar.Add("Thêm vào giỏ hàng thành công", Severity.Success);
+            await _cartStateService.LoadCartDetailsAsync();
+        } else
+        {
+            _snackbar.Add("Thêm vào giỏ hàng thất bại", Severity.Error);
+        }
     }
 }

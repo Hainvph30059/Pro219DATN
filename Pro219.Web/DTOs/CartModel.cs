@@ -18,7 +18,7 @@ namespace Pro219.Web.DTOs
 
     public class AddCartModel
     {
-        public int ProductVariantId { get; set; }
+        public int VariantId { get; set; }
 
         public int Quantity { get; set; }
     }

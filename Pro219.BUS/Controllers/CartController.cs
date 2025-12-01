@@ -175,6 +175,7 @@ namespace Pro219.API.Controllers
                             AddedAt = DateTime.Now,
                             CreateAt = DateTime.Now,
                             UpdateBy = userId,
+                            IsSelectedForCheckout = false,
                             Status = 1
                         };
                         var addedCartItem = await cartItemRepository.AddCartItem(newCartItem);
