@@ -1,11 +1,16 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pro219.API.DTOs;
 using Pro219.DAL.Models;
 using Pro219.DAL.Repository;
 using System;
 using System.Collections.Generic;
+using System.Net.Http.Headers;
 using System.Security.Claims;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
 namespace Pro219.API.Controllers
@@ -15,9 +20,11 @@ namespace Pro219.API.Controllers
     public class AddressController : ControllerBase
     {
         AddressRepository addressRepository;
+        private readonly IConfiguration _configuration;
+        public AddressController(IConfiguration configuration)
 
-        public AddressController()
         {
+            _configuration = configuration;
             addressRepository = new AddressRepository();
         }
 
@@ -176,6 +183,169 @@ namespace Pro219.API.Controllers
             {
                 return StatusCode(500, Constant.ErrorCode.OtherError);
             }
+        }
+
+        [HttpGet("GetAllProvinces")]
+        public async Task<ActionResult<List<ProvinceDTO>>> GetAllProvinces()
+        {
+
+            HttpClient client = new HttpClient();
+
+            string token = _configuration["GHN:Token"];
+
+
+            string url = "https://online-gateway.ghn.vn/shiip/public-api/master-data/province";
+            try
+            {
+                client.DefaultRequestHeaders.Add("token", token);
+                client.DefaultRequestHeaders.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue("application/json"));
+                HttpResponseMessage response = await client.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+                string responseBody = await response.Content.ReadAsStringAsync();
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+
+                var root = JsonSerializer.Deserialize<RootResponseForProvince>(responseBody, options);
+                if (root == null || root.Data == null)
+                {
+                    return StatusCode(500, "Lỗi khi kéo data =)");
+                }
+                return Ok(root.Data);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Lỗi khi kéo data =)");
+            }
+
+
+
+        }
+
+        [HttpGet("GetAllDistricts")]
+        public async Task<ActionResult<List<DistrictDTO>>> GetAllDistricts()
+        {
+            HttpClient client = new HttpClient();
+
+            string token = _configuration["GHN:Token"];
+
+
+            string url = "https://online-gateway.ghn.vn/shiip/public-api/master-data/district";
+            try
+            {
+                client.DefaultRequestHeaders.Add("token", token);
+                client.DefaultRequestHeaders.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue("application/json"));
+                HttpResponseMessage response = await client.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+                string responseBody = await response.Content.ReadAsStringAsync();
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+
+                var root = JsonSerializer.Deserialize<RootResponseForDistrict>(responseBody, options);
+                if (root == null || root.Data == null)
+                {
+                    return StatusCode(500, "Lỗi khi kéo data =)");
+                }
+                return Ok(root.Data);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Lỗi khi kéo data =)");
+            }
+        }
+
+        [HttpGet("GetAllDistrictsByProvinceId/{provinceId}")]
+        public async Task<ActionResult<List<DistrictDTO>>> GetAllDistrictsByProvinceId(string provinceId)
+        {
+            var token = _configuration["GHN:Token"];
+            var url = $"https://online-gateway.ghn.vn/shiip/public-api/master-data/district?province_id={provinceId}";
+
+            using var client = new HttpClient();
+            client.DefaultRequestHeaders.Add("token", token);
+
+            try
+            {
+                var response = await client.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+
+                var responseBody = await response.Content.ReadAsStringAsync();
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+
+                var root = JsonSerializer.Deserialize<RootResponseForDistrict>(responseBody, options);
+                if (root == null || root.Data == null)
+                {
+                    return StatusCode(500, "Lỗi khi kéo data =)");
+                }
+
+                return Ok(root.Data);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Lỗi khi kéo data =)");
+            }
+        }
+
+
+        [HttpGet("GetAllWardByDistrictCode/{districtCode}")]
+        public async Task<ActionResult<List<WardDTO>>> GetAllWardByDistrictCode(string districtCode)
+        {
+            var token = _configuration["GHN:Token"];
+            var url = $"https://online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id={districtCode}";
+
+            using var client = new HttpClient();
+            client.DefaultRequestHeaders.Add("token", token);
+
+            try
+            {
+                var response = await client.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+
+                var result = await response.Content.ReadAsStringAsync();
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+
+                var root = JsonSerializer.Deserialize<RootResponseForWard>(result, options);
+                if (root == null || root.Data == null)
+                {
+                    return StatusCode(500, "Lỗi khi kéo data =)");
+                }
+
+                return Ok(root.Data);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Lỗi khi kéo data =)");
+            }
+        }
+
+
+        public class RootResponseForProvince
+        {
+            public int Code { get; set; }
+            public string Message { get; set; }
+            public List<ProvinceDTO> Data { get; set; }
+        }
+        public class RootResponseForDistrict
+        {
+            public int Code { get; set; }
+            public string Message { get; set; }
+            public List<DistrictDTO> Data { get; set; }
+        }
+        public class RootResponseForWard
+        {
+            public int Code { get; set; }
+            public string Message { get; set; }
+            public List<WardDTO> Data { get; set; }
         }
     }
 }
