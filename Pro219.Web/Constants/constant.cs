@@ -28,7 +28,9 @@
             public const string Max2000 = "Tối đa 2000 kí tự.";
             public const string Max1000 = "Tối đa 1000 kí tự.";
             public const string Max255 = "Tối đa 255 kí tự.";
+            public const string Max500 = "Tối đa 500 kí tự.";
             public const string Max200 = "Tối đa 200 kí tự.";
+            public const string Max20 = "Tối đa 20 kí tự.";
             public const string Max100 = "Tối đa 100 kí tự.";
             public const string Max50 = "Tối đa 50 kí tự.";
             public const string Min2 = "Tối thiểu 2 kí tự.";

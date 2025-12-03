@@ -37,9 +37,9 @@
             <span class="whitespace-pre-wrap text-sm font-medium">@(_cartStateService.CartDetails.TemporaryTotal.ToString("C", vietnameseCulture))</span>
         </div>
 
-        <button class="my-4 w-full bg-black py-3 text-base text-white shadow" disabled="@(_cartStateService.CartDetails.TotalItemCount == 0)">Tiến Hành Đặt Hàng</button>
+        <button class="my-4 w-full bg-black py-3 text-base text-white shadow" disabled="@(_cartStateService.CartDetails.TotalItemCount == 0)" @onclick="@(() => HandleRedirect(false))">Tiến Hành Đặt Hàng</button>
 
-        <button @onclick="HandleRedirect" class="mx-auto flex w-fit items-center text-sm">Xem Chi tiết Giỏ Hàng <MudIcon Class="ml-2" Icon="@Icons.Material.Filled.ArrowForward" Size="Size.Medium" /></button>
+        <button @onclick="@(() => HandleRedirect(true))" class="mx-auto flex w-fit items-center text-sm">Xem Chi tiết Giỏ Hàng <MudIcon Class="ml-2" Icon="@Icons.Material.Filled.ArrowForward" Size="Size.Medium" /></button>
     </div>
 </MudDrawer>
 
@@ -50,7 +50,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-            _token = await localStorage.GetItemAsStringAsync(Constant.TokenNameLocalStorage);
+        _token = await localStorage.GetItemAsStringAsync(Constant.TokenNameLocalStorage);
     }
 
     protected override void OnInitialized()
@@ -63,11 +63,16 @@
         _drawerService.OnChange -= StateHasChanged;
     }
 
-    void HandleRedirect()
+    void HandleRedirect(bool isToCart)
     {
         _drawerService.CloseDrawer();
-
-        navigation.NavigateTo(RouterConst.User.CartDetail);
+        if (isToCart)
+        {
+            navigation.NavigateTo(RouterConst.User.CartDetail);
+        } else
+        {
+            navigation.NavigateTo(RouterConst.User.CheckoutDetail);
+        }
     }
 
     private async Task Delete(int id)

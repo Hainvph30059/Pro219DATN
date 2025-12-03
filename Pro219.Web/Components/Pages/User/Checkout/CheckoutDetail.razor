@@ -1,0 +1,264 @@
+﻿@page "/checkout/customer"
+@layout MainLayout
+
+<PageTitle>@Constant.PageTitleUser Thanh toán</PageTitle>
+
+<section class="mx-auto mb-10 mt-4 w-full max-w-[1032px]">
+    <div class="flex w-full flex-col flex-wrap justify-between gap-4 lg:flex-row lg:gap-8">
+        <div class="w-full lg:w-[calc(100%-26rem)]">
+            <div class="max-h-[24rem] w-full">
+                <MudExpansionPanel Class="!mt-2 !rounded-lg !border !border-solid !border-slate-200 !shadow">
+                    <TitleContent>
+                        <h3 class="text-lg font-bold">Địa chỉ giao hàng</h3>
+
+                        <div class="mt-3 flex items-center gap-2">
+                            <MudIcon Icon="@Icons.Material.Filled.Place"></MudIcon>
+                            <div>
+                                <p class="text-sm font-medium">@_addressDefault?.FullName <span class="text-slate-500">- @_addressDefault?.Phone</span></p>
+                                <p class="text-sm font-medium">Số 1, đường Trịnh Văn Bô, Phương Canh, Nam Từ Liêm, Hà Nội</p>
+                            </div>
+                        </div>
+                    </TitleContent>
+                    <ChildContent>
+                        <MudDivider />
+
+                        <MudButton Class="my-6 w-full" Variant="Variant.Outlined" OnClick="OpenDialogCreateAddress"><MudIcon Icon="@Icons.Material.Filled.AddLocation" /> Thêm địa chỉ mới</MudButton>
+
+                        <div class="max-h-[30rem] w-full">
+                            <MudRadioGroup T="int" Value="@_selectedAdress" ValueChanged="OnChangeAddress">
+                                @if (_address.Any())
+                                {
+                                    @foreach (var item in _address)
+                                    {
+                                        <MudRadio Value="@item.Id" Class="my-1 !w-full !space-y-2">
+                                            <p class="text-sm font-medium">@item.FullName <span class="text-slate-500">- @item.Phone</span> <span class="text-xs text-red-400">@(item.IsDefault ? "- Mặc Định" : "")</span></p>
+                                            <p class="text-sm font-medium">Số 1, đường Trịnh Văn Bô, Phương Canh, Nam Từ Liêm, Hà Nội</p>
+                                        </MudRadio>
+                                    }
+                                }
+                                
+                            </MudRadioGroup>
+                        </div>
+                    </ChildContent>
+                </MudExpansionPanel>
+
+                <div class="mt-6 rounded-lg border border-solid border-slate-200 p-3 shadow">
+                    <h3 class="text-lg font-bold">Phương thức thanh toán</h3>
+
+                    <MudRadioGroup T="int">
+                        <MudRadio Value="0" Class="!w-full">
+                            Tiền mặt
+                        </MudRadio>
+                    </MudRadioGroup>
+                </div>
+
+                <div class="mt-6 rounded-lg border border-solid border-slate-200 p-3 shadow">
+                    <h3 class="text-lg font-bold">Ghi chú</h3>
+
+                    <input value="@_coupon" placeholder="nội dung cho cửa hàng" class="mt-3 !h-10 w-full rounded-md border border-solid border-slate-200 px-2" />
+                </div>
+            </div>
+        </div>
+
+        <div class="flex w-full flex-shrink-0 flex-col gap-5 lg:w-[24rem]">
+            <div class="flex max-h-[40rem] w-full flex-col gap-3 overflow-y-auto rounded-lg border border-solid border-slate-200 p-3 shadow">
+                @if(_data.Any())
+                {
+                    foreach (var item in _data)
+                    {
+                        <div class="flex items-center gap-2">
+                            <div class="h-full max-h-[5rem] w-full max-w-[5rem] flex-shrink-0">
+                                <a>
+                                    <img src="@item.ImageUrl" alt="product" />
+                                </a>
+                            </div>
+
+                            <div class="flex flex-col">
+                                <p class="whitespace-pre-wrap text-sm">@item.productName - @item.ColorName - @item.SizeName</p>
+                                <span class="whitespace-pre-wrap text-sm font-medium">@item.UnitPrice?.ToString("C", vietnameseCulture) x @item.Quantity</span>
+                                <button class="w-fit p-2 text-xs text-slate-500 hover:text-red-500" @onclick="@(() => Delete(item.Id))">Xóa</button>
+                            </div>
+                        </div>
+                    }
+                } else
+                {
+                    <p class="text-center text-base">Sản phẩm trống</p>
+                }
+            </div>
+
+            <div class="flex w-full flex-col gap-2 rounded-lg border border-solid border-slate-200 p-3 shadow">
+                <h3 class="text-lg font-bold">Khuyến mãi</h3>
+
+                <div class="flex w-full items-center gap-2">
+                    <input value="@_coupon" placeholder="nhập mã khuyến mãi" class="!h-10 w-full rounded-md border border-solid border-slate-200 px-2" />
+                    <MudButton Class="!h-10 w-[8rem] flex-shrink-0" Color="Color.Dark" Variant="Variant.Filled" Disabled="@(!_data.Any())">Áp Dụng</MudButton>
+                </div>
+            </div>
+
+            <div class="flex w-full flex-col gap-2 rounded-lg border border-solid border-slate-200 p-3 shadow">
+                <h3 class="text-lg font-bold">Tóm tắt đơn hàng</h3>
+                <div class="flex justify-between gap-2">
+                    <span class="flex-shrink-0 text-sm uppercase">Tiền sản phẩm:</span>
+                    <span class="whitespace-pre-wrap text-sm font-medium">@_data.Sum(i => i.Quantity * i.UnitPrice)?.ToString("C", vietnameseCulture)</span>
+                </div>
+                <div class="flex justify-between gap-2">
+                    <span class="flex-shrink-0 text-sm uppercase">Phí giao hàng:</span>
+                    <span class="whitespace-pre-wrap text-sm font-medium">@_shippingPrice.ToString("C", vietnameseCulture)</span>
+                </div>
+                <div class="flex justify-between gap-2">
+                    <span class="flex-shrink-0 text-sm font-bold uppercase">Tổng tiền:</span>
+                    <span class="whitespace-pre-wrap text-sm font-medium">@((_data.Sum(i => i.Quantity * i.UnitPrice) + _shippingPrice)?.ToString("C", vietnameseCulture))</span>
+                </div>
+                <MudButton Class="!h-10" Color="Color.Dark" Variant="Variant.Filled" Disabled="@(_data.Count() == 0)">Đặt Hàng</MudButton>
+            </div>
+        </div>
+    </div>
+</section>
+
+@code {
+    readonly DialogOptions _maxWidth = new() { MaxWidth = MaxWidth.Small, FullWidth = true };
+
+    CancellationTokenSource _cts = new CancellationTokenSource();
+    List<CartItemWithProductDTO> _data = [];
+    List<DAL.Models.Address> _address = [];
+    List<ProvinceDTO> _provinces = [];
+    List<DistrictDTO> _districts = [];
+    List<WardDTO> _wards = [];
+    DAL.Models.Address _addressDefault = new DAL.Models.Address();
+    string _coupon = "";
+    string _cartId = "";
+    string _token = "";
+    int _parsedCartId = 0;
+    decimal _shippingPrice = 0;
+    int _selectedAdress = 0;
+    GetMeResponseDTO _me = new GetMeResponseDTO();
+    CultureInfo vietnameseCulture = new CultureInfo("vi-VN");
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _token = await localStorage.GetItemAsStringAsync(Constant.TokenNameLocalStorage, _cts.Token);
+            _cartId = await localStorage.GetItemAsStringAsync(Constant.AuthCartIdLocalStorage, _cts.Token);
+            var resultMe = await localStorage.GetItemAsStringAsync(Constant.UserInfoLocalStorage);
+
+            if (!string.IsNullOrEmpty(resultMe))
+            {
+                _me = JsonSerializer.Deserialize<GetMeResponseDTO>(resultMe);
+            }
+
+            await LoadData();
+            await GetShippingFee();
+            StateHasChanged();
+        }
+    }
+
+    async Task LoadData()
+    {
+        if (!string.IsNullOrEmpty(_cartId))
+        {
+            bool isSuccess = int.TryParse(_cartId, out _parsedCartId);
+
+            if (isSuccess)
+            {
+                var result = await _cartItemService.GetAllCartItemWithDetailByCartId(_parsedCartId);
+
+                if (result.IsSuccess && result.Data != null)
+                {
+                    _data = result.Data;
+                }
+            }
+        }
+
+        if(_me != null && _me.Id > 0)
+        {
+            var resAddressMe = await _addressService.GetAllByCustomerId(_me.Id);
+
+            if (resAddressMe.IsSuccess && resAddressMe.Data != null)
+            {
+                _address = resAddressMe.Data;
+                _addressDefault = resAddressMe.Data.FirstOrDefault(a => a.IsDefault);
+                _selectedAdress = _addressDefault.Id;
+            }
+        }
+    }
+
+    async Task GetShippingFee()
+    {
+        if (_data.Any())
+        {
+            if (_addressDefault != null && !string.IsNullOrEmpty(_addressDefault.District) && !string.IsNullOrEmpty(_addressDefault.Street))
+            {
+                var requestData = new CalculateFeeRequestModel
+                {
+                    ToDistrictId = int.Parse(_addressDefault.District),
+                    ToWardCode = _addressDefault.Street,
+                    Items = new List<FeeItemModel>()
+                };
+
+                foreach (var item in _data)
+                {
+                    var itemPro = new FeeItemModel()
+                    {
+                        Quantity = item.Quantity,
+                        Name = item.productName,
+                        Length = 35,
+                        Weight = 500,
+                        Width = 35,
+                        Height = 5,
+                    };
+
+                    requestData.Items.Add(itemPro);
+                }
+
+                var resCaculate = await _addressService.CaculateFee(requestData);
+
+                if(resCaculate.IsSuccess)
+                {
+                    _shippingPrice = resCaculate.Data.Data.Total;
+                }
+            }
+        } else
+        {
+            _shippingPrice = 0;
+        }
+    }
+
+    async Task OnChangeAddress(int addressId)
+    {
+        _addressDefault = _address.FirstOrDefault(a => a.Id == addressId);
+        _selectedAdress = addressId;
+
+        await GetShippingFee();
+    }
+
+    async Task OpenDialogCreateAddress()
+    {
+        var dialog = await _dialogService.ShowAsync<Common.User.CreateAddressDialog>("Options Dialog", _maxWidth);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await LoadData();
+            StateHasChanged();
+        }
+    }
+
+    private async Task Delete(int id)
+    {
+        var result = await _cartItemService.Delete(id, _token);
+
+        if (result)
+        {
+            _snackbar.Add("Xóa thành công", Severity.Success);
+            await _cartStateService.LoadCartDetailsAsync();
+            await LoadData();
+            await GetShippingFee();
+            StateHasChanged();
+        }
+        else
+        {
+            _snackbar.Add("Đã có lỗi xảy ra", Severity.Error);
+        }
+    }
+}
