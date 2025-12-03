@@ -22,6 +22,31 @@ namespace Pro219.DAL.Repository
         {
             try
             {
+                if (address.IsDefault)
+                {
+                    var allAddressByCustomer = _context.Addresses.Where(a => a.CustomerId == address.CustomerId).ToList();
+
+                    if (allAddressByCustomer != null && allAddressByCustomer.Any())
+                    {
+                        var hasAddressIsDefault = allAddressByCustomer.FirstOrDefault(a => a.IsDefault == true);
+
+                        if (hasAddressIsDefault != null)
+                        {
+                            hasAddressIsDefault.IsDefault = false;
+
+                            var obj = _context.Addresses.Update(hasAddressIsDefault).Entity;
+                        }
+                    }
+                } else
+                {
+                    var allAddressByCustomer = _context.Addresses.Where(a => a.CustomerId == address.CustomerId).ToList();
+
+                    if (allAddressByCustomer == null || (allAddressByCustomer != null && !allAddressByCustomer.Any())) 
+                    { 
+                        address.IsDefault = true;
+                    }
+                }
+
                 var addedAddress = _context.Addresses.Add(address).Entity;
                 await _context.SaveChangesAsync();
                 return addedAddress;
@@ -54,6 +79,33 @@ namespace Pro219.DAL.Repository
                 {
                     existingAddress.UpdateBy = address.UpdateBy;
                 }
+
+                if (address.IsDefault)
+                {
+                    var allAddressByCustomer = _context.Addresses.Where(a => a.CustomerId == address.CustomerId).ToList();
+
+                    if (allAddressByCustomer != null && allAddressByCustomer.Any())
+                    {
+                        var hasAddressIsDefault = allAddressByCustomer.FirstOrDefault(a => a.IsDefault == true);
+
+                        if (hasAddressIsDefault != null)
+                        {
+                            hasAddressIsDefault.IsDefault = false;
+
+                            var obj = _context.Addresses.Update(hasAddressIsDefault).Entity;
+                        }
+                    }
+                }
+                else
+                {
+                    var allAddressByCustomer = _context.Addresses.Where(a => a.CustomerId == address.CustomerId).ToList();
+
+                    if (allAddressByCustomer == null || (allAddressByCustomer != null && !allAddressByCustomer.Any()))
+                    {
+                        existingAddress.IsDefault = true;
+                    }
+                }
+
 
                 var updatedAddress = _context.Addresses.Update(existingAddress).Entity;
                 await _context.SaveChangesAsync();

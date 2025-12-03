@@ -20,6 +20,10 @@
 
             // Product
             public const string ProductDetail = "/product/detail";
+
+            // Checkout
+            public const string CheckoutDetail = "/checkout/customer";
+            public const string GusestCheckoutDetail = "/checkout/guest";
         }
 
         public static class Admin

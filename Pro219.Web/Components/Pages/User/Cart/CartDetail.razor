@@ -54,7 +54,7 @@
 
             <MudDivider Class="my-4 !border-black" />
 
-            <button class="mb-2 w-full bg-black py-3 text-sm text-white shadow">Tiến Hành Đặt Hàng</button>
+            <button class="mb-2 w-full bg-black py-3 text-sm text-white shadow" @onclick="@(() => navigation.NavigateTo(RouterConst.User.CheckoutDetail))">Tiến Hành Đặt Hàng</button>
 
             <button class="w-full border-2 border-solid border-black bg-white py-3 text-sm shadow hover:bg-black hover:text-white" @onclick="@(() => navigation.NavigateTo(RouterConst.User.Home))">Mua thêm sản phẩm</button>
         </div>
