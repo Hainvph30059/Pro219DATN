@@ -19,18 +19,25 @@ namespace Pro219.DAL.Models
         [Required]
         [MaxLength(20)]
         public string Phone { get; set; } = string.Empty;
-
+        
+        //WardCode
         [Required]
         [MaxLength(200)]
         public string Street { get; set; } = string.Empty;
 
+        //ProvinceCode
         [Required]
         [MaxLength(100)]
         public string City { get; set; } = string.Empty;
 
+        //DistrictCode
         [Required]
         [MaxLength(100)]
         public string District { get; set; } = string.Empty;
+
+        public string StreetName { get; set; } = string.Empty;
+        public string CityName { get; set; } = string.Empty;
+        public string DistrictName { get; set; } = string.Empty;
 
         [MaxLength(500)]
         public string? OtherInfo { get; set; }
