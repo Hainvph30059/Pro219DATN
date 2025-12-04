@@ -21,6 +21,42 @@ namespace Pro219.API.Controllers
             productRepository = new ProductRepository();
         }
 
+        [HttpGet("GetAllProductsInCategory/{categoryId}")]
+        public async Task<ActionResult<List<DAL.Repository.ProductRepository.ProductDetailDto>>> GetAllProductsInCategory(int categoryId, int page, int pageSize)
+        {
+            try
+            {
+                var result = await productRepository.GetAllProductsInCategory(categoryId, page, pageSize);
+                if (result == null)
+                {
+                    return Ok(new List<DAL.Repository.ProductRepository.ProductDetailDto>());
+                }
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, Constant.ErrorCode.OtherError);
+            }
+        }
+
+        [HttpGet("GetAllProductByKeyWord/{keyWord}")]
+        public async Task<ActionResult<List<DAL.Repository.ProductRepository.ProductDetailDto>>> GetAllProductByKeyWord(string keyWord, int page, int pageSize)
+        {
+            try
+            {
+                var result = await productRepository.GetAllProductByKeyWord(keyWord, page, pageSize);
+                if (result == null)
+                {
+                    return Ok(new List<DAL.Repository.ProductRepository.ProductDetailDto>());
+                }
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, Constant.ErrorCode.OtherError);
+            }
+        }
+
         [HttpGet("GetAll")]
         public async Task<ActionResult<List<Product>>> GetAllProducts()
         {
