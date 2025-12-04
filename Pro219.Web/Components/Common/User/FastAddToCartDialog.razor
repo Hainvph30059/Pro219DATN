@@ -1,32 +1,23 @@
-﻿@page "/product/detail/{id:int}"
-@layout MainLayout
-@using Pro219.Web.DTOs
-@using MudBlazor
-
-<PageTitle>@Constant.PageTitleUser @(_product?.Name ?? "Chi tiết sản phẩm")</PageTitle>
-
-@if (_product == null)
-{
-    <div class="d-flex mt-10 justify-center">
-        <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
-    </div>
-}
-else
-{
-    <section class="mx-auto mb-10 mt-4 w-full max-w-screen-xl">
+﻿<MudDialog>
+    <TitleContent>
+        <MudText></MudText>
+    </TitleContent>
+    <DialogContent>
         <div class="mt-2 flex h-full w-full flex-col gap-4 md:flex-row lg:flex-row">
             <div class="w-full md:w-[calc(100%-27rem)] lg:w-[calc(100%-27rem)]">
                 <MudCarousel Class="mud-width-full !aspect-square" ShowBullets="true" AutoCycle="false" TData="string">
-                    @if (_images.Any()) {
+                    @if (_images.Any())
+                    {
                         @foreach (var item in _images)
-                        { 
+                        {
                             <MudCarouselItem>
                                 <div class="d-flex" style="height:100%">
                                     <img src="@item" alt="image" class="mx-auto my-auto h-full w-full object-contain" />
                                 </div>
                             </MudCarouselItem>
                         }
-                    } else
+                    }
+                    else
                     {
                         <MudCarouselItem>
                             <div class="d-flex" style="height:100%">
@@ -36,7 +27,7 @@ else
                     }
                 </MudCarousel>
             </div>
-            <div class="h-fit w-full flex-shrink-0 p-3 shadow md:w-[26rem] lg:w-[26rem]">
+            <div class="h-fit w-full flex-shrink-0 rounded-lg border border-solid border-slate-200 p-3 shadow md:w-[26rem] lg:w-[26rem]">
                 <h1 class="mb-2 text-base font-medium">@_product?.Name</h1>
                 @if (IsOutOfStock())
                 {
@@ -56,13 +47,13 @@ else
                 <div class="mt-2">
                     <p class="mb-2 text-sm font-medium uppercase">Màu sắc:  <span class="font-bold">@_selectedColorName</span></p>
                     <div class="flex flex-wrap items-center gap-2">
-                        @if(_product.AvailableColors != null && _product.AvailableColors.Any())
+                        @if (_product.AvailableColors != null && _product.AvailableColors.Any())
                         {
                             @foreach (var color in _product.AvailableColors)
                             {
                                 <button @onclick="() => SelectColor(color)"
-                                     class="h-9 w-9 rounded-full cursor-pointer !border border-solid border-slate-400"
-                                     style="background-color: @color.HexCode;">
+                                        class="h-9 w-9 rounded-full cursor-pointer !border border-solid border-slate-400"
+                                        style="background-color: @color.HexCode;">
                                 </button>
                             }
                         }
@@ -72,7 +63,7 @@ else
                 <div class="mt-2">
                     <p class="mb-2 text-sm font-medium uppercase">Kích thước</p>
                     <div class="flex flex-wrap items-center gap-2">
-                        @if(_product.AvailableSizes != null && _product.AvailableSizes.Any())
+                        @if (_product.AvailableSizes != null && _product.AvailableSizes.Any())
                         {
                             @foreach (var size in _product.AvailableSizes)
                             {
@@ -89,7 +80,7 @@ else
 
                 <div class="my-4 flex">
                     <MudIconButton Class="!flex !h-[1.875rem] !w-[1.875rem] !cursor-pointer !items-center !justify-center" @onclick="DecreaseQuantity" Icon="@Icons.Material.Filled.Remove" Size="Size.Small" Disabled="@((_quantity == 1) || (_selectedColorId == 0 && _selectedSizeId == 0))" />
-                    
+
                     <span class="flex h-[1.875rem] w-10 items-baseline justify-center border bg-gray-50 p-1">@_quantity</span>
 
                     <MudIconButton Class="!flex !h-[1.875rem] !w-[1.875rem] !cursor-pointer !items-center !justify-center" @onclick="IncreaseQuantity" Icon="@Icons.Material.Filled.Add" Size="Size.Small" Disabled="@(_selectedColorId == 0 && _selectedSizeId == 0)" />
@@ -103,57 +94,21 @@ else
                 <div class="mt-2">
                     <button class="w-full border border-solid border-slate-200 py-3"><MudIcon Icon="@Icons.Material.Filled.FavoriteBorder" /> Yêu Thích</button>
                 </div>
+
+                <div class="mt-4">
+                    <button @onclick="@(() => navigation.NavigateTo(RouterConst.User.ProductDetail + $"/{productId}"))" class="mx-auto flex w-fit items-center text-sm">Xem chi tiết sản phẩm <MudIcon Class="ml-2" Icon="@Icons.Material.Filled.ArrowForward" Size="Size.Small" /></button>
+                </div>
             </div>
         </div>
-    </section>
-
-    
-}
-@* // best seller*@
-<section class="mx-auto mb-10 max-w-screen-xl pt-10">
-    <h2 class="w-fit border-b-4 border-solid border-black text-base font-bold uppercase">Sản phẩm bán chạy</h2>
-    <MudCarousel Class="mud-width-full mt-4 h-[24rem] md:h-[19.25rem] sm:h-[15rem]" ShowBullets="false" EnableSwipeGesture="false" AutoCycle="false" TData="object">
-        <MudCarouselItem>
-            <div class="flex justify-between">
-                <ProductItem />
-                <ProductItem />
-                <ProductItem />
-                <ProductItem />
-            </div>
-        </MudCarouselItem>
-        <MudCarouselItem>
-            <div class="flex justify-between">
-                <ProductItem />
-                <ProductItem />
-                <ProductItem />
-                <ProductItem />
-            </div>
-        </MudCarouselItem>
-        <MudCarouselItem>
-            <div class="flex justify-between">
-                <ProductItem />
-                <ProductItem />
-                <ProductItem />
-                <ProductItem />
-            </div>
-        </MudCarouselItem>
-        <MudCarouselItem>
-            <div class="flex justify-between">
-                <ProductItem />
-                <ProductItem />
-                <ProductItem />
-                <ProductItem />
-            </div>
-        </MudCarouselItem>
-    </MudCarousel>
-</section>
-@* banner *@
-<section class="mx-auto mb-6 max-w-screen-xl pt-10">
-    <img src="/Assets/Images/user-home-banner-2.jpg" alt="banner" />
-</section>
+    </DialogContent>
+</MudDialog>
 
 @code {
-    [Parameter] public int id { get; set; }
+    [Parameter]
+    public int productId { get; set; }
+
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; }
 
     private DAL.Repository.ProductRepository.ProductDetailDto? _product = new DAL.Repository.ProductRepository.ProductDetailDto();
     private DAL.Repository.ProductRepository.ProductVariantDto? _foundVariant;
@@ -164,7 +119,7 @@ else
     private string _token = "";
     private int _selectedColorId = 0;
     private string _selectedColorName = "";
-    private int _selectedSizeId= 0;
+    private int _selectedSizeId = 0;
     private int _quantity = 1;
     private decimal _currentPrice = 0;
 
@@ -173,7 +128,7 @@ else
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if(firstRender)
+        if (firstRender)
         {
             _token = await localStorage.GetItemAsStringAsync(Constant.TokenNameLocalStorage);
         }
@@ -186,20 +141,21 @@ else
 
     private async Task LoadData()
     {
-        var res = await _productService.GetDetail(id);
+        var res = await _productService.GetDetail(productId);
         if (res.IsSuccess && res.Data != null)
         {
             _product = res.Data;
             _images = _product.ImageUrls;
             if (res.Data.Variants.Any())
             {
-                foreach(var item in res.Data.Variants)
+                foreach (var item in res.Data.Variants)
                 {
                     _images.AddRange(item.VariantImageUrls.ToList());
                 }
             }
             _currentPrice = _product.BasePrice;
-        } else
+        }
+        else
         {
             _snackbar.Add(res.ErrorMessage, Severity.Error);
             navigation.NavigateTo(RouterConst.User.Home);
@@ -213,24 +169,27 @@ else
         _selectedColorId = color.Id;
         _images.Clear();
 
-        if(_product.Variants != null && _product.Variants.Any())
+        if (_product.Variants != null && _product.Variants.Any())
         {
             var detail = _product.Variants.Where(pv => pv.ColorId == color.Id).FirstOrDefault();
 
-            if(detail != null && detail.VariantImageUrls != null && detail.VariantImageUrls.Any())
+            if (detail != null && detail.VariantImageUrls != null && detail.VariantImageUrls.Any())
             {
                 _images.AddRange(detail.VariantImageUrls);
-            } else
+            }
+            else
             {
-                if(_product.ImageUrls != null && _product.ImageUrls.Any())
+                if (_product.ImageUrls != null && _product.ImageUrls.Any())
                 {
                     _images.AddRange(_product.ImageUrls);
-                } else
+                }
+                else
                 {
                     _images.Add(Constant.DefaultImages);
                 }
             }
-        } else
+        }
+        else
         {
             if (_product.ImageUrls != null && _product.ImageUrls.Any())
             {
@@ -255,7 +214,7 @@ else
     {
         if (_selectedColorId == 0 || _selectedSizeId == 0) return;
 
-        _foundVariant = _product.Variants.FirstOrDefault(v => 
+        _foundVariant = _product.Variants.FirstOrDefault(v =>
             v.ColorId == _selectedColorId &&
             v.SizeId == _selectedSizeId);
 
@@ -274,8 +233,8 @@ else
     {
         if (sizeId == 0 || _selectedColorId == 0) return true;
 
-        var result = _product.Variants.Any(v => 
-            v.ColorId == _selectedColorId && 
+        var result = _product.Variants.Any(v =>
+            v.ColorId == _selectedColorId &&
             v.SizeId == sizeId &&
             v.StockQuantity > 0);
 
@@ -327,10 +286,10 @@ else
         }
 
         var item = new AddCartModel()
-        {
-            VariantId = _foundVariant.Id,
-            Quantity = _quantity
-        };
+            {
+                VariantId = _foundVariant.Id,
+                Quantity = _quantity
+            };
 
         var result = await _cartService.AddToCart(item, _token);
 
@@ -338,9 +297,13 @@ else
         {
             _snackbar.Add("Thêm vào giỏ hàng thành công", Severity.Success);
             await _cartStateService.LoadCartDetailsAsync();
-        } else
+            MudDialog.Close();
+        }
+        else
         {
             _snackbar.Add("Thêm vào giỏ hàng thất bại", Severity.Error);
         }
     }
+
+    private void Cancel() => MudDialog.Cancel();
 }

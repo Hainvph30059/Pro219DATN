@@ -72,9 +72,9 @@
                         </div>
 
                         <div class="invisible absolute -bottom-10 left-0 z-10 flex w-full items-center justify-between gap-4 bg-black py-2.5 opacity-0 group-hover:visible group-hover:opacity-100">
-                            <a class="flex w-[49%] justify-center text-white"><MudIcon Icon="@Icons.Material.Filled.ShoppingCart" Size="Size.Small" Class="!mr-1" /> Mua nhanh</a>
+                            <button class="flex w-[49%] justify-center text-white" @onclick="@(() => OpenDialog(item.Id))"><MudIcon Icon="@Icons.Material.Filled.ShoppingCart" Size="Size.Small" Class="!mr-1" /> Thêm giỏ hàng</button>
                             <div class="h-5 w-[2%] border-r border-white" />
-                            <a href="/Product/detail/@item?.Id" class="flex w-[49%] justify-center text-white"><MudIcon Icon="@Icons.Material.Filled.RemoveRedEye" Size="Size.Small" Class="!mr-1" /> Xem chi tiết</a>
+                            <button @onclick="@(() => navigation.NavigateTo(RouterConst.User.ProductDetail + $"/{item.Id}"))" class="flex w-[49%] justify-center text-white"><MudIcon Icon="@Icons.Material.Filled.RemoveRedEye" Size="Size.Small" Class="!mr-1" /> Xem chi tiết</button>
                         </div>
                     </div>
                 </div>
@@ -103,12 +103,12 @@
     </div>
 </section>
 
-<section class="my-8 px-0 pt-8 lg:px-8">
+@*<section class="my-8 px-0 pt-8 lg:px-8">
     <h2 class="text-center text-xl font-bold uppercase md:text-2xl lg:text-3xl">Sản phẩm bán chạy</h2>
     <div class="mt-8 grid grid-cols-4 gap-2 px-4 xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 sm:px-2">
 
     </div>
-</section>
+</section>*@
 
 <section class="my-8 px-0 pt-8 lg:px-8">
     <h2 class="text-center text-xl font-bold uppercase md:text-2xl lg:text-3xl">Sản được yêu thích nhất</h2>
@@ -175,9 +175,9 @@
                         </div>
 
                         <div class="invisible absolute -bottom-10 left-0 z-10 flex w-full items-center justify-between gap-4 bg-black py-2.5 opacity-0 group-hover:visible group-hover:opacity-100">
-                            <a class="flex w-[49%] justify-center text-white"><MudIcon Icon="@Icons.Material.Filled.ShoppingCart" Size="Size.Small" Class="!mr-1" /> Mua nhanh</a>
+                            <button class="flex w-[49%] justify-center text-white"><MudIcon Icon="@Icons.Material.Filled.ShoppingCart" @onclick="@(() => OpenDialog(item.Id))" Size="Size.Small" Class="!mr-1" /> Thêm giỏ hàng</button>
                             <div class="h-5 w-[2%] border-r border-white" />
-                            <a href="/Product/detail/@item?.Id" class="flex w-[49%] justify-center text-white"><MudIcon Icon="@Icons.Material.Filled.RemoveRedEye" Size="Size.Small" Class="!mr-1" /> Xem chi tiết</a>
+                            <button @onclick="@(() => navigation.NavigateTo(RouterConst.User.ProductDetail + $"/{@item.Id}"))" class="flex w-[49%] justify-center text-white"><MudIcon Icon="@Icons.Material.Filled.RemoveRedEye" Size="Size.Small" Class="!mr-1" /> Xem chi tiết</button>
                         </div>
                     </div>
                 </div>
@@ -211,6 +211,8 @@
 </section>
 
 @code {
+    readonly DialogOptions _maxWidth = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+
     List<DAL.Repository.ProductRepository.ProductDetailDto> _productNews = [];
     List<DAL.Repository.ProductRepository.ProductDetailDto> _productFavourites = [];
 
@@ -229,6 +231,21 @@
         if (_resProductFavourites.IsSuccess && _resProductFavourites.Data != null)
         {
             _productFavourites = _resProductFavourites.Data;
+        }
+    }
+
+    private async Task OpenDialog(int productId)
+    {
+        var fastAddCartParaeters = new DialogParameters<Common.User.FastAddToCartDialog>
+        {
+            {x => x.productId, productId}
+        };
+
+        var dialog = await _dialogService.ShowAsync<Common.User.FastAddToCartDialog>("Options Dialog", fastAddCartParaeters, _maxWidth);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
         }
     }
 }
