@@ -90,7 +90,7 @@ namespace Pro219.API.Controllers
                 var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, loginModel.Username),
-                   new Claim(ClaimTypes.SerialNumber, user.ToString()),
+                   new Claim(ClaimTypes.SerialNumber, user.UserID.ToString()),
                 new Claim(ClaimTypes.Role, user.Role),
                  new Claim(ClaimTypes.Name, user.UserName)
             };
