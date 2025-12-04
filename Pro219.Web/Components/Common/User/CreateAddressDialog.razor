@@ -33,14 +33,14 @@
                 }
             </MudSelect>
 
-            <MudSelect T="int" @bind-Value="@_selectedWard" Label="Phường/Xã" Variant="Variant.Outlined" Disabled="@(!_wards.Any())">
+            <MudSelect T="string" @bind-Value="@_selectedWard" Label="Phường/Xã" Variant="Variant.Outlined" Disabled="@(!_wards.Any())">
                 @if (_wards.Any())
                 {
-                    <MudSelectItem Value="0">Vui lòng chọn</MudSelectItem>
+                    <MudSelectItem T="string" Value="0.ToString()">Vui lòng chọn</MudSelectItem>
 
                     foreach (var city in _wards)
                     {
-                        <MudSelectItem Value="@(int.Parse(city.WardCode))">@city.WardName</MudSelectItem>
+                        <MudSelectItem T="string" Value="@(city.WardCode.ToString())">@city.WardName</MudSelectItem>
                     }
                 }
             </MudSelect>
@@ -67,7 +67,7 @@
 
     private int _selectedProvince = 0;
     private int _selectedDistrict = 0;
-    private int _selectedWard = 0;
+    private string _selectedWard = string.Empty;
     private AddressModel _model = new AddressModel();
 
     protected override async Task OnInitializedAsync()
@@ -93,7 +93,7 @@
         {
             _selectedProvince = provinceId;
             _selectedDistrict = 0;
-            _selectedWard = 0;
+            _selectedWard = string.Empty;
             var resDistrict = await _addressService.GetAllDistrictByProvinceId(provinceId);
 
             if (resDistrict.IsSuccess && resDistrict.Data != null)
@@ -108,7 +108,7 @@
         try
         {
             _selectedDistrict = districtId;
-            _selectedWard = 0;
+            _selectedWard = string.Empty;
             var resWard = await _addressService.GetAllWardByDistrictCode(districtId);
 
             if (resWard.IsSuccess && resWard.Data != null)
@@ -121,7 +121,7 @@
 
     private async Task Onsubmit()
     {
-        if (_selectedProvince == 0 || _selectedDistrict == 0 || _selectedWard == 0)
+        if (_selectedProvince == 0 || _selectedDistrict == 0 || string.IsNullOrEmpty(_selectedWard))
         {
             _snackbar.Add("Vui lòng nhập và chọn đầy đủ thông tin", Severity.Warning);
             return;
@@ -131,6 +131,9 @@
         _model.City = _selectedProvince.ToString();
         _model.District = _selectedDistrict.ToString();
         _model.Street = _selectedWard.ToString();
+        _model.CityName = _provinces.FirstOrDefault(p => p.ProvinceID == _selectedProvince)?.ProvinceName ?? "";
+        _model.DistrictName = _districts.FirstOrDefault(p => p.DistrictID == _selectedDistrict)?.DistrictName ?? "";
+        _model.StreetName = _wards.FirstOrDefault(p => p.WardCode == _selectedWard.ToString())?.WardName ?? "";
 
         var result = await _addressService.Create(_model);
 

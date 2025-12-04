@@ -27,6 +27,12 @@ namespace Pro219.API.DTOs
         [MaxLength(100)]
         public string District { get; set; } = string.Empty;
 
+        public string CityName {  get; set; } = string.Empty;
+
+        public string DistrictName {  get; set; } = string.Empty;
+
+        public string StreetName {  get; set; } = string.Empty;
+
         [MaxLength(500)]
         public string? OtherInfo { get; set; }
 

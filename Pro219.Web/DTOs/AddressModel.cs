@@ -28,6 +28,12 @@ namespace Pro219.Web.DTOs
         [MaxLength(100, ErrorMessage = Constant.MessageValid.Max100)]
         public string District { get; set; }
 
+        public string CityName { get; set; }
+
+        public string DistrictName { get; set; }
+
+        public string StreetName { get; set; }
+
         [MaxLength(500, ErrorMessage = Constant.MessageValid.Max500)]
         public string? OtherInfo { get; set; }
 
