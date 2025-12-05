@@ -1,0 +1,325 @@
+﻿@page "/products/search"
+@layout MainLayout
+
+<section class="mx-auto max-w-[1440px] p-8">
+    <div>
+        <h1 class="text-3xl">Tìm kiếm: <span class="font-bold">@_keyword</span></h1>
+        <p class="text-sm"><span class="font-bold">@(_products.Count())</span> Sản Phẩm</p>
+    </div>
+
+    <div class="mt-4">
+        <MudButton Variant="Variant.Outlined" OnClick="@(() => navigation.NavigateTo($"{RouterConst.User.SearchByKeyword}?k={_keyword}&page={Constant.Pagination.DefaultPage}", false))"><MudIcon Icon="@Icons.Material.Filled.Filter"/> Đặt lại bộ lọc</MudButton>
+        <div class="mt-3 flex max-w-full flex-nowrap items-center gap-4 overscroll-x-auto">
+            <MudSelect T="int" Value="@_selectBrand" ValueChanged="@((int value) => OnMaterialSelected(1, value))" Variant="Variant.Outlined" Label="Thương Hiệu">
+                <MudSelectItem Value="0">Tất cả</MudSelectItem>
+                @if(_brands.Any())
+                {
+                    foreach(var item in _brands)
+                    {
+                        <MudSelectItem Value="@item.Id">@item.Name</MudSelectItem>
+                    }
+                }
+            </MudSelect>
+
+            <MudSelect T="int" Value="@_selectColor" ValueChanged="@((int value) => OnMaterialSelected(2, value))" Variant="Variant.Outlined" Label="Màu Sắc">
+                <MudSelectItem Value="0">Tất cả</MudSelectItem>
+                @if(_colors.Any())
+                {
+                    foreach(var item in _colors)
+                    {
+                        <MudSelectItem Value="@item.Id">@item.Name</MudSelectItem>
+                    }
+                }
+            </MudSelect>
+
+            <MudSelect T="int" Value="@_selectSize" ValueChanged="@((int value) => OnMaterialSelected(3, value))" Variant="Variant.Outlined" Label="Kích Thước">
+                <MudSelectItem Value="0">Tất cả</MudSelectItem>
+                @if (_sizes.Any())
+                {
+                    foreach (var item in _sizes)
+                    {
+                        <MudSelectItem Value="@item.Id">@item.Name</MudSelectItem>
+                    }
+                }
+            </MudSelect>
+
+            <MudSelect T="int" Value="@_selectOrder" ValueChanged="@((int value) => OnMaterialSelected(4, value))" Variant="Variant.Outlined" Label="Sắp Xếp">
+                <MudSelectItem Value="1">A-Z</MudSelectItem>
+                <MudSelectItem Value="2">Z-A</MudSelectItem>
+                <MudSelectItem Value="3">Giá tăng dần</MudSelectItem>
+                <MudSelectItem Value="4">Giá giảm dần</MudSelectItem>
+            </MudSelect>
+        </div>
+        </div>
+
+    <div class="mt-6">
+        @if (_products.Any())
+        {
+            <div class="grid grid-cols-4 gap-4">
+                @foreach (var item in _products)
+                {
+                    <div accesskey="@item.Id" class="w-full">
+                        <div data-animation="1" class="group relative mb-10 lg:p-2.5">
+                            <div class="group relative overflow-hidden px-2.5 text-center">
+                                <a class="block transition">
+                                    @if (item.ImageUrls.Any())
+                                    {
+                                        <picture class="flex h-full items-center justify-center transition duration-700 ease-in-out group-hover:invisible group-hover:opacity-0">
+                                            <img class="overflow-clip" src="@item.ImageUrls[0]" />
+                                        </picture>
+
+                                        if (item.ImageUrls.Count > 1)
+                                        {
+                                            <picture accesskey="@item.Id" class="invisible absolute bottom-0 left-0 right-0 top-0 flex items-center justify-center opacity-0 transition duration-700 ease-in-out group-hover:visible group-hover:opacity-100">
+                                                <img class="overflow-clip" src="@item?.ImageUrls[1]" />
+                                            </picture>
+                                        }
+                                        else
+                                        {
+                                            <picture class="invisible absolute bottom-0 left-0 right-0 top-0 flex items-center justify-center opacity-0 transition duration-700 ease-in-out group-hover:visible group-hover:opacity-100">
+                                                <img class="overflow-clip" src="/Assets/Images/default-image.png" />
+                                            </picture>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <picture class="flex h-full items-center justify-center transition duration-700 ease-in-out group-hover:invisible group-hover:opacity-0">
+                                            <img class="overflow-clip" src="/Assets/Images/default-image.png" />
+                                        </picture>
+                                        <picture class="invisible absolute bottom-0 left-0 right-0 top-0 flex items-center justify-center opacity-0 transition duration-700 ease-in-out group-hover:visible group-hover:opacity-100">
+                                            <img class="overflow-clip" src="/Assets/Images/default-image.png" />
+                                        </picture>
+                                    }
+                                </a>
+                            </div>
+
+                            @if (item?.AvailableColors != null && item.AvailableColors.Any())
+                            {
+                                <div class="my-2.5 flex w-full justify-center gap-1">
+                                    @foreach (var c in item.AvailableColors)
+                                    {
+                                        <MudTooltip Text="@c.Name" Arrow="true" Placement="Placement.Top">
+                                            <div class="h-6 w-6 cursor-pointer rounded-full border border-gray-300 shadow-sm"
+                                                 style="background-color: @c.HexCode">
+                                            </div>
+                                        </MudTooltip>
+                                    }
+                                </div>
+                            }
+
+                            <div class="w-full">
+                                <p class="line-clamp-1 text-center text-sm">@item?.Name</p>
+                            </div>
+
+                            <div class="w-full">
+                                <p class="line-clamp-1 text-center text-sm font-bold">@item?.BasePrice.ToString("C", vietnameseCulture)</p>
+                            </div>
+
+                            <div class="invisible absolute -bottom-10 left-0 z-10 flex w-full items-center justify-between gap-4 bg-black py-2.5 opacity-0 group-hover:visible group-hover:opacity-100">
+                                <button class="flex w-[49%] justify-center text-white" @onclick="@(() => OpenDialog(item.Id))"><MudIcon Icon="@Icons.Material.Filled.ShoppingCart" Size="Size.Small" Class="!mr-1" /> Thêm giỏ hàng</button>
+                                <div class="h-5 w-[2%] border-r border-white" />
+                                <button @onclick="@(() => navigation.NavigateTo(RouterConst.User.ProductDetail + $"/{@item.Id}"))" class="flex w-[49%] justify-center text-white"><MudIcon Icon="@Icons.Material.Filled.RemoveRedEye" Size="Size.Small" Class="!mr-1" /> Xem chi tiết</button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="mx-auto my-6 w-fit">
+                @* Sửa lại để truyền giá trị trang mới vào hàm OnPageSelected *@
+                <MudPagination Color="Color.Primary" Count="@(_products.Count() <= Constant.Pagination.DefaultPerPage ? 1 : _products.Count() / Constant.Pagination.DefaultPerPage)" Selected="@_selectPage" SelectedChanged="@((int page) => OnPageSelected(page))" />
+            </div>
+        }
+        else
+        {
+            <p class="mx-auto mt-6 max-w-screen-xl text-center text-lg">Không có sản phẩm nào</p>
+        }
+    </div>
+</section>
+
+@code {
+    readonly DialogOptions _maxWidth = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+
+    // Parameters từ Query String (Giữ nguyên)
+    [SupplyParameterFromQuery(Name = "k")]
+    public string _keyword { get; set; } = string.Empty;
+
+    [SupplyParameterFromQuery(Name = "page")]
+    public int _page { get; set; } = Constant.Pagination.DefaultPage;
+
+    [SupplyParameterFromQuery(Name = "color")]
+    public int _colorId { get; set; } = 0;
+
+    [SupplyParameterFromQuery(Name = "brand")]
+    public int _brandId { get; set; } = 0;
+
+    [SupplyParameterFromQuery(Name = "size")]
+    public int _sizeId { get; set; } = 0; // Đổi từ sizeId sang _sizeId
+
+    [SupplyParameterFromQuery(Name = "sort")]
+    public string _sort { get; set; } = string.Empty;
+
+    private List<DAL.Repository.ProductRepository.ProductDetailDto> _products = [];
+    private List<DAL.Models.Color> _colors = [];
+    private List<DAL.Models.Brand> _brands = [];
+    private List<DAL.Models.Size> _sizes = [];
+
+    private int _selectColor = 0;
+    private int _selectBrand = 0;
+    private int _selectSize = 0;
+    private int _selectOrder = 1;
+
+    private int _perPage = Constant.Pagination.DefaultPerPage;
+    private int _selectPage = Constant.Pagination.DefaultPage;
+    private int _currentPage = Constant.Pagination.DefaultPage;
+
+    CultureInfo vietnameseCulture = new CultureInfo("vi-VN");
+
+    protected override async Task OnParametersSetAsync()
+    {
+        int validatedPage = (_page < 1) ? Constant.Pagination.DefaultPage : _page;
+
+        _currentPage = validatedPage;
+        _selectPage = validatedPage;
+        _selectBrand = _brandId;
+        _selectColor = _colorId;
+        _selectSize = _sizeId;
+        _selectOrder = ConvertSortStringToId(_sort);
+
+        await LoadMaterial();
+        await LoadData();
+        StateHasChanged();
+    }
+
+    private async Task LoadMaterial()
+    {
+        if (!_colors.Any())
+        {
+            var resColor = await _colorService.GetAll();
+            if (resColor.IsSuccess && resColor.Data.Count() > 0)
+                _colors = resColor.Data;
+        }
+
+        if (!_brands.Any())
+        {
+            var resBrand = await _brandService.GetAll();
+            if (resBrand.IsSuccess && resBrand.Data.Count() > 0)
+                _brands = resBrand.Data;
+        }
+
+        if (!_sizes.Any())
+        {
+            var resSize = await _sizeService.GetAll();
+            if (resSize.IsSuccess && resSize.Data.Count() > 0)
+                _sizes = resSize.Data;
+        }
+    }
+
+
+    private async Task LoadData()
+    {
+        var resData = await _productService.GetAllByKeyword(
+            _keyword, 
+            _currentPage, 
+            _perPage,
+            _selectBrand,
+            _selectSize,
+            _selectColor,
+            ConvertSortIdToString(_selectOrder));
+
+        if (resData.IsSuccess)
+        {
+            _products = resData.Data;
+        }
+        else
+        {
+            _products = [];
+        }
+    }
+
+    private string ConvertSortIdToString(int id)
+    {
+        return id switch
+        {
+            1 => "name_asc",
+            2 => "name_desc",
+            3 => "price_asc",
+            4 => "price_desc",
+            _ => string.Empty
+        };
+    }
+
+    private int ConvertSortStringToId(string sortString)
+    {
+        return sortString?.ToLower() switch
+        {
+            "name_asc" => 1,
+            "name_desc" => 2,
+            "price_asc" => 3,
+            "price_desc" => 4,
+            _ => 1
+        };
+    }
+    
+    private async Task OpenDialog(int productId)
+    {
+        var fastAddCartParaeters = new DialogParameters<Common.User.FastAddToCartDialog>
+        {
+            {x => x.productId, productId}
+        };
+
+        var dialog = await _dialogService.ShowAsync<Common.User.FastAddToCartDialog>("Options Dialog", fastAddCartParaeters, _maxWidth);
+        var result = await dialog.Result;
+    }
+
+    private void OnMaterialSelected(int type, int value)
+    {
+        switch (type)
+        {
+            case 1: _selectBrand = value; break;
+            case 2: _selectColor = value; break;
+            case 3: _selectSize = value; break;
+            case 4: _selectOrder = value; break;
+        }
+
+        int newPage = Constant.Pagination.DefaultPage;
+
+        var uriBuilder = new UriBuilder(navigation.Uri);
+        var queryParams = new Dictionary<string, string?>
+        {
+            { "k", _keyword },
+            { "page", newPage.ToString() }
+        };
+
+        if (_selectBrand > 0)
+            queryParams.Add("brand", _selectBrand.ToString());
+
+        if (_selectColor > 0)
+            queryParams.Add("color", _selectColor.ToString());
+
+        if (_selectSize > 0)
+            queryParams.Add("size", _selectSize.ToString());
+
+        string sortValue = ConvertSortIdToString(_selectOrder);
+        if (!string.IsNullOrWhiteSpace(sortValue) && sortValue != ConvertSortIdToString(1))
+            queryParams.Add("sort", sortValue);
+            
+        string newUrl = Microsoft.AspNetCore.WebUtilities.QueryHelpers.AddQueryString(uriBuilder.Path, queryParams!);
+
+        navigation.NavigateTo(newUrl, forceLoad: false);
+    }
+    
+    private void OnPageSelected(int newPage)
+    {
+        var uriBuilder = new UriBuilder(navigation.Uri);
+        
+        var currentParams = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uriBuilder.Query);
+        var queryParams = currentParams.ToDictionary(k => k.Key, v => v.Value.ToString());
+        
+        queryParams["page"] = newPage.ToString();
+
+        string newUrl = Microsoft.AspNetCore.WebUtilities.QueryHelpers.AddQueryString(uriBuilder.Path, queryParams!);
+
+        navigation.NavigateTo(newUrl, forceLoad: false);
+    }
+}

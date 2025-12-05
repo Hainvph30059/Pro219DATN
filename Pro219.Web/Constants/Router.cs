@@ -24,6 +24,11 @@
             // Checkout
             public const string CheckoutDetail = "/checkout/customer";
             public const string GusestCheckoutDetail = "/checkout/guest";
+
+            // Search
+            public const string SearchByCategoryId = "/products/category/:categoryId";
+            public const string SearchByKeyword = "/products/search";
+            public const string SearchAll = "/products/all";
         }
 
         public static class Admin

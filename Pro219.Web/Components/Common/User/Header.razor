@@ -33,30 +33,36 @@
 
 <header class="fixed left-0 right-0 top-0 z-50 hidden h-20 bg-white px-10 py-2.5 shadow-lg lg:flex">
     <nav class="flex h-full w-full items-center justify-center gap-4">
-        <div class="max-w-[calc((100%-5rem)/2)] flex w-full items-center justify-start gap-2">
-            <MudMenu Variant="Variant.Text"
-                     Color="Color.Inherit" Label="DANH MỤC" Class="customer-menu !font-medium !text-[#666666] hover:!text-black" ListClass="customer-menu !min-w-[15rem] rounded-lg bg-white !p-2 !shadow-xl">
-                @if (_lstCategories.Any())
-                {
-                    @RenderMenuItems(_lstCategories)
-                }
-                else
-                {
-                    <MudMenuItem Disabled="true">Đang tải danh mục...</MudMenuItem>
-                }
-            </MudMenu>
+        <div class="max-w-32 flex-shrink-0">
+             <a href="@RouterConst.User.Home">
+                <img src="/Assets/Icons/logo.svg" alt="logo" />
+             </a>
         </div>
 
-        <div class="h-16 max-w-16 flex-shrink-0">
-             <a href="@RouterConst.User.Home">
-                <img src="/Assets/Icons/logo-mb.svg" alt="logo" />
-             </a>
+        <div class="flex w-full items-center justify-start gap-2">
+            <MudButton Class="!font-medium !text-[#666666] hover:!text-black" OnClick="@(() => navigation.NavigateTo(RouterConst.User.Home))">Trang Chủ</MudButton>
+            <MudButton>
+                <MudMenu Variant="Variant.Text"
+                         Color="Color.Inherit" Label="DANH MỤC" Class="customer-menu !font-medium !text-[#666666] hover:!text-black" ListClass="customer-menu !min-w-[15rem] rounded-lg bg-white !p-2 !shadow-xl">
+                    @if (_lstCategories.Any())
+                    {
+                        @RenderMenuItems(_lstCategories)
+                    }
+                    else
+                    {
+                        <MudMenuItem Disabled="true">Đang tải danh mục...</MudMenuItem>
+                    }
+                </MudMenu>
+            </MudButton>
+            <MudButton Class="!font-medium !text-[#666666] hover:!text-black" OnClick="@(() => navigation.NavigateTo($"{RouterConst.User.SearchAll}?page={Constant.Pagination.DefaultPage}"))">Tất Cả Sản Phẩm</MudButton>
+            <MudButton Class="!font-medium !text-[#666666] hover:!text-black" OnClick="@(() => navigation.NavigateTo(RouterConst.User.Home))">Mã giảm giá</MudButton>
+            <MudButton Class="!font-medium !text-[#666666] hover:!text-black" OnClick="@(() => navigation.NavigateTo(RouterConst.User.Home))">Giới Thiệu</MudButton>
         </div>
 
         <div class="max-w-[calc((100%-5rem)/2)] flex w-full items-center justify-end gap-3">
             <div class="flex items-center">
-            <input placeholder="Tìm kiếm sản phẩm" class="!h-10 !w-56 rounded-e-none rounded-l-lg border-y border-l border-gray-300 px-2 outline-0" name="_searchValue" />
-                <MudIcon Icon="@Icons.Material.Filled.Search" Size="@Size.Large" Class="!h-10 cursor-pointer rounded-r-lg border-y border-r border-gray-300 pr-2" />
+                <input placeholder="Tìm kiếm sản phẩm" class="!h-10 !w-56 rounded-e-none rounded-l-lg border-y border-l border-gray-300 px-2 outline-0" @bind-value="_searchValue" @bind-value:event="oninput" @onkeydown="@(e => { if (e.Key == "Enter") HandleSearch(); })" />
+                <MudIcon Icon="@Icons.Material.Filled.Search" Size="@Size.Large" Class="!h-10 cursor-pointer rounded-r-lg border-y border-r border-gray-300 pr-2" @onclick="HandleSearch" />
             </div>
                 
             <div class="group relative">
@@ -135,7 +141,7 @@
     <MudNavMenu>
         @* Mục Tìm kiếm (Đặt ở trên cùng) *@
         <div class="p-4">
-            <MudTextField @bind-Value="_searchValue" Placeholder="Tìm kiếm sản phẩm" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" Immediate="true" />
+            <MudTextField @bind-Value="_searchValue" Placeholder="Tìm kiếm sản phẩm" OnAdornmentClick="HandleSearch" OnKeyDown="@(e => { if (e.Key == "Enter") HandleSearch(); })" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" Immediate="true" />
         </div>
 
         <MudDivider />
@@ -222,8 +228,31 @@
 
     private void NavigateAndCloseDrawer(int categoryId)
     {
-        _drawerOpen = false; // Đóng Drawer
-        navigation.NavigateTo($"/danh-muc/{categoryId}");
+        _drawerOpen = false;
+        navigation.NavigateTo($"{RouterConst.User.SearchByCategoryId.Replace(":categoryId", categoryId.ToString())}?page={Constant.Pagination.DefaultPage}");
+    }
+
+    private void HandleSearch()
+    {
+        var term = _searchValue.Trim();
+
+        if (string.IsNullOrEmpty(term))
+        {
+            return;
+        }
+
+        _drawerOpen = false;
+        var queryParams = new Dictionary<string, string?>
+    {
+        { "k", term }, 
+        { "page", Constant.Pagination.DefaultPage.ToString() }
+    };
+    
+    string basePath = RouterConst.User.SearchByKeyword;
+
+    string newUrl = QueryHelpers.AddQueryString(basePath, queryParams!);
+
+    navigation.NavigateTo(newUrl, forceLoad: false);
     }
 
     async Task Logout()
@@ -242,7 +271,7 @@
                 <MudMenu AnchorOrigin="Origin.TopRight" TransformOrigin="Origin.TopLeft" ListClass="customer-menu !min-w-[15rem] !rounded-lg !bg-white !p-2 !shadow-xl">
 
                     <ActivatorContent>
-                        <MudMenuItem Disabled="true">
+                        <MudMenuItem Disabled="true" OnClick="@(() => NavigateAndCloseDrawer(category.Id))">
                             <span>@category.Name</span>
                             <MudIcon Icon="@Icons.Material.Filled.KeyboardArrowRight" Class="ml-auto" />
                         </MudMenuItem>
@@ -255,7 +284,7 @@
             }
             else
             {
-                <MudMenuItem Href="@($"/danh-muc/{category.Id}")">
+                <MudMenuItem OnClick="@(() => NavigateAndCloseDrawer(category.Id))">
                     @category.Name
                 </MudMenuItem>
             }
@@ -272,14 +301,12 @@
         }
         else
         {
-            _categoryExpansionState[categoryId] = true; // Mặc định mở nếu chưa có
+            _categoryExpansionState[categoryId] = true;
         }
         
-        // RẤT QUAN TRỌNG: Gọi StateHasChanged() để Blazor biết có gì đó đã thay đổi
         StateHasChanged();
     }
     
-    // Hàm kiểm tra trạng thái mở
     private bool IsCategoryExpanded(int categoryId)
     {
         return _categoryExpansionState.GetValueOrDefault(categoryId, false);
@@ -291,28 +318,26 @@
         {
             if (category.SubCategory?.Any() == true)
             {
-                // Lấy trạng thái hiện tại từ Dictionary
                 var isExpanded = IsCategoryExpanded(category.Id);
 
-                // Item cha trong Drawer
-                // Sửa OnClick để gọi hàm ToggleCategoryExpansion
                 <MudListItem T="string" OnClick="@(() => ToggleCategoryExpansion(category.Id))">
                     <div class="flex w-full items-center justify-between">
                         <MudText Typo="Typo.subtitle2" Class="!font-semibold">@category.Name</MudText>
-                        @* Sửa Icon để hiển thị theo trạng thái isExpanded *@
                         <MudIcon Icon="@(isExpanded ? Icons.Material.Filled.KeyboardArrowUp : Icons.Material.Filled.KeyboardArrowDown)" Size="Size.Small" />
                     </div>
                 </MudListItem>
+
+                <MudListItem T="string" OnClick="@(() => NavigateAndCloseDrawer(category.Id))" Class="ml-4 !pt-0 !pb-0 !mt-[-4px]">
+                    <MudText Typo="Typo.body2" Class="!text-sm italic text-blue-600 hover:text-black">Xem tất cả @category.Name</MudText>
+                </MudListItem>
             
-                // MudCollapse cho cấp con
-                // Sửa Expanded để liên kết với trạng thái isExpanded
                 <MudCollapse Expanded="@isExpanded">
                     <MudList T="string" Class="ml-4">
                         @RenderDrawerItems(category.SubCategory)
                     </MudList>
                 </MudCollapse>
             }
-            else // Item cuối (Leaf Item)
+            else
             {
                 <MudListItem T="string" OnClick="() => NavigateAndCloseDrawer(category.Id)">
                     <MudText Typo="Typo.body2">@category.Name</MudText>

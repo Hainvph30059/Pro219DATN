@@ -9,11 +9,11 @@
 
         @if (_cartStateService.CartDetails.CartItems.Any())
         {
-            <div class="max-h-[calc(100lvh-15.9375rem)] flex flex-col gap-2">
+            <div class="max-h-[calc(100lvh-15.9375rem)] flex flex-col gap-2 overflow-y-auto">
                 @foreach (var item in _cartStateService.CartDetails.CartItems)
                 {
                         <div class="flex items-center gap-2">
-                            <div class="h-full max-h-[6.25rem] w-full max-w-[6.25rem] flex-shrink-0">
+                            <div class="h-full w-full max-w-[6.25rem] flex-shrink-0">
                                 <a>
                                     <img src="@item.ImageUrl" alt="product" />
                                 </a>

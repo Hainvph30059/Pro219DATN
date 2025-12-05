@@ -28,7 +28,7 @@
                 <MudTd DataLabel="Ảnh">@context.Name</MudTd>
                 <MudTd DataLabel="Giá mặc định">@context.BasePrice.ToString("C", vietnameseCulture)</MudTd>
                 <MudTd DataLabel="Danh mục">@_categories.FirstOrDefault(x => x.Id == context.CategoryId)?.Name</MudTd>
-                <MudTd DataLabel="Thương hiệu">@_brands.FirstOrDefault(x => x.Id == context.CategoryId)?.Name</MudTd>
+                <MudTd DataLabel="Thương hiệu">@_brands.FirstOrDefault(x => x.Id == context.BrandId)?.Name</MudTd>
                 <MudTd DataLabel="Mô tả">@context.Description</MudTd>
                 <MudTd DataLabel="Trạng thái">@((context.Status == Constant.StatusDefault.Active) ? "Hoạt Động" : "Không Hoạt Động")</MudTd>
                 <MudTd DataLabel="Thao tác">
