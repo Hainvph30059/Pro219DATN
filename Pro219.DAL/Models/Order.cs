@@ -9,38 +9,40 @@ namespace Pro219.DAL.Models
         [Key]
         public int OrderId { get; set; }
 
-        [Required]
-        public int CustomerId { get; set; }
+        public int? CustomerId { get; set; }
 
-        [Required]
+
         public int ShippingAddressId { get; set; }
 
         public int? DiscountId { get; set; }
 
         public int? PaymentMethodId { get; set; }
 
-        [Required]
+        public byte? OrderType { get; set; }
+
         [MaxLength(50)]
         public string OrderCode { get; set; } = string.Empty;
 
         public DateTime OrderDate { get; set; }
 
-        [Required]
+
         [Column(TypeName = "decimal(18,2)")]
         public decimal TotalAmount { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal DiscountAmount { get; set; }
 
-        [Required]
+
         [Column(TypeName = "decimal(18,2)")]
         public decimal FinalAmount { get; set; }
 
-        [Required]
+        public decimal ShippingFee { get; set; } = 0;
+
+
         [MaxLength(20)]
         public string PaymentStatus { get; set; } = string.Empty;
 
-        [Required]
+
         [MaxLength(20)]
         public string OrderStatus { get; set; } = string.Empty;
 
@@ -62,7 +64,7 @@ namespace Pro219.DAL.Models
 
         // Foreign key navigation properties
         [ForeignKey("CustomerId")]
-        public virtual Customer Customer { get; set; } = null!;
+        public virtual Customer? Customer { get; set; } = null!;
 
         [ForeignKey("ShippingAddressId")]
         public virtual Address ShippingAddress { get; set; } = null!;
