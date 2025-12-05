@@ -26,5 +26,36 @@
             public const string OutOfStock = "out_of_stock";
 
         }
+
+        public static class OrderStatus
+        {
+            public const string PaymentPending = "Chờ thanh toán";
+            public const string PaymentCompleted = "Đã thanh toán";
+            public const string PaymentCancelled = "Hủy thanh toán";
+
+            public const string OrderStatusPending = "Đang chờ xử lý";
+            public const string OrderStatusConfirm = "Đã xác nhận";
+            public const string OrderStatusCanceledByUser = "Đã hủy bởi người dùng";
+            public const string OrderStatusShipping = "Đang giao hàng";
+            public const string OrderStatusShippingDone = "Đã giao hàng";
+            public const string OrderStatusShippingFailed = "Giao hàng thất bại";
+            public const string OrderStatusDone = "Hoàn thành";
+
+            public const byte StatusPending = 1;
+            public const byte StatusConfirm = 2;
+            public const byte StatusCanceledByUser = 3;
+            public const byte StatusShipping = 4;
+            public const byte StatusShippingDone = 5;
+            public const byte StatusShippingFailed = 6;
+            public const byte StatusDone = 7;
+
+
+        }
+
+        public static class DiscountCode { 
+        
+            public const byte StatusPercentage = 1;
+            public const byte StatusFixedAmount = 2;
+        }
     }
 }

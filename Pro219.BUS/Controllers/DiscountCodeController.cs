@@ -39,6 +39,79 @@ namespace Pro219.API.Controllers
             }
         }
 
+        [HttpGet("ApplyDiscountCodeValue")]
+        public async Task<ActionResult<decimal>> ApplyDiscountCodeValue(string code, decimal totalAmount)
+        {
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.SerialNumber)?.Value;
+
+                if (userIdClaim == null)
+                {
+                    return BadRequest("Chỉ áp dụng cho khách hàng đã đăng nhập");
+                }
+
+                var discountCode = await discountCodeRepository.GetDiscountCodeByCode(code);
+                if (discountCode == null)
+                {
+                    return NotFound(Constant.ErrorCode.DataNotFound);
+                }
+
+                int userTimeUsed = await discountCodeRepository.GetUserTimeUsed(code, int.Parse(userIdClaim));
+
+                if (discountCode.IsReusable == false && userTimeUsed >= 1)
+                {
+                    return BadRequest("Mã giảm giá không thể sử dụng lại");
+                }
+                else if (userTimeUsed >= discountCode.MaxUsage)
+                {
+                    return BadRequest("Mã giảm giá đã hết lượt sử dụng");
+                }
+
+                if (discountCode.StartDate > DateTime.Now)
+                {
+                    return BadRequest("Mã giảm giá đã hết hạn");
+                }
+                if (discountCode.EndDate < DateTime.Now)
+                {
+                    return BadRequest("Mã giảm giá đã hết hạn");
+                }
+                if (discountCode.IsActive == false)
+                {
+                    return BadRequest("Mã giảm giá đã hết hạn");
+                }
+                if (discountCode.MaxUsage != null && discountCode.UsageCount >= discountCode.MaxUsage)
+                {
+                    return BadRequest("Mã giảm giá đã hết lượt sử dụng");
+
+                }
+                if (discountCode.MinOrderValue != null && totalAmount < discountCode.MinOrderValue)
+                {
+                    return BadRequest("Đơn hàng không đủ giá trị để sử dụng mã giảm giá");
+                }
+                if (discountCode.MaxDiscountAmount != null && discountCode.Value > discountCode.MaxDiscountAmount)
+                {
+                    return BadRequest("Mã giảm giá vượt quá giá trị giảm giá tối đa");
+                }
+                if (discountCode.Status == 1) // Percent
+                {
+                    return Ok(totalAmount * (discountCode.Value / 100));
+                }
+                else if (discountCode.Status == 2) // Fixed Amount
+                {
+                    return Ok(discountCode.Value);
+                }
+                else
+                {
+                    return BadRequest("Mã giảm giá không hợp lệ");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, Constant.ErrorCode.OtherError);
+            }
+        }
+
         [HttpGet("GetById/{id}")]
         public async Task<ActionResult<DiscountCode>> GetDiscountCodeById(int id)
         {
