@@ -24,13 +24,22 @@ namespace Pro219.DAL.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal? MinOrderValue { get; set; }
 
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal? MaxDiscountAmount { get; set; }
+        
+        public int? MaxUsage { get; set; } = 1;
+
+        public int? UsageCount { get; set; } = 0;
+
+        public bool? IsReusable { get; set; } = false;
+
         public DateTime StartDate { get; set; }
 
         public DateTime EndDate { get; set; }
 
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
 
-        public bool? Delete { get; set; }
+        public bool? Delete { get; set; } = false;
 
         public DateTime? CreateAt { get; set; }
 
@@ -38,7 +47,7 @@ namespace Pro219.DAL.Models
 
         public DateTime? DeleteAt { get; set; }
 
-        public byte? Status { get; set; }
+        public byte? Status { get; set; } = 1;
 
         [MaxLength(255)]
         public string? UpdateBy { get; set; }

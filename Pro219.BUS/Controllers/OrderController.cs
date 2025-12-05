@@ -20,19 +20,17 @@ namespace Pro219.API.Controllers
     public class OrderController : ControllerBase
     {
         OrderRepository orderRepository;
+        DiscountCodeRepository discountCodeRepository;
 
         public OrderController()
         {
             orderRepository = new OrderRepository();
         }
 
-       [HttpPost("GetCheckoutUrl")]
-       public async Task<ActionResult<string>> GetCheckoutUrl([FromBody] List<CheckoutItemDTO> listProduct, string discountCode = null)
+        [HttpPost("Checkout")]
+        public async Task<ActionResult<string>> GetCheckoutUrl([FromBody] List<CheckoutItemDTO> listProduct, decimal discountAmount = 0, decimal shippingFee = 0, int? PaymentMethodTypeId = 2, int? discountId = null)
        {
-
-         
-
-
+            discountCodeRepository = new DiscountCodeRepository();
             PayOS payOS = new PayOS("09b8a42b-6105-4cd4-a4ee-8492e42e909c", "15cfbaf8-79a4-48a0-908f-248c30538001", "00b20c6b94e21bf27e6cb0ae2f26515637c93d70b2eeb832e7b51e299cba433d");
             List<ItemData> items = new List<ItemData>();
             foreach (var product in listProduct)
@@ -42,48 +40,29 @@ namespace Pro219.API.Controllers
             }
 
             decimal totalPrice = listProduct.Sum(p => p.UnitPrice * p.Quantity);
-            decimal discountAmount = 0;
-            if (discountCode != null)
-            {
-                DiscountCodeRepository discountRepository = new DiscountCodeRepository();
-                var discount = await discountRepository.GetDiscountCodeByCode(discountCode);
-                if (discount != null)
-                {
-
-                    if (discount.DiscountType == "Percentage")
-                    {
-                        discountAmount = totalPrice * (discount.Value / 100);
-                        totalPrice -= discountAmount;
-                        discountAmount = discountAmount;
-                    }
-                    else if (discount.DiscountType == "FixedAmount")
-                    {
-                        discountAmount = discount.Value;
-                        totalPrice -= discountAmount;
-                        discountAmount = discountAmount;
-                    }
-                }
-            }
-            decimal finalAmount = totalPrice - discountAmount;
+           
+            decimal finalAmount = (totalPrice - discountAmount)+shippingFee;
             int ordCode = new Random().Next(1, int.MaxValue);
             Order order = new Order();
             try
             {
                 order.OrderCode = "DH" + ordCode.ToString();
-                order.TotalAmount = finalAmount;
+                order.TotalAmount = totalPrice;
                 order.DiscountAmount = discountAmount;
                 order.FinalAmount = finalAmount;
-                order.PaymentStatus = "Pending";
-                order.OrderStatus = "Pending";
-                order.Notes = "Đang chờ thanh toán qua PayOS";
+                order.ShippingFee = shippingFee;
+                order.PaymentStatus = PaymentMethodTypeId == 2 ? Constant.OrderStatus.PaymentPending : Constant.OrderStatus.PaymentCompleted;
+                order.OrderStatus = Constant.OrderStatus.OrderStatusPending;
+                order.DiscountId = discountId;
+                order.Notes = User.FindFirst(ClaimTypes.SerialNumber)?.Value == null ? "Khách hàng không đăng nhập" : "";
                 order.CreateAt = DateTime.Now;
                 order.LastUpdate = DateTime.Now;
                 order.UpdateBy = "System";
-                order.Status = 1;
-                order.CustomerId = int.Parse(User.FindFirst(ClaimTypes.SerialNumber)?.Value);
+                order.Status = Constant.OrderStatus.StatusPending;
+                order.CustomerId = User.FindFirst(ClaimTypes.SerialNumber)?.Value == null ? null : int.Parse(User.FindFirst(ClaimTypes.SerialNumber)?.Value);
                 order.ShippingAddressId = 1;
-                order.DiscountId = null;
-                order.PaymentMethodId = 1;
+                order.DiscountId = discountId == null ? null : (int)discountId;
+                order.PaymentMethodId = PaymentMethodTypeId == 2 ? null : PaymentMethodTypeId;
                 var result = await orderRepository.AddOrder(order);
 
 
@@ -115,19 +94,44 @@ namespace Pro219.API.Controllers
             {
                 return StatusCode(500, Constant.ErrorCode.OtherError);
             }
-            PaymentData paymentData = new PaymentData(ordCode, (int)finalAmount, "Adam Store Thanh toán", items, "https://localhost:7179/Order/PaymentCanceled?orderId=" + order.OrderId + "&errorMessage=" + "Đã hủy thanh toán", "https://localhost:7179/Order/PaymentSuccess?orderId=" + order.OrderId );
 
-            CreatePaymentResult createPayment = await payOS.createPaymentLink(paymentData);
-            
-            if(createPayment.status == "PENDING")
-            {    
-              
-                return Ok(createPayment.checkoutUrl);
-            }
-            else
+            if(discountId != null && discountAmount > 0)
             {
-                return BadRequest();
-            }           
+                var discountCode = await discountCodeRepository.GetDiscountCodeById((int)discountId);
+                if(discountCode != null)
+                {
+                    discountCode.UsageCount++;
+                    var result = await discountCodeRepository.UpdateDiscountCode(discountCode);
+                    if(result == null)
+                    {
+                        return BadRequest(Constant.ErrorCode.DatabaseError);
+                    }
+                   
+                }
+            }
+
+            if(PaymentMethodTypeId == 2)
+            {
+                PaymentData paymentData = new PaymentData(ordCode, (int)finalAmount, "Adam Store Thanh toán", items, "https://localhost:7179/Order/PaymentCanceled?orderId=" + order.OrderId + "&errorMessage=" + "Đã hủy thanh toán", "https://localhost:7179/Order/PaymentSuccess?orderId=" + order.OrderId);
+
+                CreatePaymentResult createPayment = await payOS.createPaymentLink(paymentData);
+
+                if (createPayment.status == "PENDING")
+                {
+
+                    return Ok(createPayment.checkoutUrl);
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+            else if(PaymentMethodTypeId == 1)            
+            {
+                return Ok();
+            }
+           
+            return BadRequest("Lỗi");
            
 
         }
@@ -143,8 +147,8 @@ namespace Pro219.API.Controllers
                 {
                     return NotFound();
                 }
-                order.PaymentStatus = "Đã thanh toán";
-                order.OrderStatus = "Đã thanh toán";
+                order.PaymentStatus = Constant.OrderStatus.PaymentCompleted;
+                order.OrderStatus = Constant.OrderStatus.OrderStatusPending;
                 order.LastUpdate = DateTime.Now;
                 order.UpdateBy = "System";
                 var result = await orderRepository.UpdateOrder(order);
@@ -171,8 +175,8 @@ namespace Pro219.API.Controllers
                 {
                     return NotFound();
                 }
-                order.PaymentStatus = "Canceled";
-                order.OrderStatus = "Đã hủy";
+                order.PaymentStatus = Constant.OrderStatus.PaymentCancelled;
+                order.OrderStatus = Constant.OrderStatus.OrderStatusCanceledByUser;
                 order.LastUpdate = DateTime.Now;
                 order.UpdateBy = "System";
                 var result = await orderRepository.UpdateOrder(order);

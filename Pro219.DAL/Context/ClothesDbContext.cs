@@ -352,9 +352,7 @@ namespace Pro219.DAL.Context
             // PaymentMethods
             modelBuilder.Entity<PaymentMethod>().HasData(
                 new PaymentMethod { Id = 1, Name = "Thanh toán khi nhận hàng", Description = "Thanh toán bằng tiền mặt khi nhận hàng", IsActive = true, UpdateBy = "admin", Delete = false, CreateAt = seedDate, Status = 1 },
-                new PaymentMethod { Id = 2, Name = "Thẻ tín dụng", Description = "Thanh toán bằng thẻ tín dụng", IsActive = true, UpdateBy = "admin", Delete = false, CreateAt = seedDate, Status = 1 },
-                new PaymentMethod { Id = 3, Name = "Chuyển khoản ngân hàng", Description = "Chuyển khoản qua ngân hàng", IsActive = true, UpdateBy = "admin", Delete = false, CreateAt = seedDate, Status = 1 },
-                new PaymentMethod { Id = 4, Name = "Ví điện tử", Description = "Thanh toán qua ví điện tử (MoMo, ZaloPay)", IsActive = true, UpdateBy = "admin", Delete = false, CreateAt = seedDate, Status = 1 }
+                new PaymentMethod { Id = 2, Name = "Chuyển khoản ngân hàng", Description = "Chuyển khoản qua ngân hàng", IsActive = true, UpdateBy = "admin", Delete = false, CreateAt = seedDate, Status = 1 }
             );
 
             // DiscountCodes
@@ -368,7 +366,7 @@ namespace Pro219.DAL.Context
             modelBuilder.Entity<Order>().HasData(
                 new Order { OrderId = 1, CustomerId = 1, ShippingAddressId = 1, DiscountId = 1, PaymentMethodId = 1, OrderCode = "DH001", OrderDate = seedDate, TotalAmount = 1397000m, DiscountAmount = 279400m, FinalAmount = 1117600m, PaymentStatus = "Chờ thanh toán", OrderStatus = "Đang xử lý", LastUpdate = seedDate, UpdateBy = "admin", Delete = false, CreateAt = seedDate, Status = 1 },
                 new Order { OrderId = 2, CustomerId = 2, ShippingAddressId = 2, DiscountId = null, PaymentMethodId = 2, OrderCode = "DH002", OrderDate = seedDate.AddDays(1), TotalAmount = 399000m, DiscountAmount = 0, FinalAmount = 399000m, PaymentStatus = "Đã thanh toán", OrderStatus = "Đã giao hàng", LastUpdate = seedDate.AddDays(1), UpdateBy = "admin", Delete = false, CreateAt = seedDate.AddDays(1), Status = 1 },
-                new Order { OrderId = 3, CustomerId = 3, ShippingAddressId = 4, DiscountId = 2, PaymentMethodId = 4, OrderCode = "DH003", OrderDate = seedDate.AddDays(2), TotalAmount = 499000m, DiscountAmount = 49900m, FinalAmount = 449100m, PaymentStatus = "Đã thanh toán", OrderStatus = "Đang vận chuyển", LastUpdate = seedDate.AddDays(2), UpdateBy = "admin", Delete = false, CreateAt = seedDate.AddDays(2), Status = 1 }
+                new Order { OrderId = 3, CustomerId = 3, ShippingAddressId = 4, DiscountId = 2, PaymentMethodId = 2, OrderCode = "DH003", OrderDate = seedDate.AddDays(2), TotalAmount = 499000m, DiscountAmount = 49900m, FinalAmount = 449100m, PaymentStatus = "Đã thanh toán", OrderStatus = "Đang vận chuyển", LastUpdate = seedDate.AddDays(2), UpdateBy = "admin", Delete = false, CreateAt = seedDate.AddDays(2), Status = 1 }
             );
 
             // OrderItems

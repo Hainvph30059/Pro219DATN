@@ -32,14 +32,60 @@ namespace Pro219.DAL.Repository
             }
         }
 
+        //public async Task<decimal> ApplyDiscountCodeValue(string code, int userId, decimal totalAmount){
+
+        //    try{
+
+        //        if(userId == null) return 0;
+        //        var discountCode = await GetDiscountCodeByCode(code);
+        //        int userTimeUsed = await _context.Orders.Where(x => x.CustomerId == userId && x.DiscountId == discountCode.DiscountId).CountAsync();
+        //        if(discountCode.IsReusable == true && userTimeUsed >= discountCode.MaxUsage) return 0;
+        //        if(discountCode == null) return 0;
+        //        if(discountCode.MinOrderValue != null && totalAmount < discountCode.MinOrderValue) return 0;
+        //        if(discountCode.MaxDiscountAmount != null && discountCode.Value > discountCode.MaxDiscountAmount) return 0;
+        //        if(discountCode.MaxUsage != null && discountCode.UsageCount >= discountCode.MaxUsage) return 0;
+        //        if(discountCode.IsActive == false) return 0;
+        //        if(discountCode.StartDate > DateTime.Now) return 0;
+        //        if(discountCode.EndDate < DateTime.Now) return 0;
+        //        if(discountCode.IsReusable == false && userTimeUsed >= 1) return 0;
+        //        if(discountCode.Status == 1) // Percent
+        //        {
+        //            return totalAmount * (discountCode.Value / 100);
+        //        }
+        //        else if(discountCode.Status == 2) // Fixed Amount
+        //        {
+        //            return totalAmount - discountCode.Value;
+        //        }
+        //        return 0;   
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return 0;
+        //    }
+        //}
+
+
+        public async Task<int> GetUserTimeUsed(string code, int userId)
+        {
+            try
+            {
+                var discountCode = await GetDiscountCodeByCode(code);
+                return await _context.Orders.Where(x => x.CustomerId == userId && x.DiscountId == discountCode.DiscountId && x.Status!=3).CountAsync();
+            }
+            catch (Exception)
+            {
+                return 0;
+            }
+        }
+
         public async Task<DiscountCode> GetDiscountCodeById(int id)
         {
             try
             {
                 var discountCode = await _context.DiscountCodes.FindAsync(id);
-                if (discountCode != null && discountCode.Delete == true)
-                    return null;
-                return discountCode;
+                if (discountCode != null && discountCode.Delete == false)
+                    return discountCode;
+                return null;
             }
             catch (Exception)
             {
@@ -47,6 +93,7 @@ namespace Pro219.DAL.Repository
             }
         }
 
+               
         public async Task<DiscountCode> GetDiscountCodeByCode(string code)
         {
             try
@@ -106,6 +153,8 @@ namespace Pro219.DAL.Repository
                 return null;
             }
         }
+
+        
 
         public async Task<DiscountCode> DeleteDiscountCode(int id, string? updateBy = null)
         {
