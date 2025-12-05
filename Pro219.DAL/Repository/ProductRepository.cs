@@ -22,13 +22,59 @@ namespace Pro219.DAL.Repository
             _context = context;
         }
         
-        public async Task<List<ProductDetailDto>> GetAllProductsInCategory(int categoryId, int page, int pageSize)
+        public async Task<List<ProductDetailDto>> GetAllProductsInCategory(
+            int categoryId, 
+            int page, 
+            int pageSize,
+            int? brandId = null,
+            int? sizeId = null,
+            int? colorId = null,
+            string? sortOrder = null)
         {
             try
             {
-                var productListDto = await _context.Products
-                    
-                    .Where(p => p.Delete == false && p.CategoryId == categoryId)
+                var query = _context.Products
+                    .Where(p => p.Delete == false && p.CategoryId == categoryId);
+
+                if (brandId.HasValue && brandId.Value > 0)
+                {
+                    query = query.Where(p => p.BrandId == brandId.Value);
+                }
+
+                if (colorId.HasValue && colorId.Value > 0)
+                {
+                    query = query.Where(p => p.ProductVariants.Any(pv => pv.Delete == false && pv.ColorId == colorId.Value));
+                }
+
+                if (sizeId.HasValue && sizeId.Value > 0)
+                {
+                    query = query.Where(p => p.ProductVariants.Any(pv => pv.Delete == false && pv.SizeId == sizeId.Value));
+                }
+
+                switch (sortOrder?.ToLower())
+                {
+                    case "name_asc":
+                    case "az":
+                        query = query.OrderBy(p => p.Name);
+                        break;
+                    case "name_desc":
+                    case "za":
+                        query = query.OrderByDescending(p => p.Name);
+                        break;
+                    case "price_asc":
+                    case "price_increase":
+                        query = query.OrderBy(p => p.BasePrice);
+                        break;
+                    case "price_desc":
+                    case "price_decrease":
+                        query = query.OrderByDescending(p => p.BasePrice);
+                        break;
+                    default:
+                        query = query.OrderByDescending(p => p.CreatedAt);
+                        break;
+                }
+
+                var productListDto = await query
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize)
                     .Select(p => new ProductDetailDto
@@ -72,7 +118,7 @@ namespace Pro219.DAL.Repository
                             .ToList(),
 
                         Variants = p.ProductVariants
-                            .Where(pv => pv.Delete == false)
+                            .Where(pv => pv.Delete == false && (!colorId.HasValue || colorId.Value <= 0 || pv.ColorId == colorId.Value))
                             .Select(pv => new ProductVariantDto
                             {
                                 Id = pv.Id,
@@ -108,13 +154,59 @@ namespace Pro219.DAL.Repository
             }
         }
 
-        public async Task<List<ProductDetailDto>> GetAllProductByKeyWord(string keyWord, int page, int pageSize)
+        public async Task<List<ProductDetailDto>> GetAllProductByKeyWord(
+            string keyWord, 
+            int page, 
+            int pageSize,
+            int? brandId = null,
+            int? sizeId = null,
+            int? colorId = null,
+            string? sortOrder = null)
         {
             try
             {
-               var productListDto = await _context.Products
-                    
-                    .Where(p => p.Delete == false && p.Name.ToLower().Contains(keyWord.ToLower()))
+                var query = _context.Products
+                    .Where(p => p.Delete == false && p.Name.ToLower().Contains(keyWord.ToLower()));
+                
+                if (brandId.HasValue && brandId.Value > 0)
+                {
+                    query = query.Where(p => p.BrandId == brandId.Value);
+                }
+
+                if (colorId.HasValue && colorId.Value > 0)
+                {
+                    query = query.Where(p => p.ProductVariants.Any(pv => pv.Delete == false && pv.ColorId == colorId.Value));
+                }
+
+                if (sizeId.HasValue && sizeId.Value > 0)
+                {
+                    query = query.Where(p => p.ProductVariants.Any(pv => pv.Delete == false && pv.SizeId == sizeId.Value));
+                }
+
+                switch (sortOrder?.ToLower())
+                {
+                    case "name_asc":
+                    case "az":
+                        query = query.OrderBy(p => p.Name);
+                        break;
+                    case "name_desc":
+                    case "za":
+                        query = query.OrderByDescending(p => p.Name);
+                        break;
+                    case "price_asc":
+                    case "price_increase":
+                        query = query.OrderBy(p => p.BasePrice);
+                        break;
+                    case "price_desc":
+                    case "price_decrease":
+                        query = query.OrderByDescending(p => p.BasePrice);
+                        break;
+                    default:
+                        query = query.OrderByDescending(p => p.CreatedAt);
+                        break;
+                }
+
+                var productListDto = await query
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize)
                     .Select(p => new ProductDetailDto
@@ -158,7 +250,7 @@ namespace Pro219.DAL.Repository
                             .ToList(),
 
                         Variants = p.ProductVariants
-                            .Where(pv => pv.Delete == false)
+                            .Where(pv => pv.Delete == false && (!colorId.HasValue || colorId.Value <= 0 || pv.ColorId == colorId.Value))
                             .Select(pv => new ProductVariantDto
                             {
                                 Id = pv.Id,
