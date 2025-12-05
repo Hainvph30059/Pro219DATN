@@ -22,11 +22,18 @@ namespace Pro219.API.Controllers
         }
 
         [HttpGet("GetAllProductsInCategory/{categoryId}")]
-        public async Task<ActionResult<List<DAL.Repository.ProductRepository.ProductDetailDto>>> GetAllProductsInCategory(int categoryId, int page, int pageSize)
+        public async Task<ActionResult<List<DAL.Repository.ProductRepository.ProductDetailDto>>> GetAllProductsInCategory(
+            int categoryId, 
+            int page, 
+            int pageSize,
+            [FromQuery] int? brandId = null,
+            [FromQuery] int? sizeId = null,
+            [FromQuery] int? colorId = null,
+            [FromQuery] string? sortOrder = null)
         {
             try
             {
-                var result = await productRepository.GetAllProductsInCategory(categoryId, page, pageSize);
+                var result = await productRepository.GetAllProductsInCategory(categoryId, page, pageSize, brandId, sizeId, colorId, sortOrder);
                 if (result == null)
                 {
                     return Ok(new List<DAL.Repository.ProductRepository.ProductDetailDto>());
@@ -40,11 +47,18 @@ namespace Pro219.API.Controllers
         }
 
         [HttpGet("GetAllProductByKeyWord/{keyWord}")]
-        public async Task<ActionResult<List<DAL.Repository.ProductRepository.ProductDetailDto>>> GetAllProductByKeyWord(string keyWord, int page, int pageSize)
+        public async Task<ActionResult<List<DAL.Repository.ProductRepository.ProductDetailDto>>> GetAllProductByKeyWord(
+            string keyWord, 
+            int page, 
+            int pageSize,
+            [FromQuery] int? brandId = null,
+            [FromQuery] int? sizeId = null,
+            [FromQuery] int? colorId = null,
+            [FromQuery] string? sortOrder = null)
         {
             try
             {
-                var result = await productRepository.GetAllProductByKeyWord(keyWord, page, pageSize);
+                var result = await productRepository.GetAllProductByKeyWord(keyWord, page, pageSize, brandId, sizeId, colorId, sortOrder);
                 if (result == null)
                 {
                     return Ok(new List<DAL.Repository.ProductRepository.ProductDetailDto>());
