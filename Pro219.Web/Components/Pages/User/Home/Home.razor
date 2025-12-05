@@ -175,7 +175,7 @@
                         </div>
 
                         <div class="invisible absolute -bottom-10 left-0 z-10 flex w-full items-center justify-between gap-4 bg-black py-2.5 opacity-0 group-hover:visible group-hover:opacity-100">
-                            <button class="flex w-[49%] justify-center text-white"><MudIcon Icon="@Icons.Material.Filled.ShoppingCart" @onclick="@(() => OpenDialog(item.Id))" Size="Size.Small" Class="!mr-1" /> Thêm giỏ hàng</button>
+                            <button class="flex w-[49%] justify-center text-white" @onclick="@(() => OpenDialog(item.Id))"><MudIcon Icon="@Icons.Material.Filled.ShoppingCart" Size="Size.Small" Class="!mr-1" /> Thêm giỏ hàng</button>
                             <div class="h-5 w-[2%] border-r border-white" />
                             <button @onclick="@(() => navigation.NavigateTo(RouterConst.User.ProductDetail + $"/{@item.Id}"))" class="flex w-[49%] justify-center text-white"><MudIcon Icon="@Icons.Material.Filled.RemoveRedEye" Size="Size.Small" Class="!mr-1" /> Xem chi tiết</button>
                         </div>

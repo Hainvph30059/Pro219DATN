@@ -6,7 +6,7 @@
 <section class="mx-auto w-full max-w-[1032px] pb-10 pt-4">
     <div class="flex w-full flex-col flex-wrap justify-between gap-4 lg:flex-row lg:gap-8">
         <div class="w-full lg:w-[calc(100%-26rem)]">
-            <div class="max-h-[24rem] w-full">
+            <div class="w-full">
                 <MudExpansionPanel Class="!mt-2 !rounded-lg !border !border-solid !border-slate-200 !shadow">
                     <TitleContent>
                         <h3 class="text-lg font-bold">Địa chỉ giao hàng</h3>
@@ -36,7 +36,7 @@
                         <MudButton Class="my-6 w-full" Variant="Variant.Outlined" OnClick="OpenDialogCreateAddress"><MudIcon Icon="@Icons.Material.Filled.AddLocation" /> Thêm địa chỉ mới</MudButton>
 
                         <div class="max-h-[30rem] w-full">
-                            <MudRadioGroup T="int" Value="@_selectedAdress" ValueChanged="OnChangeAddress">
+                            <MudRadioGroup T="int" Value="@_selectedAdress" Class="max-h-[24rem] overflow-y-auto" ValueChanged="OnChangeAddress">
                                 @if (_address.Any())
                                 {
                                     @foreach (var item in _address)
@@ -61,9 +61,12 @@
                 <div class="mt-6 rounded-lg border border-solid border-slate-200 p-3 shadow">
                     <h3 class="text-lg font-bold">Phương thức thanh toán</h3>
 
-                    <MudRadioGroup T="int">
-                        <MudRadio Value="0" Class="!w-full">
+                    <MudRadioGroup T="int" @bind-Value="_selectPaymentMethod">
+                        <MudRadio Value="1" Class="!w-full">
                             Tiền mặt
+                        </MudRadio>
+                        <MudRadio Value="2" Class="!w-full">
+                            Chuyển khoản
                         </MudRadio>
                     </MudRadioGroup>
                 </div>
@@ -83,7 +86,7 @@
                     foreach (var item in _data)
                     {
                         <div class="flex items-center gap-2">
-                            <div class="h-full max-h-[5rem] w-full max-w-[5rem] flex-shrink-0">
+                            <div class="h-full w-full max-w-[5rem] flex-shrink-0">
                                 <a>
                                     <img src="@item.ImageUrl" alt="product" />
                                 </a>
@@ -103,10 +106,10 @@
             </div>
 
             <div class="flex w-full flex-col gap-2 rounded-lg border border-solid border-slate-200 p-3 shadow">
-                <h3 class="text-lg font-bold">Khuyến mãi</h3>
+                <h3 class="text-lg font-bold">Giảm giá</h3>
 
                 <div class="flex w-full items-center gap-2">
-                    <input value="@_coupon" placeholder="nhập mã khuyến mãi" class="!h-10 w-full rounded-md border border-solid border-slate-200 px-2" />
+                    <input value="@_coupon" placeholder="nhập mã giảm giá" class="!h-10 w-full rounded-md border border-solid border-slate-200 px-2" />
                     <MudButton Class="!h-10 w-[8rem] flex-shrink-0" Color="Color.Dark" Variant="Variant.Filled" Disabled="@(!_data.Any() || _addressDefault == null)">Áp Dụng</MudButton>
                 </div>
             </div>
@@ -120,6 +123,10 @@
                 <div class="flex justify-between gap-2">
                     <span class="flex-shrink-0 text-sm uppercase">Phí giao hàng:</span>
                     <span class="whitespace-pre-wrap text-sm font-medium">@_shippingPrice.ToString("C", vietnameseCulture)</span>
+                </div>
+                <div class="flex justify-between gap-2">
+                    <span class="flex-shrink-0 text-sm uppercase">Giảm giá:</span>
+                    <span class="whitespace-pre-wrap text-sm font-medium">@(0.ToString("C", vietnameseCulture))</span>
                 </div>
                 <div class="flex justify-between gap-2">
                     <span class="flex-shrink-0 text-sm font-bold uppercase">Tổng tiền:</span>
@@ -147,6 +154,7 @@
     int _parsedCartId = 0;
     decimal _shippingPrice = 0;
     int _selectedAdress = 0;
+    int _selectPaymentMethod = 1;
     GetMeResponseDTO _me = new GetMeResponseDTO();
     CultureInfo vietnameseCulture = new CultureInfo("vi-VN");
 
@@ -261,6 +269,8 @@
         {
             await LoadData();
             await LoadAddress();
+            await GetShippingFee();
+            StateHasChanged();
         }
     }
 

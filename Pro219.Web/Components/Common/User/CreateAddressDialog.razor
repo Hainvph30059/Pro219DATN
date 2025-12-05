@@ -140,7 +140,7 @@
         if (result.IsSuccess)
         {
             _snackbar.Add("Thêm địa chỉ thành công", Severity.Success);
-            MudDialog.Cancel();
+            MudDialog.Close(DialogResult.Ok(true));
         } else
         {
 

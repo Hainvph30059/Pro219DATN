@@ -21,7 +21,138 @@ namespace Pro219.DAL.Repository
         {
             _context = context;
         }
-        
+
+        public async Task<List<ProductDetailDto>> GetAllProducts(
+            int page,
+            int pageSize,
+            int? brandId = null,
+            int? sizeId = null,
+            int? colorId = null,
+            string? sortOrder = null)
+        {
+            try
+            {
+                var query = _context.Products
+                    .Where(p => p.Delete == false);
+
+                if (brandId.HasValue && brandId.Value > 0)
+                {
+                    query = query.Where(p => p.BrandId == brandId.Value);
+                }
+
+                if (colorId.HasValue && colorId.Value > 0)
+                {
+                    query = query.Where(p => p.ProductVariants.Any(pv => pv.Delete == false && pv.ColorId == colorId.Value));
+                }
+
+                if (sizeId.HasValue && sizeId.Value > 0)
+                {
+                    query = query.Where(p => p.ProductVariants.Any(pv => pv.Delete == false && pv.SizeId == sizeId.Value));
+                }
+
+                switch (sortOrder?.ToLower())
+                {
+                    case "name_asc":
+                    case "az":
+                        query = query.OrderBy(p => p.Name);
+                        break;
+                    case "name_desc":
+                    case "za":
+                        query = query.OrderByDescending(p => p.Name);
+                        break;
+                    case "price_asc":
+                    case "price_increase":
+                        query = query.OrderBy(p => p.BasePrice);
+                        break;
+                    case "price_desc":
+                    case "price_decrease":
+                        query = query.OrderByDescending(p => p.BasePrice);
+                        break;
+                    default:
+                        query = query.OrderByDescending(p => p.CreatedAt);
+                        break;
+                }
+
+                var productListDto = await query
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .Select(p => new ProductDetailDto
+                    {
+                        Id = p.Id,
+                        Name = p.Name,
+                        BasePrice = p.BasePrice,
+                        Description = p.Description,
+
+                        CategoryName = p.Category.Name,
+                        BrandName = p.Brand.Name,
+                        SaleName = p.Sale != null ? p.Sale.Name : null,
+                        CreateAt = p.CreatedAt,
+
+
+                        AvailableColors = p.ProductVariants
+                            .Where(pv => pv.Delete == false)
+                            .Select(pv => pv.Color)
+                            .Distinct()
+                            .Select(c => new ColorDto
+                            {
+                                Id = c.Id,
+                                Name = c.Name,
+                                HexCode = c.HexCode
+                            })
+                            .ToList(),
+
+                        AvailableSizes = p.ProductVariants
+                            .Where(pv => pv.Delete == false)
+                            .Select(pv => pv.Size)
+                            .Distinct()
+                            .Select(s => new SizeDto
+                            {
+                                Id = s.Id,
+                                Name = s.Name
+                            })
+                            .ToList(),
+                        ImageUrls = p.ProductImages
+                            .Where(pi => pi.Delete == false && pi.ProductVariantId == null)
+                            .Select(pi => pi.ImageUrl)
+                            .ToList(),
+
+                        Variants = p.ProductVariants
+                            .Where(pv => pv.Delete == false && (!colorId.HasValue || colorId.Value <= 0 || pv.ColorId == colorId.Value))
+                            .Select(pv => new ProductVariantDto
+                            {
+                                Id = pv.Id,
+                                SKU = pv.SKU,
+                                Price = pv.Price,
+                                StockQuantity = pv.StockQuantity,
+
+                                ColorId = pv.Color.Id,
+                                ColorName = pv.Color.Name,
+                                ColorHexCode = pv.Color.HexCode,
+
+                                SizeId = pv.Size.Id,
+                                SizeName = pv.Size.Name,
+
+                                VariantImageUrls = p.ProductImages
+                                    .Where(pi => pi.Delete == false && pi.ProductVariantId == pv.Id)
+                                    .Select(pi => pi.ImageUrl)
+                                    .ToList()
+                            }).ToList(),
+
+                        ReviewCount = p.Reviews.Count(r => r.Status == 1),
+                        AverageRating = p.Reviews.Any(r => r.Status == 1)
+                                            ? (double?)p.Reviews.Where(r => r.Status == 1).Average(r => r.Overall)
+                                            : null
+                    })
+                    .ToListAsync();
+
+                return productListDto;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
         public async Task<List<ProductDetailDto>> GetAllProductsInCategory(
             int categoryId, 
             int page, 

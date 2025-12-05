@@ -37,6 +37,161 @@ namespace Pro219.Web.Services
             }
         }
 
+        public async Task<ServiceResult<List<DAL.Repository.ProductRepository.ProductDetailDto>>> GetAllSearch(
+            int page,
+            int pageSize,
+            int? brandId = null,
+            int? sizeId = null,
+            int? colorId = null,
+            string? sortOrder = null)
+        {
+            var url = $"/Product/GetAllProducts?page={page}&pageSize={pageSize}";
+
+            if (brandId.HasValue && brandId > 0)
+            {
+                url += $"&brandId={brandId}";
+            }
+            if (sizeId.HasValue && sizeId > 0)
+            {
+                url += $"&sizeId={sizeId}";
+            }
+            if (colorId.HasValue && colorId > 0)
+            {
+                url += $"&colorId={colorId}";
+            }
+            if (!string.IsNullOrEmpty(sortOrder))
+            {
+                url += $"&sortOrder={sortOrder}";
+            }
+
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            var response = await _httpClient.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<List<DAL.Repository.ProductRepository.ProductDetailDto>>();
+                return ServiceResult<List<DAL.Repository.ProductRepository.ProductDetailDto>>.Success(result);
+            }
+            else
+            {
+                var errorCode = await response.Content.ReadAsStringAsync();
+
+                var errorMess = Constant.Errors.ContainsKey(errorCode ?? "")
+                                     ? Constant.Errors[errorCode ?? ""]
+                                     : $"Lỗi không xác định: {response.ReasonPhrase}";
+
+                return ServiceResult<List<DAL.Repository.ProductRepository.ProductDetailDto>>.Failure(
+                    errorCode,
+                    errorMess,
+                    response.StatusCode.ToString()
+                );
+            }
+        }
+
+        public async Task<ServiceResult<List<DAL.Repository.ProductRepository.ProductDetailDto>>> GetAllByCategory(
+            int categoryId,
+            int page,
+            int pageSize,
+            int? brandId = null,
+            int? sizeId = null,
+            int? colorId = null,
+            string? sortOrder = null)
+        {
+            var url = $"/Product/GetAllProductsInCategory/{categoryId}?page={page}&pageSize={pageSize}";
+
+            if (brandId.HasValue && brandId > 0)
+            {
+                url += $"&brandId={brandId}";
+            }
+            if (sizeId.HasValue && sizeId > 0)
+            {
+                url += $"&sizeId={sizeId}";
+            }
+            if (colorId.HasValue && colorId > 0)
+            {
+                url += $"&colorId={colorId}";
+            }
+            if (!string.IsNullOrEmpty(sortOrder))
+            {
+                url += $"&sortOrder={sortOrder}";
+            }
+
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            var response = await _httpClient.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<List<DAL.Repository.ProductRepository.ProductDetailDto>>();
+                return ServiceResult<List<DAL.Repository.ProductRepository.ProductDetailDto>>.Success(result ?? new List<DAL.Repository.ProductRepository.ProductDetailDto>());
+            }
+            else
+            {
+                var errorCode = await response.Content.ReadAsStringAsync();
+
+                var errorMess = Constant.Errors.ContainsKey(errorCode ?? "")
+                                     ? Constant.Errors[errorCode ?? ""]
+                                     : $"Lỗi không xác định: {response.ReasonPhrase}";
+
+                return ServiceResult<List<DAL.Repository.ProductRepository.ProductDetailDto>>.Failure(
+                    errorCode,
+                    errorMess,
+                    response.StatusCode.ToString()
+                );
+            }
+        }
+
+        public async Task<ServiceResult<List<DAL.Repository.ProductRepository.ProductDetailDto>>> GetAllByKeyword(
+            string keyword,
+            int page,
+            int pageSize,
+            int? brandId = null,
+            int? sizeId = null,
+            int? colorId = null,
+            string? sortOrder = null)
+        {
+            var url = $"/Product/GetAllProductByKeyWord/{keyword}?page={page}&pageSize={pageSize}";
+
+            if (brandId.HasValue && brandId > 0)
+            {
+                url += $"&brandId={brandId}";
+            }
+            if (sizeId.HasValue && sizeId > 0)
+            {
+                url += $"&sizeId={sizeId}";
+            }
+            if (colorId.HasValue && colorId > 0)
+            {
+                url += $"&colorId={colorId}";
+            }
+            if (!string.IsNullOrEmpty(sortOrder))
+            {
+                url += $"&sortOrder={sortOrder}";
+            }
+
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            var response = await _httpClient.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<List<DAL.Repository.ProductRepository.ProductDetailDto>>();
+                return ServiceResult<List<DAL.Repository.ProductRepository.ProductDetailDto>>.Success(result ?? new List<DAL.Repository.ProductRepository.ProductDetailDto>());
+            }
+            else
+            {
+                var errorCode = await response.Content.ReadAsStringAsync();
+
+                var errorMess = Constant.Errors.ContainsKey(errorCode ?? "")
+                                     ? Constant.Errors[errorCode ?? ""]
+                                     : $"Lỗi không xác định: {response.ReasonPhrase}";
+
+                return ServiceResult<List<DAL.Repository.ProductRepository.ProductDetailDto>>.Failure(
+                    errorCode,
+                    errorMess,
+                    response.StatusCode.ToString()
+                );
+            }
+        }
+
         public async Task<ServiceResult<Product>> GetById(int id)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, $"/Product/GetById/{id}");
