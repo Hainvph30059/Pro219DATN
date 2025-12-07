@@ -29,7 +29,7 @@ namespace Pro219.DAL.Models
         
         public int? MaxUsage { get; set; } = 1;
 
-        public int? UsageCount { get; set; } = 0;
+        public int? UsageCount { get; set; } = 10;
 
         public bool? IsReusable { get; set; } = false;
 
