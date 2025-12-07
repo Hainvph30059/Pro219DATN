@@ -51,6 +51,7 @@ namespace Pro219.API.Controllers
                 order.DiscountAmount = discountAmount;
                 order.FinalAmount = finalAmount;
                 order.ShippingFee = shippingFee;
+                order.OrderDate = DateTime.Now;
                 order.PaymentStatus = PaymentMethodTypeId == 2 ? Constant.OrderStatus.PaymentPending : Constant.OrderStatus.PaymentCompleted;
                 order.OrderStatus = Constant.OrderStatus.OrderStatusPending;
                 order.DiscountId = discountId;
