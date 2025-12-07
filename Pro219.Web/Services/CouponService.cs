@@ -1,4 +1,5 @@
-﻿using Pro219.DAL.Models;
+﻿using Microsoft.AspNetCore.WebUtilities;
+using Pro219.DAL.Models;
 using Pro219.Web.Constants;
 using Pro219.Web.DTOs;
 
@@ -139,6 +140,59 @@ namespace Pro219.Web.Services
             else
             {
                 return false;
+            }
+        }
+
+        public async Task<ServiceResult<decimal>> ApplyDiscountCodeValue(string code, decimal totalAmount, string token)
+        {
+            string baseUrl = "/DiscountCode/ApplyDiscountCodeValue"; 
+
+            var queryParams = new Dictionary<string, string?>
+            {
+                { "code", code },
+                { "totalAmount", totalAmount.ToString() } 
+                
+            };
+
+            string url = QueryHelpers.AddQueryString(baseUrl, queryParams!);
+
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                var formatToken = token.Trim('"');
+                request.Headers.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", formatToken);
+            }
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var discountValue = await response.Content.ReadFromJsonAsync<decimal>();
+                return ServiceResult<decimal>.Success(discountValue);
+            }
+            else
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                var errorCode = responseContent;
+
+                var errorMess = Constant.Errors.ContainsKey(errorCode ?? "")
+                                    ? Constant.Errors[errorCode ?? ""]
+                                    : responseContent; 
+
+                if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                {
+                    errorMess = responseContent;
+                }
+
+
+                return ServiceResult<decimal>.Failure(
+                    errorCode,
+                    errorMess,
+                    response.StatusCode.ToString()
+                );
             }
         }
     }

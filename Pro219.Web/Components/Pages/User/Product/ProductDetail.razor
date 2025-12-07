@@ -97,7 +97,7 @@ else
 
                 <div class="flex justify-between">
                     <button class="w-[49%] bg-black py-3 uppercase text-white" @onclick="AddToCart">Thêm Giỏ Hàng</button>
-                    <button class="w-[49%] bg-black py-3 uppercase text-white">Mua Ngay</button>
+                    <button class="w-[49%] bg-black py-3 uppercase text-white" @onclick="ToCheckout">Mua Ngay</button>
                 </div>
 
                 <div class="mt-2">
@@ -320,6 +320,12 @@ else
 
     private async Task AddToCart()
     {
+        if (string.IsNullOrEmpty(_token))
+        {
+            _snackbar.Add("Chức năng thêm giỏ hàng khi chưa đăng nhập đang phát triển. Vui lòng đăng nhập.", Severity.Warning);
+            return;
+        }
+
         if (_foundVariant == null)
         {
             _snackbar.Add("Vui lòng chọn Màu sắc và Kích thước", Severity.Info);
@@ -341,6 +347,39 @@ else
         } else
         {
             _snackbar.Add("Thêm vào giỏ hàng thất bại", Severity.Error);
+        }
+    }
+
+    private async Task ToCheckout()
+    {
+        if (string.IsNullOrEmpty(_token))
+        {
+            _snackbar.Add("Chức năng thêm giỏ hàng khi chưa đăng nhập đang phát triển. Vui lòng đăng nhập.", Severity.Warning);
+            return;
+        }
+
+        if (_foundVariant == null)
+        {
+            _snackbar.Add("Vui lòng chọn Màu sắc và Kích thước", Severity.Info);
+            return;
+        }
+
+        var item = new AddCartModel()
+            {
+                VariantId = _foundVariant.Id,
+                Quantity = _quantity
+            };
+
+        var result = await _cartService.AddToCart(item, _token);
+
+        if (result.IsSuccess)
+        {
+            await _cartStateService.LoadCartDetailsAsync();
+            navigation.NavigateTo(RouterConst.User.CheckoutDetail);
+        }
+        else
+        {
+            _snackbar.Add("Có lỗi xảy ra", Severity.Error);
         }
     }
 }

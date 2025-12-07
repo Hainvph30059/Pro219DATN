@@ -74,7 +74,7 @@
                 <div class="mt-6 rounded-lg border border-solid border-slate-200 p-3 shadow">
                     <h3 class="text-lg font-bold">Ghi chú</h3>
 
-                    <input value="@_coupon" placeholder="nội dung cho cửa hàng" class="mt-3 !h-10 w-full rounded-md border border-solid border-slate-200 px-2" />
+                    <input placeholder="nội dung cho cửa hàng" class="mt-3 !h-10 w-full rounded-md border border-solid border-slate-200 px-2" />
                 </div>
             </div>
         </div>
@@ -109,8 +109,8 @@
                 <h3 class="text-lg font-bold">Giảm giá</h3>
 
                 <div class="flex w-full items-center gap-2">
-                    <input value="@_coupon" placeholder="nhập mã giảm giá" class="!h-10 w-full rounded-md border border-solid border-slate-200 px-2" />
-                    <MudButton Class="!h-10 w-[8rem] flex-shrink-0" Color="Color.Dark" Variant="Variant.Filled" Disabled="@(!_data.Any() || _addressDefault == null)">Áp Dụng</MudButton>
+                    <MudTextField @bind-Value="@_coupon" placeholder="nhập mã giảm giá" Variant="Variant.Outlined" Style="height: 40px" />
+                    <MudButton Class="!h-10 w-[8rem] flex-shrink-0" Color="Color.Dark" Variant="Variant.Filled" Disabled="@(!_data.Any() || _addressDefault == null)" OnClick="ApplyDiscountCodeValue">Áp Dụng</MudButton>
                 </div>
             </div>
 
@@ -126,13 +126,13 @@
                 </div>
                 <div class="flex justify-between gap-2">
                     <span class="flex-shrink-0 text-sm uppercase">Giảm giá:</span>
-                    <span class="whitespace-pre-wrap text-sm font-medium">@(0.ToString("C", vietnameseCulture))</span>
+                    <span class="whitespace-pre-wrap text-sm font-medium">@(_discountAmout.ToString("C", vietnameseCulture))</span>
                 </div>
                 <div class="flex justify-between gap-2">
                     <span class="flex-shrink-0 text-sm font-bold uppercase">Tổng tiền:</span>
-                    <span class="whitespace-pre-wrap text-sm font-medium">@((_data.Sum(i => i.Quantity * i.UnitPrice) + _shippingPrice)?.ToString("C", vietnameseCulture))</span>
+                    <span class="whitespace-pre-wrap text-sm font-medium">@((_data.Sum(i => i.Quantity * i.UnitPrice) + _shippingPrice - _discountAmout)?.ToString("C", vietnameseCulture))</span>
                 </div>
-                <MudButton Class="!h-10" Color="Color.Dark" Variant="Variant.Filled" Disabled="@(_data.Count() == 0 || _addressDefault == null)">Đặt Hàng</MudButton>
+                <MudButton Class="!h-10" Color="Color.Dark" Variant="Variant.Filled" Disabled="@(_data.Count() == 0 || _addressDefault == null)" OnClick="OnCheckout">Đặt Hàng</MudButton>
             </div>
         </div>
     </div>
@@ -148,11 +148,13 @@
     List<DistrictDTO> _districts = [];
     List<WardDTO> _wards = [];
     DAL.Models.Address _addressDefault = null;
+    DAL.Models.DiscountCode _discountDetail = null;
     string _coupon = "";
     string _cartId = "";
     string _token = "";
     int _parsedCartId = 0;
     decimal _shippingPrice = 0;
+    decimal _discountAmout = 0;
     int _selectedAdress = 0;
     int _selectPaymentMethod = 1;
     GetMeResponseDTO _me = new GetMeResponseDTO();
@@ -271,6 +273,113 @@
             await LoadAddress();
             await GetShippingFee();
             StateHasChanged();
+        }
+    }
+
+    async Task ApplyDiscountCodeValue()
+    {
+        if (string.IsNullOrEmpty(_coupon))
+        {
+            _snackbar.Add("Vui lòng nhập mã giảm giá.", Severity.Warning);
+            return;
+        }
+
+        if (!_data.Any())
+        {
+            _snackbar.Add("Giỏ hàng không có sản phẩm.", Severity.Warning);
+            return;
+        }
+
+        decimal totalAmount = _data.Sum(i => i.Quantity * i.UnitPrice) ?? 0;
+
+        _discountAmout = 0;
+
+        var result = await _couponService.ApplyDiscountCodeValue(_coupon.Trim(), totalAmount, _token);
+
+        if (result.IsSuccess)
+        {
+            _discountAmout = result.Data;
+
+            var resultDiscountDetail = await _couponService.GetByCode(_coupon.Trim());
+            if (resultDiscountDetail.IsSuccess && resultDiscountDetail.Data != null)
+            {
+                _discountDetail = resultDiscountDetail.Data;
+            }
+            _snackbar.Add($"Áp dụng mã thành công! Giảm giá: {_discountAmout.ToString("C", vietnameseCulture)}", Severity.Success);
+        }
+        else
+        {
+            _coupon = string.Empty;
+            _snackbar.Add($"Áp dụng mã thất bại: {result.ErrorMessage}", Severity.Error);
+        }
+
+        StateHasChanged();
+    }
+
+    async Task OnCheckout()
+    {
+        if (_selectPaymentMethod == 2)
+        {
+            _snackbar.Add("Chức năng thanh toán chuyển khoản đang được phát triển.", Severity.Warning);
+            return;
+        }
+        if (!_data.Any() || _addressDefault == null)
+        {
+            _snackbar.Add("Vui lòng chọn địa chỉ và đảm bảo giỏ hàng không trống.", Severity.Warning);
+            return;
+        }
+
+        var listProductForCheckout = _data.Select(item => new CheckoutModel
+        {
+            ProductName = item.productName + " - " + item.ColorName + " - " + item.SizeName,
+            Quantity = item.Quantity,
+            UnitPrice = item.UnitPrice ?? 0,
+            ProductVariantId = item.VariantId
+        }).ToList();
+
+        decimal discountAmount = _discountAmout;
+        int? discountId = null;
+
+        if (_discountDetail != null) {
+            discountId = _discountDetail.DiscountId;
+        }
+
+        var result = await _orderService.GetCheckoutUrl(
+             _token,
+            listProduct: listProductForCheckout,
+            discountAmount: discountAmount,
+            shippingFee: _shippingPrice,
+            paymentMethodTypeId: _selectPaymentMethod,
+            discountId: discountId
+        );
+
+        if (result.IsSuccess)
+        {
+            string checkoutUrl = result.Data;
+
+            if (_selectPaymentMethod == 2 && !string.IsNullOrEmpty(checkoutUrl))
+            {
+                _snackbar.Add("Chuyển hướng đến cổng thanh toán...", Severity.Info);
+                navigation.NavigateTo(checkoutUrl);
+            }
+            else if (_selectPaymentMethod == 1)
+            {
+                foreach (var item in _data)
+                {
+                    await _cartItemService.Delete(item.Id, _token);
+                }
+                _snackbar.Add("Đặt hàng thành công! Đơn hàng sẽ được xử lý.", Severity.Success);
+                await _cartStateService.LoadCartDetailsAsync();
+                navigation.NavigateTo(RouterConst.User.Home);
+            }
+            else
+            {
+                _snackbar.Add("Đặt hàng thành công, nhưng không nhận được URL thanh toán hợp lệ.", Severity.Error);
+            }
+        }
+        else
+        {
+            _snackbar.Add($"Lỗi đặt hàng: {result.ErrorMessage} ({result.StatusCode})", Severity.Error);
         }
     }
 
