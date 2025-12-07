@@ -14,6 +14,9 @@
 
         public const string DefaultImages = "/Assets/Images/default-image.png";
         public const int DefaultSkeletons = 10;
+
+        public const string DiscountTypePercent = "Percentage";
+        public const string DiscountTypeFixed = "FixedAmount";
         public static class Regex
         {
             public const string Password = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,16}$";

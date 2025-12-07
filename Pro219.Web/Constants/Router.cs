@@ -82,7 +82,7 @@
             // Coupon
             public const string Coupon = "/admin/coupons";
             public const string CreateCoupon = "/admin/coupons/create";
-            public const string EditCoupon = "/admin/coupons/edit";
+            public const string EditCoupon = "/admin/coupons/:id/edit";
 
             // User
             public const string User = "/admin/users";

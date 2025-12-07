@@ -9,14 +9,166 @@
         <a href="@RouterConst.Admin.CreateCoupon" class="leading-[1.5rem] h-10 rounded-lg bg-admin-default px-6 py-2 text-white">Tạo mới</a>
     </div>
 
-    <div class="h-[calc(100lvh-9.25rem)] mt-6 w-full rounded-xl border border-slate-200 bg-white shadow-sm">
+    <div class="mt-6 w-full rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
+        <MudTable Bordered Items="@_discountCodes" Loading="@_loading" Dense="true" Hover="true" Virtualize="true" FixedHeader="true" HorizontalScrollbar="true" Height="calc(100lvh - 16.5rem)">
+            <HeaderContent>
+                <MudTh><MudTableSortLabel SortLabel="Code" T="DAL.Models.DiscountCode">Mã</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="DiscountType" T="DAL.Models.DiscountCode">Loại Giảm Giá</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="Value" T="DAL.Models.DiscountCode">Giá Trị</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="Giá trị tối thiểu áp dụng" T="DAL.Models.DiscountCode">Giá trị tối thiểu áp dụng</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="Giá trị giảm tối đa" T="DAL.Models.DiscountCode">Giá trị giảm tối đa</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="Số lần sử dụng tối đa" T="DAL.Models.DiscountCode">Số mã được phát hành</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="Số mã được phát hành" T="DAL.Models.DiscountCode">Đã sử dụng</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="StartDate" T="DAL.Models.DiscountCode">Ngày Bắt Đầu</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="EndDate" T="DAL.Models.DiscountCode">Ngày Kết Thúc</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="IsActive" T="DAL.Models.DiscountCode">Trạng Thái</MudTableSortLabel></MudTh>
+                <MudTh>Thao tác</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Code">@context.Code</MudTd>
+                <MudTd DataLabel="DiscountType">@FormatDiscountType(@context.DiscountType)</MudTd>
+                <MudTd DataLabel="Value">@(FormatDiscountValue(context))</MudTd>
+                <MudTd DataLabel="MinOrderValue">@(context.MinOrderValue?.ToString("C", vietnameseCulture) ?? "0")</MudTd>
+                <MudTd DataLabel="MaxDiscountAmount">@(context.MaxDiscountAmount?.ToString("C", vietnameseCulture) ?? "0")</MudTd>
+                <MudTd DataLabel="MaxUsage">@context.MaxUsage</MudTd>
+                <MudTd DataLabel="UsageCount">@context.UsageCount / @context.MaxUsage</MudTd>
+                <MudTd DataLabel="EndDate">@context.StartDate.ToString("dd/MM/yyyy HH:mm")</MudTd>
+                <MudTd DataLabel="EndDate">@context.EndDate.ToString("dd/MM/yyyy HH:mm")</MudTd>
+                <MudTd DataLabel="IsActive">
+                    @((context.IsActive) ? "Hoạt Động" : "Không Hoạt Động")
+                </MudTd>
+                <MudTd DataLabel="Thao tác">
+                    @{
+                        bool isActiveNow = IsCouponActiveNow(context);
+                    }
+
+                    <MudIconButton Icon="@Icons.Material.Filled.BorderColor"
+                                   aria-label="update"
+                                   Href="@(isActiveNow ? null : $"{RouterConst.Admin.EditCoupon.Replace(":id", context.DiscountId.ToString())}")"
+                                   Disabled="@isActiveNow"></MudIconButton>
+
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                   aria-label="delete"
+                                   OnClick="@(isActiveNow ? null : () => OpenDialogDelete(context.DiscountId))"
+                                   Disabled="@isActiveNow"></MudIconButton>
+                </MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText>Không có dữ liệu.</MudText>
+            </NoRecordsContent>
+            <LoadingContent>
+                <div class="flex w-full flex-col gap-3">
+                    @{
+                        for (var i = 0; i < 5; i++)
+                        {
+                            <div class="flex items-center justify-between gap-2">
+                                <MudSkeleton Width="100%" Height="3rem" />
+                                <MudSkeleton Width="100%" Height="3rem" />
+                                <MudSkeleton Width="100%" Height="3rem" />
+                                <MudSkeleton Width="100%" Height="3rem" />
+                                <MudSkeleton Width="100%" Height="3rem" />
+                                <MudSkeleton Width="100%" Height="3rem" />
+                                <MudSkeleton Width="100%" Height="3rem" />
+                                <MudSkeleton Width="100%" Height="3rem" />
+                                <MudSkeleton Width="100%" Height="3rem" />
+                            </div>
+                        }
+                    }
+                </div>
+            </LoadingContent>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
     </div>
 </div>
 
 @code {
+    private List<DAL.Models.DiscountCode> _discountCodes = [];
+    private readonly DialogOptions _maxWidth = new() { MaxWidth = MaxWidth.Large, FullWidth = true };
+    private bool _loading = true;
+    CultureInfo vietnameseCulture = new CultureInfo("vi-VN");
+
     private List<BreadcrumbItem> _items =
     [
         new("Trang Chủ", href: RouterConst.Admin.Home),
         new("Mã Giảm Giá", href: "#", disabled: true),
     ];
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await LoadData();
+        }
+        catch (Exception e)
+        {
+            _loading = false;
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    async Task LoadData()
+    {
+        var res = await _couponService.GetAll();
+        var data = res.Data;
+        if (res.IsSuccess && data.Count > 0)
+        {
+            _discountCodes = data;
+        }
+        StateHasChanged();
+    }
+
+    async Task OpenDialogDelete(int id)
+    {
+        var deleteParaeters = new DialogParameters<Admin.Coupon.ConfirmDeleteDialog>
+        {
+            {x => x.id, id}
+        };
+
+        var dialog = await _dialogService.ShowAsync<Admin.Coupon.ConfirmDeleteDialog>("Options Dialog", deleteParaeters, _maxWidth);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await LoadData();
+            StateHasChanged();
+        }
+    }
+
+    private bool IsCouponActiveNow(DAL.Models.DiscountCode discount)
+    {
+        var now = DateTime.Now;
+
+        return discount.IsActive && (now >= discount.StartDate && now <= discount.EndDate);
+    }
+
+    private string FormatDiscountType(string type)
+    {
+        return type switch
+        {
+            Constant.DiscountTypePercent => "Phần Trăm (%)",
+            Constant.DiscountTypeFixed => "Số Tiền Cố Định",
+            _ => type,
+        };
+    }
+
+    private string FormatDiscountValue(DAL.Models.DiscountCode discount)
+    {
+        if (discount.DiscountType == Constant.DiscountTypePercent)
+        {
+            // Ví dụ: 10.00%
+            return $"{discount.Value:N2}%";
+        }
+        else if (discount.DiscountType == Constant.DiscountTypeFixed)
+        {
+            // Ví dụ: 50,000.00 đ
+            // Thay thế "đ" bằng đơn vị tiền tệ phù hợp với hệ thống của bạn
+            return $"{discount.Value:N0} đ";
+        }
+        return discount.Value.ToString();
+    }
 }
