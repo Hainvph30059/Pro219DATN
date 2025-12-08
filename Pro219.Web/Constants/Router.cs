@@ -99,7 +99,8 @@
             public const string EditCustomer = "/admin/customers/edit";
 
             // Bill
-            public const string Bill = "/admin/bills";
+            public const string Bill = "/admin/orders";
+            public const string BillDetail = "/admin/orders/:id/detail";
 
             // Statistical
             public const string Statistical = "/admin/statistical";

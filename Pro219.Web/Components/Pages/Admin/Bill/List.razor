@@ -1,4 +1,125 @@
-﻿@page "/admin/bills"
+﻿@page "/admin/orders"
 @layout AdminLayout
 
-<section class="p-6">Bill</section>
+<div class="p-6">
+    <MudBreadcrumbs Class="!p-0 !text-sm" Items="_items" Separator=">"></MudBreadcrumbs>
+
+    <div class="flex items-center justify-between">
+        <h1 class="leading-[3rem] h-12 text-3xl font-bold text-admin-default">Danh sách hóa đơn</h1>
+    </div>
+
+    <div class="mt-6 w-full rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
+        <MudTable Bordered Items="@_orders" Loading="@_loading" Dense="true" Hover="true" Virtualize="true" FixedHeader="true" HorizontalScrollbar="true" Height="calc(100lvh - 16.5rem)">
+            <HeaderContent>
+                <MudTh hidden><MudTableSortLabel SortLabel="OrderId" T="string" hidden>OrderId</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="Mã hóa đơn" T="string">Mã hóa đơn</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="Ngày đặt hàng" T="string">Ngày đặt hàng</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="Địa chỉ nhận hàng" T="string">Địa chỉ nhận hàng</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="Phương thức thanh toán" T="string">Phương thức thanh toán</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="Trạng thái thanh toán" T="string">Trạng thái thanh toán</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="Trạng thái hóa đơn" T="string">Trạng thái hóa đơn</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="Chi tiết" T="string">Chi tiết</MudTableSortLabel></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="OrderId" hidden>@context.OrderId</MudTd>
+                <MudTd DataLabel="Mã hóa đơn">@context.OrderCode</MudTd>
+                <MudTd DataLabel="Địa chỉ nhận hàng">@context.OrderDate.ToString("dd/MM/yyyy HH:mm:ss")</MudTd>
+                <MudTd DataLabel="Ngày đặt hàng">
+                    @{
+                        var address = _addresses.FirstOrDefault(a => a.Id == context.ShippingAddressId);
+
+                        if (address != null)
+                        {
+                            <div>
+                                <p class="text-sm font-medium">@address?.FullName <span class="text-slate-500">@((!string.IsNullOrEmpty(address?.Phone) ? " - " : ""))@address?.Phone</span></p>
+                                <p class="text-sm font-medium">
+                                    @address?.OtherInfo@((!string.IsNullOrEmpty(address?.OtherInfo) && (!string.IsNullOrEmpty(address?.StreetName) || !string.IsNullOrEmpty(address?.DistrictName) || !string.IsNullOrEmpty(address?.CityName)) ? ", " : ""))
+                                    @address?.StreetName@((!string.IsNullOrEmpty(address?.StreetName) && (!string.IsNullOrEmpty(address?.DistrictName) || !string.IsNullOrEmpty(address?.CityName)) ? ", " : ""))
+                                    @address?.DistrictName@((!string.IsNullOrEmpty(address?.DistrictName) && !string.IsNullOrEmpty(address?.CityName) ? ", " : ""))
+                                    @address?.CityName
+                                </p>
+                            </div>
+                        }
+                    }
+                </MudTd>
+                <MudTd DataLabel="Phương thức thanh toán">@(context.PaymentMethodId == Constant.PaymentMethod.CashBack ? "Tiền mặt" : "Chuyển khoản")</MudTd>
+                <MudTd DataLabel="Trạng thái thanh toán">@context.PaymentStatus</MudTd>
+                <MudTd DataLabel="Trạng thái hóa đơn">
+                    <MudBadge Variant="Variant.Filled" Color="@(GetOrderStatusColor(context.Status))" Content="@context.OrderStatus" />
+                </MudTd>
+                <MudTd DataLabel="Trạng thái hóa đơn"><MudIconButton OnClick=@(() => navigation.NavigateTo(RouterConst.Admin.BillDetail.Replace(":id", context.OrderId.ToString()))) Icon="@Icons.Material.Filled.Menu" /></MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText>Không có dữ liệu.</MudText>
+            </NoRecordsContent>
+            <LoadingContent>
+                <div class="flex w-full flex-col gap-3">
+                    @{
+                        for (var i = 0; i < Constant.DefaultSkeletons; i++)
+                        {
+                            <div class="flex items-center justify-between gap-2">
+                                <MudSkeleton Width="100%" Height="3rem" />
+                                <MudSkeleton Width="100%" Height="3rem" />
+                                <MudSkeleton Width="100%" Height="3rem" />
+                                <MudSkeleton Width="100%" Height="3rem" />
+                                <MudSkeleton Width="100%" Height="3rem" />
+                                <MudSkeleton Width="100%" Height="3rem" />
+                            </div>
+                        }
+                    }
+                </div>
+            </LoadingContent>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </div>
+</div>
+
+@code {
+    private List<DAL.Models.Order> _orders = [];
+    private List<DAL.Models.Address> _addresses = [];
+    private bool _loading = true;
+
+    private List<BreadcrumbItem> _items =
+    [
+        new("Trang Chủ", href: RouterConst.Admin.Home),
+    new("Hóa Đơn", href: "#", disabled: true),
+    ];
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+        _loading = false;
+        StateHasChanged();
+    }
+
+    private async Task LoadData()
+    {
+        var resOrder = await _orderService.GetAll();
+        var resAsddress = await _addressService.GetAll();
+
+        if(resOrder.IsSuccess && resOrder.Data.Count() > 0)
+        {
+            _orders = resOrder.Data;
+        }
+
+        if (resAsddress.IsSuccess && resAsddress.Data.Count() > 0)
+        {
+            _addresses = resAsddress.Data;
+        }
+    }
+
+    private Color GetOrderStatusColor(byte? Status) =>
+    Status switch
+    {
+        Constant.OrderStatus.StatusPending => Color.Primary, // Đang chờ xử lý (1) - Xanh dương
+        Constant.OrderStatus.StatusConfirm => Color.Info,    // Đã xác nhận (2) - Xanh nhạt
+        Constant.OrderStatus.StatusCanceledByUser => Color.Error, // Đã hủy bởi người dùng (3) - Đỏ
+        Constant.OrderStatus.StatusShipping => Color.Secondary, // Đang giao hàng (4) - Tím
+        Constant.OrderStatus.StatusShippingDone => Color.Success, // Đã giao hàng (5) - Xanh lá
+        Constant.OrderStatus.StatusShippingFailed => Color.Error, // Giao hàng thất bại (6) - Đỏ
+        Constant.OrderStatus.StatusDone => Color.Dark, // Hoàn thành (7) - Xám/Đen
+        _ => Color.Dark
+    };
+}
