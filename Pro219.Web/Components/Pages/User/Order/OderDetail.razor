@@ -1,0 +1,241 @@
+﻿@page "/orders/{id:int}/detail"
+@layout MainLayout
+
+<section class="mx-auto max-w-[1440px] p-8">
+    <h1 class="text-xl font-bold uppercase md:text-2xl lg:text-3xl">Chi tiết đơn hàng</h1>
+
+    <div class="mt-6 px-6">
+        <div>
+            <div class="flex items-center gap-4">
+                <span class="w-full max-w-[200px] flex-shrink-0 text-sm font-bold">Mã hóa đơn:</span>
+                <span class="text-sm">@_orderDetail?.OrderCode</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <span class="w-full max-w-[200px] flex-shrink-0 text-sm font-bold">Ngày đặt hàng:</span>
+                <span class="text-sm">@_orderDetail?.OrderDate.ToString("dd/MM/yyyy HH:mm:ss")</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <span class="w-full max-w-[200px] flex-shrink-0 text-sm font-bold">Địa chỉ nhận hàng:</span>
+                <div class="text-sm">
+                @{
+                    var address = _addresses.FirstOrDefault(a => a.Id == _orderDetail?.ShippingAddressId);
+
+                    if (address != null)
+                    {   
+                        <span class="text-sm font-medium">
+                            @address?.OtherInfo@((!string.IsNullOrEmpty(address?.OtherInfo) && (!string.IsNullOrEmpty(address?.StreetName) || !string.IsNullOrEmpty(address?.DistrictName) || !string.IsNullOrEmpty(address?.CityName)) ? ", " : ""))
+                            @address?.StreetName@((!string.IsNullOrEmpty(address?.StreetName) && (!string.IsNullOrEmpty(address?.DistrictName) || !string.IsNullOrEmpty(address?.CityName)) ? ", " : ""))
+                            @address?.DistrictName@((!string.IsNullOrEmpty(address?.DistrictName) && !string.IsNullOrEmpty(address?.CityName) ? ", " : ""))
+                            @address?.CityName
+                        </span>
+                        <span class="text-sm font-medium">(@address?.FullName <span class="text-slate-500">@((!string.IsNullOrEmpty(address?.Phone) ? " - " : ""))@address?.Phone</span>)</span>
+                    }
+                }
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <span class="w-full max-w-[200px] flex-shrink-0 text-sm font-bold">Phương thức thanh toán:</span>
+                <span class="text-sm">@(_orderDetail?.PaymentMethodId == Constant.PaymentMethod.CashBack ? "Tiền mặt" : "Chuyển khoản")</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <span class="w-full max-w-[200px] flex-shrink-0 text-sm font-bold">Trạng thái thanh toán:</span>
+                <span class="text-sm">@_orderDetail?.PaymentStatus</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <span class="w-full max-w-[200px] flex-shrink-0 text-sm font-bold">Trạng thái hóa đơn:</span>
+                <span class="text-sm">@_orderDetail?.OrderStatus</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <span class="w-full max-w-[200px] flex-shrink-0 text-sm font-bold">Chi tiết:</span>
+                <span class="text-sm">@_orderDetail?.Notes</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <span class="w-full max-w-[200px] flex-shrink-0 text-sm font-bold">Tổng tiền sản phẩm:</span>
+                <span class="text-sm">@_orderDetail?.TotalAmount.ToString("C", vietnameseCulture)</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <span class="w-full max-w-[200px] flex-shrink-0 text-sm font-bold">Giảm giá:</span>
+                <span class="text-sm">@_orderDetail?.DiscountAmount.ToString("C", vietnameseCulture)</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <span class="w-full max-w-[200px] flex-shrink-0 text-sm font-bold">Phí giao hàng:</span>
+                <span class="text-sm">@_orderDetail?.ShippingFee.ToString("C", vietnameseCulture)</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <span class="w-full max-w-[200px] flex-shrink-0 text-sm font-bold">Tổng tiền thanh toán:</span>
+                <span class="text-sm">@_orderDetail?.FinalAmount.ToString("C", vietnameseCulture)</span>
+            </div>
+        </div>
+        <MudButton Class="mt-6" Variant="Variant.Filled" Color="Color.Error" hidden="@(_orderDetail?.Status != Constant.OrderStatus.StatusPending)">Hủy đơn hàng</MudButton>
+    </div>
+
+        <div class="mt-6 px-6">
+        @if (_orderItems.Any())
+        {
+            <div>
+                <MudTable Bordered Items="@_orderItems" Loading="@_loading" Class="w-full" Dense="true" Hover="true" Virtualize="true" FixedHeader="true" HorizontalScrollbar="true">
+                    <HeaderContent>
+                        <MudTh hidden><MudTableSortLabel SortLabel="OrderItemId" T="string" hidden>OrderItemId</MudTableSortLabel></MudTh>
+                        <MudTh><MudTableSortLabel SortLabel="Ảnh" T="string">Ảnh</MudTableSortLabel></MudTh>
+                        <MudTh><MudTableSortLabel SortLabel="Sản phẩm" T="string">Sản phẩm</MudTableSortLabel></MudTh>
+                        <MudTh><MudTableSortLabel SortLabel="Số lượng" T="string">Số lượng</MudTableSortLabel></MudTh>
+                        <MudTh><MudTableSortLabel SortLabel="Đơn giá" T="string">Đơn giá</MudTableSortLabel></MudTh>
+                        <MudTh><MudTableSortLabel SortLabel="Thành tiền" T="string">Thành tiền</MudTableSortLabel></MudTh>
+                        @if ((_orderDetail?.Status == Constant.OrderStatus.StatusDone))
+                        {
+                            <MudTh><MudTableSortLabel SortLabel="Thao tác" T="string">Thao tác</MudTableSortLabel></MudTh>
+                        }
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="OrderItemId" hidden>@context.OrderItemId</MudTd>
+                        <MudTd DataLabel="Ảnh">
+                            @{
+                                var productImage = _productImages.FirstOrDefault(i => i.ProductVariantId == context.ProductVariantId);
+                                if (productImage != null)
+                                {
+                                    <MudImage Src="@productImage.ImageUrl" Width="100" />
+                                }
+                                else
+                                {
+                                    <MudImage Src="/Assets/Images/default-image.png" Width="100" />
+                                }
+                            }
+                        </MudTd>
+                        <MudTd DataLabel="Sản phẩm">
+                            @{
+                                var productVariant = _productVariants.FirstOrDefault(pv => pv.Id == context.ProductVariantId);
+                                if (productVariant != null)
+                                {
+                                    var product = _products.FirstOrDefault(p => p.Id == productVariant.ProductId);
+                                    if (product != null)
+                                    {
+                                        var color = _colors.FirstOrDefault(c => c.Id == productVariant.ColorId);
+                                        var size = _sizes.FirstOrDefault(s => s.Id == productVariant.SizeId);
+                                        var brand = _brands.FirstOrDefault(b => b.Id == product.BrandId);
+
+                                        <span>@product.Name @(brand != null ? $"- {brand.Name}" : "") @(color != null ? $"- {color.Name}" : "") @(size != null ? $"- {size.Name}" : "")</span>
+                                       
+                                    }
+                                }
+                            }
+                        </MudTd>
+                        <MudTd DataLabel="Số lượng">@context.Quantity</MudTd>
+                        <MudTd DataLabel="Đơn giá">@context.UnitPrice.ToString("C", vietnameseCulture)</MudTd>
+                        <MudTd DataLabel="Thành tiền">@context.Subtotal.ToString("C", vietnameseCulture)</MudTd>
+                        @if ((_orderDetail?.Status == Constant.OrderStatus.StatusDone))
+                        {
+                            <MudTd DataLabel="Thao tác">
+                                <MudButton Variant="Variant.Filled" Color="Color.Primary">Đánh giá</MudButton>
+                            </MudTd>
+                        }
+                    </RowTemplate>
+                    <NoRecordsContent>
+                        <MudText>Không có dữ liệu.</MudText>
+                    </NoRecordsContent>
+                    <LoadingContent>
+                        <div class="flex w-full flex-col gap-3">
+                            @{
+                                for (var i = 0; i < Constant.DefaultSkeletons; i++)
+                                {
+                                    <div class="flex items-center justify-between gap-2">
+                                        <MudSkeleton Width="100%" Height="3rem" />
+                                        <MudSkeleton Width="100%" Height="3rem" />
+                                        <MudSkeleton Width="100%" Height="3rem" />
+                                        <MudSkeleton Width="100%" Height="3rem" />
+                                        <MudSkeleton Width="100%" Height="3rem" />
+                                        <MudSkeleton Width="100%" Height="3rem" />
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </LoadingContent>
+                    <PagerContent>
+                        <MudTablePager HidePageNumber HidePagination HideRowsPerPage  />
+                    </PagerContent>
+                </MudTable>
+            </div>
+        } else
+        {
+            <p>Không có đơn hàng nào.</p>
+        }
+    </div>
+</section>
+
+@code {
+    [Parameter]
+    public int id { get; set; }
+
+
+    private DAL.Models.Order _orderDetail = null;
+    private List<DAL.Models.OrderItem> _orderItems = [];
+    private List<DAL.Models.ProductVariant> _productVariants = [];
+    private List<DAL.Models.ProductImage> _productImages = [];
+    private List<DAL.Models.Product> _products = [];
+    private List<DAL.Models.Address> _addresses = [];
+    private List<DAL.Models.Color> _colors = [];
+    private List<DAL.Models.Size> _sizes = [];
+    private List<DAL.Models.Brand> _brands = [];
+    private bool _loading = true;
+    CultureInfo vietnameseCulture = new CultureInfo("vi-VN");
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+        _loading = false;
+        StateHasChanged();
+    }
+
+    async Task LoadData()
+    {
+        var resOrderDetail = await _orderService.GetById(id);
+        if (resOrderDetail.IsSuccess && resOrderDetail.Data != null)
+        {
+            _orderDetail = resOrderDetail.Data;
+        }
+        
+        var resAddress = await _addressService.GetAll();
+        if (resAddress.IsSuccess && resAddress.Data.Count() > 0)
+        {
+            _addresses = resAddress.Data;
+        }
+
+        var resOrderItems = await _orderService.GetAllOrderItemByOrderId(id);
+        if (resOrderItems.IsSuccess && resOrderItems.Data.Count() > 0)
+        {
+            _orderItems = resOrderItems.Data;
+        }
+
+        var resProductVariants = await _productVariantService.GetAll();
+        if (resProductVariants.IsSuccess && resProductVariants.Data.Count() > 0)
+        {
+            _productVariants = resProductVariants.Data;
+        }
+
+        var resProductImages = await _productImageService.GetAll();
+        if (resProductImages.IsSuccess && resProductImages.Data.Count() > 0)
+        {
+            _productImages = resProductImages.Data;
+        }
+
+        var resProducts = await _productService.GetAll();
+        if (resProducts.IsSuccess && resProducts.Data.Count() > 0)
+        {
+            _products = resProducts.Data;
+        }
+
+        var resColors = await _colorService.GetAll();
+        if (resColors.IsSuccess && resColors.Data.Count() > 0) {
+            _colors = resColors.Data;
+        }
+
+        var resSizes = await _sizeService.GetAll();
+        if (resSizes.IsSuccess && resSizes.Data.Count() > 0) {
+            _sizes = resSizes.Data;
+        }
+
+        var resBrands = await _brandService.GetAll();
+        if (resBrands.IsSuccess && resBrands.Data.Count() > 0) {
+            _brands = resBrands.Data;
+        }
+    }
+}

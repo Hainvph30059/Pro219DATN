@@ -15,6 +15,25 @@ namespace Pro219.Web.Services
             _httpClient = httpClient;
         }
 
+        public async Task<ServiceResult<List<Address>>> GetAll()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/Address/GetAll");
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<List<Address>>();
+                return ServiceResult<List<Address>>.Success(result);
+            }
+            else
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                var errorMess = Constant.Errors[result];
+                return ServiceResult<List<Address>>.Failure(result, errorMess, response.StatusCode.ToString());
+            }
+        }
+
         public async Task<ServiceResult<List<Address>>> GetAllByCustomerId(int customerId)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, $"/Address/GetByCustomerId/{customerId}");

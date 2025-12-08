@@ -29,6 +29,10 @@
             public const string SearchByCategoryId = "/products/category/:categoryId";
             public const string SearchByKeyword = "/products/search";
             public const string SearchAll = "/products/all";
+
+            // Order
+            public const string Orders = "/orders";
+            public const string OrderDetail = "/orders/:id/detail";
         }
 
         public static class Admin
