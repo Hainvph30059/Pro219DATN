@@ -73,6 +73,23 @@ namespace Pro219.Web.Services
             }
         }
 
+        public async Task<ServiceResult<List<Order>>> GetAll()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/Order/GetAll");
+            var response = await _httpClient.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<List<Order>>();
+                return ServiceResult<List<Order>>.Success(result);
+            }
+            else
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                var errorMess = Constant.Errors[result];
+                return ServiceResult<List<Order>>.Failure(result, errorMess, response.StatusCode.ToString());
+            }
+        }
+
         public async Task<ServiceResult<Order>> GetById(int id)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, $"/Order/GetById/{id}");
