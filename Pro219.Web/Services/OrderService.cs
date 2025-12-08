@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.WebUtilities;
 using Pro219.API.DTOs;
+using Pro219.DAL.Models;
 using Pro219.Web.Constants;
 using Pro219.Web.DTOs;
 
@@ -69,6 +70,61 @@ namespace Pro219.Web.Services
                     errorMess,
                     response.StatusCode.ToString()
                 );
+            }
+        }
+
+        public async Task<ServiceResult<Order>> GetById(int id)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/Order/GetById/{id}");
+            var response = await _httpClient.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<Order>();
+                return ServiceResult<Order>.Success(result);
+            }
+            else
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                var errorMess = Constant.Errors[result];
+                return ServiceResult<Order>.Failure(result, errorMess, response.StatusCode.ToString());
+            }
+        }
+
+        public async Task<ServiceResult<List<Order>>> GetAllByCustomerId(int id)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/Order/GetByCustomerId/{id}");
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<List<Order>>();
+                return ServiceResult<List<Order>>.Success(result);
+            }
+            else
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                var errorMess = Constant.Errors[result];
+                return ServiceResult<List<Order>>.Failure(result, errorMess, response.StatusCode.ToString());
+            }
+        }
+
+        public async Task<ServiceResult<List<OrderItem>>> GetAllOrderItemByOrderId(int id)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/OrderItem/GetByOrderId/{id}");
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<List<OrderItem>>();
+                return ServiceResult<List<OrderItem>>.Success(result);
+            }
+            else
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                var errorMess = Constant.Errors[result];
+                return ServiceResult<List<OrderItem>>.Failure(result, errorMess, response.StatusCode.ToString());
             }
         }
     }

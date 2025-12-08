@@ -118,5 +118,21 @@
             public const int DefaultPage = 1;
             public const int DefaultPerPage = 20;
         }
+        public static class PaymentMethod
+        {
+            public const int CashBack = 1;
+            public const int Transfer = 2;
+        }
+
+        public static class OrderStatus
+        {
+            public const byte StatusPending = 1;
+            public const byte StatusConfirm = 2;
+            public const byte StatusCanceledByUser = 3;
+            public const byte StatusShipping = 4;
+            public const byte StatusShippingDone = 5;
+            public const byte StatusShippingFailed = 6;
+            public const byte StatusDone = 7;
+        }
     }
 }
