@@ -40,7 +40,7 @@ namespace Pro219.API.Controllers
         }
 
         [HttpGet("ApplyDiscountCodeValue")]
-        public async Task<ActionResult<decimal>> ApplyDiscountCodeValue(string code, decimal totalAmount)
+        public async Task<ActionResult<ApplyDiscountCodeDTO>> ApplyDiscountCodeValue(string code, decimal totalAmount, decimal shippingFee)
         {
             try
             {
@@ -93,13 +93,43 @@ namespace Pro219.API.Controllers
                 {
                     return BadRequest("Mã giảm giá vượt quá giá trị giảm giá tối đa");
                 }
+
+                ApplyDiscountCodeDTO applyDiscountCodeDTO = new ApplyDiscountCodeDTO
+                {
+                    ShippingDiscount = 0,
+                    DiscountAmount = 0,
+                    Type = discountCode.Type
+                };
+
                 if (discountCode.Status == 1) // Percent
                 {
-                    return Ok(totalAmount * (discountCode.Value / 100));
+
+                    if (applyDiscountCodeDTO.Type == 1)
+                    {
+                        applyDiscountCodeDTO.DiscountAmount = totalAmount * (discountCode.Value / 100);
+                    }
+                    else
+                    if (applyDiscountCodeDTO.Type == 2)
+                    {
+                        applyDiscountCodeDTO.ShippingDiscount = shippingFee * (discountCode.Value / 100);
+                    }
+
+                    return Ok(applyDiscountCodeDTO);
                 }
                 else if (discountCode.Status == 2) // Fixed Amount
                 {
-                    return Ok(discountCode.Value);
+
+                    if (applyDiscountCodeDTO.Type == 1)
+                    {
+                        applyDiscountCodeDTO.DiscountAmount = discountCode.Value;
+                    }
+                    else
+                   if (applyDiscountCodeDTO.Type == 2)
+                    {
+                        applyDiscountCodeDTO.ShippingDiscount = discountCode.Value;
+                    }
+
+                    return Ok(applyDiscountCodeDTO);
                 }
                 else
                 {

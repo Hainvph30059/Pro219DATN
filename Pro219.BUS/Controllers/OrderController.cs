@@ -28,8 +28,12 @@ namespace Pro219.API.Controllers
         }
 
         [HttpPost("Checkout")]
-        public async Task<ActionResult<string>> GetCheckoutUrl([FromBody] List<CheckoutItemDTO> listProduct, decimal discountAmount = 0, decimal shippingFee = 0, int? PaymentMethodTypeId = 2, int? discountId = null)
+        public async Task<ActionResult<string>> GetCheckoutUrl([FromBody] List<CheckoutItemDTO> listProduct, decimal discountAmount = 0, decimal shippingFee = 0, int? PaymentMethodTypeId = 2, int? discountId = null, string note ="", int addressId=-99)
        {
+            if(addressId==-99)
+            {
+                return BadRequest("Địa chỉ giao hàng không hợp lệ");
+            }
             discountCodeRepository = new DiscountCodeRepository();
             PayOS payOS = new PayOS("09b8a42b-6105-4cd4-a4ee-8492e42e909c", "15cfbaf8-79a4-48a0-908f-248c30538001", "00b20c6b94e21bf27e6cb0ae2f26515637c93d70b2eeb832e7b51e299cba433d");
             List<ItemData> items = new List<ItemData>();
@@ -49,6 +53,8 @@ namespace Pro219.API.Controllers
                 order.OrderCode = "DH" + ordCode.ToString();
                 order.TotalAmount = totalPrice;
                 order.DiscountAmount = discountAmount;
+                order.ShippingAddressId = addressId;
+                order.Notes = note;
                 order.FinalAmount = finalAmount;
                 order.ShippingFee = shippingFee;
                 order.OrderDate = DateTime.Now;

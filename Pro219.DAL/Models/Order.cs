@@ -46,8 +46,10 @@ namespace Pro219.DAL.Models
         [MaxLength(20)]
         public string OrderStatus { get; set; } = string.Empty;
 
-        [MaxLength(1000)]
+        [MaxLength(200)]
         public string? Notes { get; set; }
+
+        public string? StatusHistory { get; set; } = string.Empty;
 
         public DateTime LastUpdate { get; set; }
 

@@ -27,9 +27,9 @@ namespace Pro219.DAL.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal? MaxDiscountAmount { get; set; }
         
-        public int? MaxUsage { get; set; } = 1;
+        public int? MaxUsage { get; set; } = 10;
 
-        public int? UsageCount { get; set; } = 10;
+        public int? UsageCount { get; set; } = 1;
 
         public bool? IsReusable { get; set; } = false;
 
@@ -48,6 +48,8 @@ namespace Pro219.DAL.Models
         public DateTime? DeleteAt { get; set; }
 
         public byte? Status { get; set; } = 1;
+
+        public byte? Type { get; set; } = 1;
 
         [MaxLength(255)]
         public string? UpdateBy { get; set; }
