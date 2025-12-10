@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using Pro219.Web.Constants;
-using static Pro219.Web.DTOs.DateGreaterThanOrEqualAttribute;
 
 namespace Pro219.Web.DTOs
 {
@@ -21,12 +20,13 @@ namespace Pro219.Web.DTOs
         [Range(1.0, (double)decimal.MaxValue, ErrorMessage = "Giá trị tối thiểu là 1.")]
         public decimal Value { get; set; } = 0;
 
-        [Range(1.0, (double)decimal.MaxValue, ErrorMessage = "Giá trị tối thiểu là 1.")]
+        [ConditionalMinValue(ErrorMessage = "Giá trị tối thiểu là 1.")]
         public decimal? MinOrderValue { get; set; }
 
-        [Range(1.0, (double)decimal.MaxValue, ErrorMessage = "Giá trị tối thiểu là 1.")]
+        [ConditionalMinValue(ErrorMessage = "Giá trị tối thiểu là 1.")]
         public decimal? MaxDiscountAmount { get; set; }
 
+        [Required(ErrorMessage = Constant.MessageValid.Required)]
         [Range(1, int.MaxValue, ErrorMessage = "Số lần sử dụng tối thiểu là 1.")]
         public int? MaxUsage { get; set; } = 1;
 
@@ -34,107 +34,89 @@ namespace Pro219.Web.DTOs
 
         public bool? IsReusable { get; set; } = false;
 
-        [Required(ErrorMessage = Constant.MessageValid.Required)]
-        [FutureDate(ErrorMessage = "Ngày bắt đầu phải là một ngày trong tương lai.")]
-        [DateGreaterThanOrEqual("EndDate", ErrorMessage = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc.")]
         public DateTime? StartDate { get; set; }
 
-        [Required(ErrorMessage = Constant.MessageValid.Required)]
-        [DateMustBeGreaterThan("StartDate", ErrorMessage = "Ngày kết thúc phải lớn hơn ngày bắt đầu.")]
         public DateTime? EndDate { get; set; }
+
+        public byte Type { get; set; }
 
         public bool IsActive { get; set; } = true;
     }
 
-    public class DateGreaterThanOrEqualAttribute : ValidationAttribute
+    public class ConditionalMinValueAttribute : ValidationAttribute
     {
-        private readonly string _comparisonProperty;
-
-        public DateGreaterThanOrEqualAttribute(string comparisonProperty)
-        {
-            _comparisonProperty = comparisonProperty;
-        }
-
         protected override ValidationResult IsValid(object? value, ValidationContext validationContext)
         {
-            var currentValueNullable = value as DateTime?;
-
-            if (!currentValueNullable.HasValue)
+            if (value == null)
                 return ValidationResult.Success!;
 
-            var currentValue = currentValueNullable.Value;
+            var decimalValue = value as decimal?;
 
-            var property = validationContext.ObjectType.GetProperty(_comparisonProperty);
-
-            if (property == null)
-                throw new ArgumentException("Thuộc tính so sánh không tồn tại.");
-
-            var comparisonValueNullable = property.GetValue(validationContext.ObjectInstance) as DateTime?;
-
-            if (!comparisonValueNullable.HasValue)
-                return ValidationResult.Success!;
-
-            var comparisonValue = comparisonValueNullable.Value;
-
-            if (currentValue >= comparisonValue)
+            if (decimalValue.HasValue && decimalValue.Value < 1)
             {
-                return new ValidationResult(ErrorMessage ?? "Ngày bắt đầu phải nhỏ hơn ngày kết thúc.");
-            }
-
-            return ValidationResult.Success!;
-        }
-
-    }
-
-    public class DateMustBeGreaterThanAttribute : ValidationAttribute
-    {
-        private readonly string _comparisonProperty;
-
-        public DateMustBeGreaterThanAttribute(string comparisonProperty)
-        {
-            _comparisonProperty = comparisonProperty;
-        }
-
-        protected override ValidationResult IsValid(object? value, ValidationContext validationContext)
-        {
-            var currentValueNullable = value as DateTime?;
-            if (!currentValueNullable.HasValue)
-                return ValidationResult.Success!;
-            var currentValue = currentValueNullable.Value;
-
-            var property = validationContext.ObjectType.GetProperty(_comparisonProperty);
-            if (property == null)
-                throw new ArgumentException("Thuộc tính so sánh không tồn tại.");
-
-            var comparisonValueNullable = property.GetValue(validationContext.ObjectInstance) as DateTime?;
-            if (!comparisonValueNullable.HasValue)
-                return ValidationResult.Success!;
-
-            var comparisonValue = comparisonValueNullable.Value;
-
-            if (currentValue <= comparisonValue)
-            {
-                return new ValidationResult(ErrorMessage ?? "Ngày kết thúc phải lớn hơn ngày bắt đầu.");
+                return new ValidationResult(ErrorMessage ?? "Giá trị tối thiểu là 1.");
             }
 
             return ValidationResult.Success!;
         }
     }
 
-    public class FutureDateAttribute : ValidationAttribute
+    public class StartDateValidationAttribute : ValidationAttribute
     {
         protected override ValidationResult IsValid(object? value, ValidationContext validationContext)
         {
-            var dateNullable = value as DateTime?;
+            var startDateNullable = value as DateTime?;
 
-            if (!dateNullable.HasValue)
+            if (!startDateNullable.HasValue)
                 return ValidationResult.Success!;
 
-            var date = dateNullable.Value;
+            var startDate = startDateNullable.Value;
+            var now = DateTime.Now;
 
-            if (date <= DateTime.Now)
+            if (startDate <= now)
             {
-                return new ValidationResult(ErrorMessage ?? "Ngày bắt đầu phải là một ngày trong tương lai.");
+                return new ValidationResult(ErrorMessage ?? "Ngày và giờ bắt đầu phải lớn hơn thời điểm hiện tại.");
+            }
+
+            var endDateProperty = validationContext.ObjectType.GetProperty("EndDate");
+            if (endDateProperty != null)
+            {
+                var endDateValue = endDateProperty.GetValue(validationContext.ObjectInstance) as DateTime?;
+                if (endDateValue.HasValue && startDate >= endDateValue.Value)
+                {
+                    return new ValidationResult(ErrorMessage ?? "Ngày và giờ bắt đầu phải nhỏ hơn ngày kết thúc.");
+                }
+            }
+
+            return ValidationResult.Success!;
+        }
+    }
+
+    public class EndDateValidationAttribute : ValidationAttribute
+    {
+        protected override ValidationResult IsValid(object? value, ValidationContext validationContext)
+        {
+            var endDateNullable = value as DateTime?;
+
+            if (!endDateNullable.HasValue)
+                return ValidationResult.Success!;
+
+            var endDate = endDateNullable.Value;
+            var now = DateTime.Now;
+
+            if (endDate <= now)
+            {
+                return new ValidationResult(ErrorMessage ?? "Ngày và giờ kết thúc phải lớn hơn thời điểm hiện tại.");
+            }
+
+            var startDateProperty = validationContext.ObjectType.GetProperty("StartDate");
+            if (startDateProperty != null)
+            {
+                var startDateValue = startDateProperty.GetValue(validationContext.ObjectInstance) as DateTime?;
+                if (startDateValue.HasValue && endDate <= startDateValue.Value)
+                {
+                    return new ValidationResult(ErrorMessage ?? "Ngày và giờ kết thúc phải lớn hơn ngày bắt đầu.");
+                }
             }
 
             return ValidationResult.Success!;

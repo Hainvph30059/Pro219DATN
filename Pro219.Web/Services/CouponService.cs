@@ -143,15 +143,15 @@ namespace Pro219.Web.Services
             }
         }
 
-        public async Task<ServiceResult<decimal>> ApplyDiscountCodeValue(string code, decimal totalAmount, string token)
+        public async Task<ServiceResult<ApplyDiscountDTO>> ApplyDiscountCodeValue(string code, decimal totalAmount, decimal shippingFee, string token)
         {
             string baseUrl = "/DiscountCode/ApplyDiscountCodeValue"; 
 
             var queryParams = new Dictionary<string, string?>
             {
                 { "code", code },
-                { "totalAmount", totalAmount.ToString() } 
-                
+                { "totalAmount", totalAmount.ToString() },
+                { "shippingFee", shippingFee.ToString() }
             };
 
             string url = QueryHelpers.AddQueryString(baseUrl, queryParams!);
@@ -169,8 +169,8 @@ namespace Pro219.Web.Services
 
             if (response.IsSuccessStatusCode)
             {
-                var discountValue = await response.Content.ReadFromJsonAsync<decimal>();
-                return ServiceResult<decimal>.Success(discountValue);
+                var discountValue = await response.Content.ReadFromJsonAsync<ApplyDiscountDTO>();
+                return ServiceResult<ApplyDiscountDTO>.Success(discountValue);
             }
             else
             {
@@ -188,7 +188,7 @@ namespace Pro219.Web.Services
                 }
 
 
-                return ServiceResult<decimal>.Failure(
+                return ServiceResult<ApplyDiscountDTO>.Failure(
                     errorCode,
                     errorMess,
                     response.StatusCode.ToString()

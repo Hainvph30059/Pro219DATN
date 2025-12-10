@@ -10,11 +10,11 @@
             <MudTextField @bind-Value="@_model.Phone" For="@(() => _model.Phone)" Class="mt-4 w-full" Variant="Variant.Outlined" Placeholder="Số điện thoại" FullWidth="true" />
 
             <MudSelect T="int" Value="@_selectedProvince" ValueChanged="OnProvinceChanged" Label="Tỉnh/Thành phố" Variant="Variant.Outlined">
+                <MudSelectItem Value="0">Vui lòng chọn</MudSelectItem>
                 @if (_provinces.Any())
                 {
-                    <MudSelectItem Value="0">Vui lòng chọn</MudSelectItem>
 
-                    foreach (var city in _provinces)
+                    @foreach (var city in _provinces)
                     {
                         <MudSelectItem Value="@city.ProvinceID">@city.ProvinceName</MudSelectItem>
                     }
@@ -22,11 +22,10 @@
             </MudSelect>
 
             <MudSelect T="int" Value="@_selectedDistrict" ValueChanged="OnDistrictChanged" Label="Quận/Huyện" Variant="Variant.Outlined" Disabled="@(!_districts.Any())">
+                <MudSelectItem Value="0">Vui lòng chọn</MudSelectItem>
                 @if (_districts.Any())
                 {
-                    <MudSelectItem Value="0">Vui lòng chọn</MudSelectItem>
-
-                    foreach (var city in _districts)
+                    @foreach (var city in _districts)
                     {
                         <MudSelectItem Value="@city.DistrictID">@city.DistrictName</MudSelectItem>
                     }
@@ -34,10 +33,9 @@
             </MudSelect>
 
             <MudSelect T="string" @bind-Value="@_selectedWard" Label="Phường/Xã" Variant="Variant.Outlined" Disabled="@(!_wards.Any())">
+                <MudSelectItem T="string" Value="0.ToString()">Vui lòng chọn</MudSelectItem>
                 @if (_wards.Any())
                 {
-                    <MudSelectItem T="string" Value="0.ToString()">Vui lòng chọn</MudSelectItem>
-
                     foreach (var city in _wards)
                     {
                         <MudSelectItem T="string" Value="@(city.WardCode.ToString())">@city.WardName</MudSelectItem>

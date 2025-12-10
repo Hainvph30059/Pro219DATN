@@ -1,5 +1,6 @@
 ﻿@page "/checkout/customer"
 @layout MainLayout
+@implements IAsyncDisposable
 
 <PageTitle>@Constant.PageTitleUser Thanh toán</PageTitle>
 
@@ -16,16 +17,18 @@
                             @if (_addressDefault == null)
                             {
                                 <p class="text-sm font-medium">Không có địa chỉ</p>
-                            } else
+                            }
+                            else
                             {
                                 <div>
-                                    <p class="text-sm font-medium">@_addressDefault?.FullName <span class="text-slate-500">@((!string.IsNullOrEmpty(_addressDefault?.Phone) ? " - " : ""))@_addressDefault?.Phone</span></p>
                                     <p class="text-sm font-medium">
-                                        @_addressDefault?.OtherInfo@((!string.IsNullOrEmpty(_addressDefault?.OtherInfo) && (!string.IsNullOrEmpty(_addressDefault?.StreetName) || !string.IsNullOrEmpty(_addressDefault?.DistrictName) || !string.IsNullOrEmpty(_addressDefault?.CityName)) ? ", " : ""))
-                                        @_addressDefault?.StreetName@((!string.IsNullOrEmpty(_addressDefault?.StreetName) && (!string.IsNullOrEmpty(_addressDefault?.DistrictName) || !string.IsNullOrEmpty(_addressDefault?.CityName)) ? ", " : ""))
-                                        @_addressDefault?.DistrictName@((!string.IsNullOrEmpty(_addressDefault?.DistrictName) && !string.IsNullOrEmpty(_addressDefault?.CityName) ? ", " : ""))
-                                        @_addressDefault?.CityName
+                                        @_addressDefault.FullName 
+                                        @if (!string.IsNullOrEmpty(_addressDefault.Phone))
+                                        {
+                                            <span class="text-slate-500"> - @_addressDefault.Phone</span>
+                                        }
                                     </p>
+                                    <p class="text-sm font-medium">@FormatAddress(_addressDefault)</p>
                                 </div>
                             }
                         </div>
@@ -33,26 +36,32 @@
                     <ChildContent>
                         <MudDivider />
 
-                        <MudButton Class="my-6 w-full" Variant="Variant.Outlined" OnClick="OpenDialogCreateAddress"><MudIcon Icon="@Icons.Material.Filled.AddLocation" /> Thêm địa chỉ mới</MudButton>
+                        <MudButton Class="my-6 w-full" Variant="Variant.Outlined" OnClick="OpenDialogCreateAddress">
+                            <MudIcon Icon="@Icons.Material.Filled.AddLocation" /> Thêm địa chỉ mới
+                        </MudButton>
 
                         <div class="max-h-[30rem] w-full">
-                            <MudRadioGroup T="int" Value="@_selectedAdress" Class="max-h-[24rem] overflow-y-auto" ValueChanged="OnChangeAddress">
+                            <MudRadioGroup T="int" Value="@_selectedAddress" Class="max-h-[24rem] overflow-y-auto" ValueChanged="OnChangeAddress">
                                 @if (_address.Any())
                                 {
                                     @foreach (var item in _address)
                                     {
                                         <MudRadio Value="@item.Id" Class="my-1 !w-full !space-y-2">
-                                            <p class="text-sm font-medium">@item.FullName <span class="text-slate-500">@((!string.IsNullOrEmpty(item.Phone) ? " - " : ""))@item.Phone</span> <span class="text-xs text-red-400">@(item.IsDefault ? "- Mặc Định" : "")</span></p>
                                             <p class="text-sm font-medium">
-                                                @item.OtherInfo@((!string.IsNullOrEmpty(item.OtherInfo) && (!string.IsNullOrEmpty(item.StreetName) || !string.IsNullOrEmpty(item.DistrictName) || !string.IsNullOrEmpty(item.CityName)) ? ", " : ""))
-                                                @item.StreetName@((!string.IsNullOrEmpty(item.StreetName) && (!string.IsNullOrEmpty(item.DistrictName) || !string.IsNullOrEmpty(item.CityName)) ? ", " : ""))
-                                                @item.DistrictName@((!string.IsNullOrEmpty(item.DistrictName) && !string.IsNullOrEmpty(item.CityName) ? ", " : ""))
-                                                @item.CityName
+                                                @item.FullName 
+                                                @if (!string.IsNullOrEmpty(item.Phone))
+                                                {
+                                                    <span class="text-slate-500"> - @item.Phone</span>
+                                                }
+                                                @if (item.IsDefault)
+                                                {
+                                                    <span class="text-xs text-red-400"> - Mặc Định</span>
+                                                }
                                             </p>
+                                            <p class="text-sm font-medium">@FormatAddress(item)</p>
                                         </MudRadio>
                                     }
                                 }
-                                
                             </MudRadioGroup>
                         </div>
                     </ChildContent>
@@ -62,10 +71,10 @@
                     <h3 class="text-lg font-bold">Phương thức thanh toán</h3>
 
                     <MudRadioGroup T="int" @bind-Value="_selectPaymentMethod">
-                        <MudRadio Value="1" Class="!w-full">
+                        <MudRadio Value="@Constant.PaymentMethod.CashBack" Class="!w-full">
                             Tiền mặt
                         </MudRadio>
-                        <MudRadio Value="2" Class="!w-full">
+                        <MudRadio Value="@Constant.PaymentMethod.Transfer" Class="!w-full">
                             Chuyển khoản
                         </MudRadio>
                     </MudRadioGroup>
@@ -74,16 +83,16 @@
                 <div class="mt-6 rounded-lg border border-solid border-slate-200 p-3 shadow">
                     <h3 class="text-lg font-bold">Ghi chú</h3>
 
-                    <input placeholder="nội dung cho cửa hàng" class="mt-3 !h-10 w-full rounded-md border border-solid border-slate-200 px-2" />
+                    <MudTextField @bind-Value="@_note" placeholder="nội dung cho cửa hàng" Variant="Variant.Outlined" Style="height: 40px" />
                 </div>
             </div>
         </div>
 
         <div class="flex w-full flex-shrink-0 flex-col gap-5 lg:w-[24rem]">
             <div class="flex max-h-[40rem] w-full flex-col gap-3 overflow-y-auto rounded-lg border border-solid border-slate-200 p-3 shadow">
-                @if(_data.Any())
+                @if (_data.Any())
                 {
-                    foreach (var item in _data)
+                    @foreach (var item in _data)
                     {
                         <div class="flex items-center gap-2">
                             <div class="h-full w-full max-w-[5rem] flex-shrink-0">
@@ -94,12 +103,13 @@
 
                             <div class="flex flex-col">
                                 <p class="whitespace-pre-wrap text-sm">@item.productName - @item.ColorName - @item.SizeName</p>
-                                <span class="whitespace-pre-wrap text-sm font-medium">@item.UnitPrice?.ToString("C", vietnameseCulture) x @item.Quantity</span>
+                                <span class="whitespace-pre-wrap text-sm font-medium">@FormatCurrency(item.UnitPrice ?? 0) x @item.Quantity</span>
                                 <button class="w-fit p-2 text-xs text-slate-500 hover:text-red-500" @onclick="@(() => Delete(item.Id))">Xóa</button>
                             </div>
                         </div>
                     }
-                } else
+                }
+                else
                 {
                     <p class="text-center text-base">Sản phẩm trống</p>
                 }
@@ -110,175 +120,229 @@
 
                 <div class="flex w-full items-center gap-2">
                     <MudTextField @bind-Value="@_coupon" placeholder="nhập mã giảm giá" Variant="Variant.Outlined" Style="height: 40px" />
-                    <MudButton Class="!h-10 w-[8rem] flex-shrink-0" Color="Color.Dark" Variant="Variant.Filled" Disabled="@(!_data.Any() || _addressDefault == null)" OnClick="ApplyDiscountCodeValue">Áp Dụng</MudButton>
+                    <MudButton Class="!h-10 w-[8rem] flex-shrink-0" Color="Color.Dark" Variant="Variant.Filled" Disabled="@(!_data.Any() || _addressDefault == null)" OnClick="ApplyDiscountCodeValue">
+                        Áp Dụng
+                    </MudButton>
                 </div>
+
+                @if (_appliedDiscount.Any())
+                {
+                    <span class="font-bold">Bạn đã áp mã: </span>
+                    @foreach (var i in _appliedDiscount)
+                    {
+                        <span>@i.DiscountCode</span>
+                    }
+                }
             </div>
 
             <div class="flex w-full flex-col gap-2 rounded-lg border border-solid border-slate-200 p-3 shadow">
                 <h3 class="text-lg font-bold">Tóm tắt đơn hàng</h3>
                 <div class="flex justify-between gap-2">
                     <span class="flex-shrink-0 text-sm uppercase">Tiền sản phẩm:</span>
-                    <span class="whitespace-pre-wrap text-sm font-medium">@_data.Sum(i => i.Quantity * i.UnitPrice)?.ToString("C", vietnameseCulture)</span>
+                    <span class="whitespace-pre-wrap text-sm font-medium">@FormatCurrency(CalculateSubtotal())</span>
                 </div>
                 <div class="flex justify-between gap-2">
                     <span class="flex-shrink-0 text-sm uppercase">Phí giao hàng:</span>
-                    <span class="whitespace-pre-wrap text-sm font-medium">@_shippingPrice.ToString("C", vietnameseCulture)</span>
+                    <span class="whitespace-pre-wrap text-sm font-medium">@FormatCurrency(_shippingPrice)</span>
                 </div>
                 <div class="flex justify-between gap-2">
                     <span class="flex-shrink-0 text-sm uppercase">Giảm giá:</span>
-                    <span class="whitespace-pre-wrap text-sm font-medium">@(_discountAmout.ToString("C", vietnameseCulture))</span>
+                    <span class="whitespace-pre-wrap text-sm font-medium">@FormatCurrency(_discountAmount)</span>
+                </div>
+                <div class="flex justify-between gap-2">
+                    <span class="flex-shrink-0 text-sm uppercase">Trừ phí vận chuyển:</span>
+                    <span class="whitespace-pre-wrap text-sm font-medium">@FormatCurrency(_discountShippingFee)</span>
                 </div>
                 <div class="flex justify-between gap-2">
                     <span class="flex-shrink-0 text-sm font-bold uppercase">Tổng tiền:</span>
-                    <span class="whitespace-pre-wrap text-sm font-medium">@((_data.Sum(i => i.Quantity * i.UnitPrice) + _shippingPrice - _discountAmout)?.ToString("C", vietnameseCulture))</span>
+                    <span class="whitespace-pre-wrap text-sm font-medium">@FormatCurrency(CalculateTotal())</span>
                 </div>
-                <MudButton Class="!h-10" Color="Color.Dark" Variant="Variant.Filled" Disabled="@(_data.Count() == 0 || _addressDefault == null)" OnClick="OnCheckout">Đặt Hàng</MudButton>
+                <MudButton Class="!h-10" Color="Color.Dark" Variant="Variant.Filled" Disabled="@(!_data.Any() || _addressDefault == null)" OnClick="OnCheckout">
+                    Đặt Hàng
+                </MudButton>
             </div>
         </div>
     </div>
 </section>
 
 @code {
-    readonly DialogOptions _maxWidth = new() { MaxWidth = MaxWidth.Small, FullWidth = true };
+    private readonly DialogOptions _maxWidth = new() { MaxWidth = MaxWidth.Small, FullWidth = true };
+    private readonly CancellationTokenSource _cts = new();
+    private readonly CultureInfo _vietnameseCulture = new("vi-VN");
 
-    CancellationTokenSource _cts = new CancellationTokenSource();
-    List<CartItemWithProductDTO> _data = [];
-    List<DAL.Models.Address> _address = [];
-    List<ProvinceDTO> _provinces = [];
-    List<DistrictDTO> _districts = [];
-    List<WardDTO> _wards = [];
-    DAL.Models.Address _addressDefault = null;
-    DAL.Models.DiscountCode _discountDetail = null;
-    string _coupon = "";
-    string _cartId = "";
-    string _token = "";
-    int _parsedCartId = 0;
-    decimal _shippingPrice = 0;
-    decimal _discountAmout = 0;
-    int _selectedAdress = 0;
-    int _selectPaymentMethod = 1;
-    GetMeResponseDTO _me = new GetMeResponseDTO();
-    CultureInfo vietnameseCulture = new CultureInfo("vi-VN");
+    private List<CartItemWithProductDTO> _data = [];
+    private List<DAL.Models.Address> _address = [];
+    private List<ItemAppliedTemp> _appliedDiscount = [];
+    private DAL.Models.Address? _addressDefault;
+    private DAL.Models.DiscountCode? _discountDetail;
+    private GetMeResponseDTO _me = new();
 
+    private string _coupon = string.Empty;
+    private string _cartId = string.Empty;
+    private string _token = string.Empty;
+    private string _note = string.Empty;
+    private int _parsedCartId = 0;
+    private decimal _shippingPrice = 0;
+    private decimal _discountAmount = 0;
+    private decimal _discountShippingFee = 0;
+    private int _selectedAddress = 0;
+    private int _selectPaymentMethod = Constant.PaymentMethod.CashBack;
+    
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            _token = await localStorage.GetItemAsStringAsync(Constant.TokenNameLocalStorage, _cts.Token);
-            _cartId = await localStorage.GetItemAsStringAsync(Constant.AuthCartIdLocalStorage, _cts.Token);
-            var resultMe = await localStorage.GetItemAsStringAsync(Constant.UserInfoLocalStorage);
-
-            if (!string.IsNullOrEmpty(resultMe))
+            try
             {
-                _me = JsonSerializer.Deserialize<GetMeResponseDTO>(resultMe);
+                await InitializeAsync();
             }
-
-            await LoadData();
-            await LoadAddress();
-            await GetShippingFee();
-            StateHasChanged();
-        }
-    }
-
-    async Task LoadData()
-    {
-        if (!string.IsNullOrEmpty(_cartId))
-        {
-            bool isSuccess = int.TryParse(_cartId, out _parsedCartId);
-
-            if (isSuccess)
+            catch (Exception ex)
             {
-                var result = await _cartItemService.GetAllCartItemWithDetailByCartId(_parsedCartId);
-
-                if (result.IsSuccess && result.Data != null)
-                {
-                    _data = result.Data;
-                }
+                _snackbar.Add($"Lỗi khởi tạo: {ex.Message}", Severity.Error);
             }
         }
     }
 
-    async Task LoadAddress()
+    public async ValueTask DisposeAsync()
     {
-        if (_me != null && _me.Id > 0)
-        {
-            var resAddressMe = await _addressService.GetAllByCustomerId(_me.Id);
+        _cts?.Cancel();
+        _cts?.Dispose();
+    }
 
-            if (resAddressMe.IsSuccess && resAddressMe.Data.Count > 0)
+    private async Task InitializeAsync()
+    {
+        _token = await localStorage.GetItemAsStringAsync(Constant.TokenNameLocalStorage, _cts.Token) ?? string.Empty;
+        _cartId = await localStorage.GetItemAsStringAsync(Constant.AuthCartIdLocalStorage, _cts.Token) ?? string.Empty;
+        
+        var resultMe = await localStorage.GetItemAsStringAsync(Constant.UserInfoLocalStorage);
+        if (!string.IsNullOrEmpty(resultMe))
+        {
+            try
             {
-                _address = resAddressMe.Data;
-                _addressDefault = resAddressMe.Data.FirstOrDefault(a => a.IsDefault);
-                _selectedAdress = _addressDefault.Id;
+                _me = JsonSerializer.Deserialize<GetMeResponseDTO>(resultMe) ?? new GetMeResponseDTO();
+            }
+            catch
+            {
+                _me = new GetMeResponseDTO();
+            }
+        }
+
+        await LoadDataAsync();
+        await LoadAddressAsync();
+        await GetShippingFeeAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        if (string.IsNullOrEmpty(_cartId))
+            return;
+
+        if (!int.TryParse(_cartId, out _parsedCartId))
+            return;
+
+        var result = await _cartItemService.GetAllCartItemWithDetailByCartId(_parsedCartId);
+
+        if (result.IsSuccess && result.Data != null)
+        {
+            _data = result.Data;
+        }
+    }
+
+    private async Task LoadAddressAsync()
+    {
+        if (_me?.Id <= 0)
+            return;
+
+        var resAddressMe = await _addressService.GetAllByCustomerId(_me.Id);
+
+        if (resAddressMe.IsSuccess && resAddressMe.Data?.Count > 0)
+        {
+            _address = resAddressMe.Data;
+            _addressDefault = _address.FirstOrDefault(a => a.IsDefault);
+            if (_addressDefault != null)
+            {
+                _selectedAddress = _addressDefault.Id;
             }
         }
     }
 
-    async Task GetShippingFee()
+    private async Task GetShippingFeeAsync()
     {
-        if (_data.Any())
+        if (!_data.Any())
         {
-            if (_addressDefault != null && !string.IsNullOrEmpty(_addressDefault.District) && !string.IsNullOrEmpty(_addressDefault.Street))
+            _shippingPrice = 0;
+            return;
+        }
+
+        if (_addressDefault == null || 
+            string.IsNullOrEmpty(_addressDefault.District) || 
+            string.IsNullOrEmpty(_addressDefault.Street))
+        {
+            _shippingPrice = 0;
+            return;
+        }
+
+        if (!int.TryParse(_addressDefault.District, out int districtId))
+        {
+            _shippingPrice = 0;
+            return;
+        }
+
+        var requestData = new CalculateFeeRequestModel
+        {
+            ToDistrictId = districtId,
+            ToWardCode = _addressDefault.Street,
+            Items = _data.Select(item => new FeeItemModel
             {
-                var requestData = new CalculateFeeRequestModel
-                {
-                    ToDistrictId = int.Parse(_addressDefault.District),
-                    ToWardCode = _addressDefault.Street,
-                    Items = new List<FeeItemModel>()
-                };
+                Quantity = item.Quantity,
+                Name = item.productName ?? string.Empty,
+                Length = 35,
+                Weight = 500,
+                Width = 35,
+                Height = 5,
+            }).ToList()
+        };
 
-                foreach (var item in _data)
-                {
-                    var itemPro = new FeeItemModel()
-                    {
-                        Quantity = item.Quantity,
-                        Name = item.productName,
-                        Length = 35,
-                        Weight = 500,
-                        Width = 35,
-                        Height = 5,
-                    };
+        var resCalculate = await _addressService.CaculateFee(requestData);
 
-                    requestData.Items.Add(itemPro);
-                }
-
-                var resCaculate = await _addressService.CaculateFee(requestData);
-
-                if(resCaculate.IsSuccess)
-                {
-                    _shippingPrice = resCaculate.Data.Data.Total;
-                }
-            }
-        } else
+        if (resCalculate.IsSuccess && resCalculate.Data?.Data != null)
+        {
+            _shippingPrice = resCalculate.Data.Data.Total;
+        }
+        else
         {
             _shippingPrice = 0;
         }
     }
 
-    async Task OnChangeAddress(int addressId)
+    private async Task OnChangeAddress(int addressId)
     {
         _addressDefault = _address.FirstOrDefault(a => a.Id == addressId);
-        _selectedAdress = addressId;
+        _selectedAddress = addressId;
 
-        await GetShippingFee();
+        await GetShippingFeeAsync();
+        await ReapplyDiscountsAsync();
+        StateHasChanged();
     }
 
-    async Task OpenDialogCreateAddress()
+    private async Task OpenDialogCreateAddress()
     {
         var dialog = await _dialogService.ShowAsync<Common.User.CreateAddressDialog>("Options Dialog", _maxWidth);
         var result = await dialog.Result;
 
         if (!result.Canceled)
         {
-            await LoadData();
-            await LoadAddress();
-            await GetShippingFee();
+            await LoadAddressAsync();
+            await GetShippingFeeAsync();
+            await ReapplyDiscountsAsync();
             StateHasChanged();
         }
     }
 
-    async Task ApplyDiscountCodeValue()
+    private async Task ApplyDiscountCodeValue()
     {
-        if (string.IsNullOrEmpty(_coupon))
+        if (string.IsNullOrWhiteSpace(_coupon))
         {
             _snackbar.Add("Vui lòng nhập mã giảm giá.", Severity.Warning);
             return;
@@ -290,22 +354,32 @@
             return;
         }
 
-        decimal totalAmount = _data.Sum(i => i.Quantity * i.UnitPrice) ?? 0;
+        decimal totalAmount = CalculateSubtotal();
 
-        _discountAmout = 0;
+        var result = await _couponService.ApplyDiscountCodeValue(_coupon.Trim(), totalAmount, _shippingPrice, _token);
 
-        var result = await _couponService.ApplyDiscountCodeValue(_coupon.Trim(), totalAmount, _token);
-
-        if (result.IsSuccess)
+        if (result.IsSuccess && result.Data != null)
         {
-            _discountAmout = result.Data;
+            var resApply = result.Data;
+
+            if (resApply.Type == Constant.DiscountType.Order)
+            {
+                _discountAmount = resApply.DiscountAmount;
+                _snackbar.Add($"Áp dụng mã thành công! Giảm giá: {FormatCurrency(_discountAmount)}", Severity.Success);
+            }
+            else if (resApply.Type == Constant.DiscountType.Shipping)
+            {
+                _discountShippingFee = resApply.ShippingDiscount;
+                _snackbar.Add($"Áp dụng mã thành công! Giảm giá: {FormatCurrency(_discountShippingFee)}", Severity.Success);
+            }
+
+            UpdateAppliedDiscountList(resApply.Type, _coupon.Trim());
 
             var resultDiscountDetail = await _couponService.GetByCode(_coupon.Trim());
             if (resultDiscountDetail.IsSuccess && resultDiscountDetail.Data != null)
             {
                 _discountDetail = resultDiscountDetail.Data;
             }
-            _snackbar.Add($"Áp dụng mã thành công! Giảm giá: {_discountAmout.ToString("C", vietnameseCulture)}", Severity.Success);
         }
         else
         {
@@ -316,70 +390,66 @@
         StateHasChanged();
     }
 
-    async Task OnCheckout()
+    private async Task OnCheckout()
     {
-        if (_selectPaymentMethod == 2)
+        if (_selectPaymentMethod == Constant.PaymentMethod.Transfer)
         {
             _snackbar.Add("Chức năng thanh toán chuyển khoản đang được phát triển.", Severity.Warning);
             return;
         }
+
         if (!_data.Any() || _addressDefault == null)
         {
             _snackbar.Add("Vui lòng chọn địa chỉ và đảm bảo giỏ hàng không trống.", Severity.Warning);
             return;
         }
 
-        var listProductForCheckout = _data.Select(item => new CheckoutModel
+        try
         {
-            ProductName = item.productName + " - " + item.ColorName + " - " + item.SizeName,
-            Quantity = item.Quantity,
-            UnitPrice = item.UnitPrice ?? 0,
-            ProductVariantId = item.VariantId
-        }).ToList();
-
-        decimal discountAmount = _discountAmout;
-        int? discountId = null;
-
-        if (_discountDetail != null) {
-            discountId = _discountDetail.DiscountId;
-        }
-
-        var result = await _orderService.GetCheckoutUrl(
-             _token,
-            listProduct: listProductForCheckout,
-            discountAmount: discountAmount,
-            shippingFee: _shippingPrice,
-            paymentMethodTypeId: _selectPaymentMethod,
-            discountId: discountId
-        );
-
-        if (result.IsSuccess)
-        {
-            string checkoutUrl = result.Data;
-
-            if (_selectPaymentMethod == 2 && !string.IsNullOrEmpty(checkoutUrl))
+            var listProductForCheckout = _data.Select(item => new CheckoutModel
             {
-                _snackbar.Add("Chuyển hướng đến cổng thanh toán...", Severity.Info);
-                navigation.NavigateTo(checkoutUrl);
-            }
-            else if (_selectPaymentMethod == 1)
+                ProductName = $"{item.productName} - {item.ColorName} - {item.SizeName}",
+                Quantity = item.Quantity,
+                UnitPrice = item.UnitPrice ?? 0,
+                ProductVariantId = item.VariantId
+            }).ToList();
+
+            int? discountId = _discountDetail?.DiscountId;
+
+            var result = await _orderService.GetCheckoutUrl(
+                _token,
+                listProduct: listProductForCheckout,
+                discountAmount: _discountAmount,
+                shippingFee: _shippingPrice,
+                note: _note,
+                shippingAddressId: _addressDefault.Id,
+                paymentMethodTypeId: _selectPaymentMethod,
+                discountId: discountId
+            );
+
+            if (result.IsSuccess && !string.IsNullOrEmpty(result.Data))
             {
-                foreach (var item in _data)
+                if (_selectPaymentMethod == Constant.PaymentMethod.Transfer)
                 {
-                    await _cartItemService.Delete(item.Id, _token);
+                    _snackbar.Add("Chuyển hướng đến cổng thanh toán...", Severity.Info);
+                    navigation.NavigateTo(result.Data);
                 }
-                _snackbar.Add("Đặt hàng thành công! Đơn hàng sẽ được xử lý.", Severity.Success);
-                await _cartStateService.LoadCartDetailsAsync();
-                navigation.NavigateTo(RouterConst.User.Home);
+                else if (_selectPaymentMethod == Constant.PaymentMethod.CashBack)
+                {
+                    await ClearCartAfterCheckout();
+                    _snackbar.Add("Đặt hàng thành công! Đơn hàng sẽ được xử lý.", Severity.Success);
+                    await _cartStateService.LoadCartDetailsAsync();
+                    navigation.NavigateTo(RouterConst.User.Home);
+                }
             }
             else
             {
                 _snackbar.Add("Đặt hàng thành công, nhưng không nhận được URL thanh toán hợp lệ.", Severity.Error);
             }
         }
-        else
+        catch (Exception ex)
         {
-            _snackbar.Add($"Lỗi đặt hàng: {result.ErrorMessage} ({result.StatusCode})", Severity.Error);
+            _snackbar.Add($"Lỗi đặt hàng: {ex.Message}", Severity.Error);
         }
     }
 
@@ -391,13 +461,134 @@
         {
             _snackbar.Add("Xóa thành công", Severity.Success);
             await _cartStateService.LoadCartDetailsAsync();
-            await LoadData();
-            await GetShippingFee();
+            await LoadDataAsync();
+            await GetShippingFeeAsync();
+            await ReapplyDiscountsAsync();
             StateHasChanged();
         }
         else
         {
             _snackbar.Add("Đã có lỗi xảy ra", Severity.Error);
+        }
+    }
+
+    private string FormatAddress(DAL.Models.Address address)
+    {
+        if (address == null)
+            return string.Empty;
+
+        var parts = new List<string>();
+
+        if (!string.IsNullOrEmpty(address.OtherInfo))
+            parts.Add(address.OtherInfo);
+
+        if (!string.IsNullOrEmpty(address.StreetName))
+            parts.Add(address.StreetName);
+
+        if (!string.IsNullOrEmpty(address.DistrictName))
+            parts.Add(address.DistrictName);
+
+        if (!string.IsNullOrEmpty(address.CityName))
+            parts.Add(address.CityName);
+
+        return string.Join(", ", parts);
+    }
+
+    private string FormatCurrency(decimal amount)
+    {
+        return amount.ToString("C", _vietnameseCulture);
+    }
+
+    private decimal CalculateSubtotal()
+    {
+        return _data.Sum(i => i.Quantity * (i.UnitPrice ?? 0));
+    }
+
+    private decimal CalculateTotal()
+    {
+        return CalculateSubtotal() + _shippingPrice - _discountAmount - _discountShippingFee;
+    }
+
+    private void UpdateAppliedDiscountList(byte? discountType, string discountCode)
+    {
+        var appliedTemp = _appliedDiscount.FirstOrDefault(d => d.Type == discountType);
+
+        if (appliedTemp != null)
+        {
+            _appliedDiscount.Remove(appliedTemp);
+            appliedTemp.DiscountCode = discountCode;
+            _appliedDiscount.Add(appliedTemp);
+        }
+        else
+        {
+            _appliedDiscount.Add(new ItemAppliedTemp
+            {
+                Type = discountType,
+                DiscountCode = discountCode
+            });
+        }
+    }
+
+    private async Task ReapplyDiscountsAsync()
+    {
+        if (!_appliedDiscount.Any() || !_data.Any())
+            return;
+
+        decimal totalAmount = CalculateSubtotal();
+        var discountsToRemove = new List<ItemAppliedTemp>();
+
+        foreach (var discount in _appliedDiscount)
+        {
+            if (string.IsNullOrWhiteSpace(discount.DiscountCode))
+                continue;
+
+            var result = await _couponService.ApplyDiscountCodeValue(
+                discount.DiscountCode.Trim(), 
+                totalAmount, 
+                _shippingPrice, 
+                _token
+            );
+
+            if (result.IsSuccess && result.Data != null)
+            {
+                var resApply = result.Data;
+                if (resApply.Type == Constant.DiscountType.Order)
+                {
+                    _discountAmount = resApply.DiscountAmount;
+                }
+                else if (resApply.Type == Constant.DiscountType.Shipping)
+                {
+                    _discountShippingFee = resApply.ShippingDiscount;
+                }
+            }
+            else if (!result.IsSuccess)
+            {
+                _snackbar.Add($"Mã giảm giá {discount.DiscountCode} không còn đủ điều kiện áp dụng nữa.", Severity.Warning);
+                
+                if (discount.Type == Constant.DiscountType.Order)
+                {
+                    _discountAmount = 0;
+                }
+                else if (discount.Type == Constant.DiscountType.Shipping)
+                {
+                    _discountShippingFee = 0;
+                }
+                
+                discountsToRemove.Add(discount);
+            }
+        }
+
+        foreach (var discountToRemove in discountsToRemove)
+        {
+            _appliedDiscount.Remove(discountToRemove);
+        }
+    }
+
+    private async Task ClearCartAfterCheckout()
+    {
+        foreach (var item in _data)
+        {
+            await _cartItemService.Delete(item.Id, _token);
         }
     }
 }
