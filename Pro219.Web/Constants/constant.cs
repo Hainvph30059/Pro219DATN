@@ -126,6 +126,14 @@
 
         public static class OrderStatus
         {
+            public const string OrderStatusPending = "Đang chờ xử lý";
+            public const string OrderStatusConfirm = "Đã xác nhận";
+            public const string OrderStatusCanceledByUser = "Đã hủy bởi người dùng";
+            public const string OrderStatusShipping = "Đang giao hàng";
+            public const string OrderStatusShippingDone = "Đã giao hàng";
+            public const string OrderStatusShippingFailed = "Giao hàng thất bại";
+            public const string OrderStatusDone = "Hoàn thành";
+
             public const byte StatusPending = 1;
             public const byte StatusConfirm = 2;
             public const byte StatusCanceledByUser = 3;
@@ -133,6 +141,29 @@
             public const byte StatusShippingDone = 5;
             public const byte StatusShippingFailed = 6;
             public const byte StatusDone = 7;
+        }
+
+        public class OrderStatusItem
+        {
+            public byte id { get; set; }
+            public string label { get; set; }
+        }
+
+        public static readonly OrderStatusItem[] OrderStatusArray = new OrderStatusItem[]
+        {
+            new OrderStatusItem { id = OrderStatus.StatusPending, label = OrderStatus.OrderStatusPending },
+            new OrderStatusItem { id = OrderStatus.StatusConfirm, label = OrderStatus.OrderStatusConfirm },
+            new OrderStatusItem { id = OrderStatus.StatusCanceledByUser, label = OrderStatus.OrderStatusCanceledByUser },
+            new OrderStatusItem { id = OrderStatus.StatusShipping, label = OrderStatus.OrderStatusShipping },
+            new OrderStatusItem { id = OrderStatus.StatusShippingDone, label = OrderStatus.OrderStatusShippingDone },
+            new OrderStatusItem { id = OrderStatus.StatusShippingFailed, label = OrderStatus.OrderStatusShippingFailed },
+            new OrderStatusItem { id = OrderStatus.StatusDone, label = OrderStatus.OrderStatusDone }
+        };
+
+        public static class DiscountType
+        {
+            public const int Order = 1;
+            public const int Shipping = 2;
         }
     }
 }

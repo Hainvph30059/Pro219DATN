@@ -114,6 +114,7 @@ namespace Pro219.DAL.Repository
             {
                 discountCode.CreateAt = DateTime.Now;
                 discountCode.Delete = false;
+                discountCode.Status = 1;
                 var addedDiscountCode = _context.DiscountCodes.Add(discountCode).Entity;
                 await _context.SaveChangesAsync();
                 return addedDiscountCode;

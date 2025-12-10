@@ -20,6 +20,8 @@ namespace Pro219.Web.Services
             List<CheckoutModel> listProduct,
             decimal discountAmount = 0,
             decimal shippingFee = 0,
+            string note = "",
+            int shippingAddressId = -99,
             int? paymentMethodTypeId = 2,
             int? discountId = null)
         {
@@ -28,6 +30,8 @@ namespace Pro219.Web.Services
                 { "discountAmount", discountAmount.ToString() },
                 { "shippingFee", shippingFee.ToString() },
                 { "PaymentMethodTypeId", paymentMethodTypeId.ToString() },
+                { "note", note },
+                { "addressId", shippingAddressId.ToString() }
             };
 
             if (discountId.HasValue)
@@ -142,6 +146,33 @@ namespace Pro219.Web.Services
                 var result = await response.Content.ReadAsStringAsync();
                 var errorMess = Constant.Errors[result];
                 return ServiceResult<List<OrderItem>>.Failure(result, errorMess, response.StatusCode.ToString());
+            }
+        }
+
+        public async Task<ServiceResult<Order>> UpdateStatus(Order order, string token) {
+            var request = new HttpRequestMessage(HttpMethod.Put, "/Order/Update");
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                var formatToken = token.Trim('"');
+                request.Headers.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", formatToken);
+            }
+
+            request.Content = JsonContent.Create(order);
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<Order>();
+                return ServiceResult<Order>.Success(result);
+            }
+            else
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                var errorMess = Constant.Errors[result ?? ""];
+                return ServiceResult<Order>.Failure(result, errorMess, response.StatusCode.ToString());
             }
         }
     }

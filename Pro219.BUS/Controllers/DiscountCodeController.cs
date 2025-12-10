@@ -188,6 +188,13 @@ namespace Pro219.API.Controllers
                     return BadRequest(Constant.ErrorCode.DataRequired);
                 }
 
+                var hasCode = await discountCodeRepository.GetDiscountCodeByCode(discountCode.Code);
+
+                if (discountCode != null)
+                {
+                    return BadRequest("Đã có mã giảm giá này");
+                }
+
                 var result = await discountCodeRepository.AddDiscountCode(discountCode);
                 if (result == null)
                 {
@@ -227,6 +234,7 @@ namespace Pro219.API.Controllers
                     UpdateBy = User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
                     UpdateAt = DateTime.Now,
                     Delete = discountCodeDTO.Delete,
+                    Type = discountCodeDTO.Type,
                     DeleteAt = discountCodeDTO.Delete == true ? DateTime.Now : null
                 };
 
