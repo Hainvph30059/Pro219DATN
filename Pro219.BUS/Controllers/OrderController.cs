@@ -28,7 +28,7 @@ namespace Pro219.API.Controllers
         }
 
         [HttpPost("Checkout")]
-        public async Task<ActionResult<string>> GetCheckoutUrl([FromBody] List<CheckoutItemDTO> listProduct, decimal discountAmount = 0, decimal shippingFee = 0, int? PaymentMethodTypeId = 2, int? discountId = null, string note ="", int addressId=-99)
+        public async Task<ActionResult<CheckoutDTO>> GetCheckoutUrl([FromBody] List<CheckoutItemDTO> listProduct, decimal discountAmount = 0, decimal shippingFee = 0, int? PaymentMethodTypeId = 2, int? discountId = null, string note ="", int addressId=-99)
        {
             if(addressId==-99)
             {
@@ -58,7 +58,7 @@ namespace Pro219.API.Controllers
                 order.FinalAmount = finalAmount;
                 order.ShippingFee = shippingFee;
                 order.OrderDate = DateTime.Now;
-                order.PaymentStatus = PaymentMethodTypeId == 2 ? Constant.OrderStatus.PaymentPending : Constant.OrderStatus.PaymentCompleted;
+                order.PaymentStatus = Constant.OrderStatus.PaymentPending;
                 order.OrderStatus = Constant.OrderStatus.OrderStatusPending;
                 order.DiscountId = discountId;
                 order.Notes = User.FindFirst(ClaimTypes.SerialNumber)?.Value == null ? "Khách hàng không đăng nhập" : "";
@@ -69,7 +69,7 @@ namespace Pro219.API.Controllers
                 order.CustomerId = User.FindFirst(ClaimTypes.SerialNumber)?.Value == null ? null : int.Parse(User.FindFirst(ClaimTypes.SerialNumber)?.Value);
                 order.ShippingAddressId = 1;
                 order.DiscountId = discountId == null ? null : (int)discountId;
-                order.PaymentMethodId = PaymentMethodTypeId == 2 ? null : PaymentMethodTypeId;
+                order.PaymentMethodId = PaymentMethodTypeId;
                 var result = await orderRepository.AddOrder(order);
 
 
@@ -117,7 +117,13 @@ namespace Pro219.API.Controllers
                 }
             }
 
-            if(PaymentMethodTypeId == 2)
+            CheckoutDTO checkoutDTO = new CheckoutDTO();
+            checkoutDTO.OrderCode = order.OrderCode;
+            checkoutDTO.OrderId = order.OrderId;
+            checkoutDTO.PaymentType = PaymentMethodTypeId;
+            
+
+            if (PaymentMethodTypeId == 2)
             {
                 PaymentData paymentData = new PaymentData(ordCode, (int)finalAmount, "Adam Store Thanh toán", items, "https://localhost:7179/Order/PaymentCanceled?orderId=" + order.OrderId + "&errorMessage=" + "Đã hủy thanh toán", "https://localhost:7179/Order/PaymentSuccess?orderId=" + order.OrderId);
 
@@ -125,8 +131,9 @@ namespace Pro219.API.Controllers
 
                 if (createPayment.status == "PENDING")
                 {
+                    checkoutDTO.URLPayment = createPayment.checkoutUrl;
 
-                    return Ok(createPayment.checkoutUrl);
+                    return Ok(checkoutDTO);
                 }
                 else
                 {
@@ -135,7 +142,8 @@ namespace Pro219.API.Controllers
             }
             else if(PaymentMethodTypeId == 1)            
             {
-                return Ok();
+                checkoutDTO.URLPayment = null ;
+                return Ok(checkoutDTO);
             }
            
             return BadRequest("Lỗi");
