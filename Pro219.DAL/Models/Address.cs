@@ -59,7 +59,7 @@ namespace Pro219.DAL.Models
 
         // Foreign key navigation property
         [ForeignKey("CustomerId")]
-        public virtual Customer Customer { get; set; } = null!;
+        public virtual Customer? Customer { get; set; } = null!;
 
         // Navigation properties
         public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
