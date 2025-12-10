@@ -26,6 +26,8 @@ namespace Pro219.API.DTOs
 
         public bool IsActive { get; set; }
 
+        public byte Type { get; set; } = 1;
+
         public byte? Status { get; set; }
 
         public bool? Delete { get; set; }

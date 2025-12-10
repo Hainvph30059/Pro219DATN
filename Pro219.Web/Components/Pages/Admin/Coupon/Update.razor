@@ -48,30 +48,30 @@
                 <span Class="w-44 flex-shrink-0 pt-4 text-base font-medium text-gray-900">Thời gian diễn ra</span>
                 <div class="flex flex-1 gap-4">
                     <div class="flex flex-1 gap-4">
-                        <MudDatePicker Date="@_model.StartDate"
-                                       DateChanged="ApplyTime"
+                        <MudDatePicker Date="@_startDateOnly"
+                                       DateChanged="OnStartDateChanged"
                                        For="@(() => _model.StartDate)"
                                        Label="Ngày Bắt Đầu"
                                        Variant="Variant.Outlined"
                                        Style="background-color: white" />
 
                         <MudTimePicker Time="@_startTime"
-                                       TimeChanged="ApplyTime"
+                                       TimeChanged="OnStartTimeChanged"
                                        Label="Giờ Bắt Đầu"
                                        Variant="Variant.Outlined"
                                        Style="background-color: white" />
                     </div>
 
                     <div class="flex flex-1 gap-4">
-                        <MudDatePicker Date="@_model.EndDate"
-                                       DateChanged="ApplyTime"
+                        <MudDatePicker Date="@_endDateOnly"
+                                       DateChanged="OnEndDateChanged"
                                        For="@(() => _model.EndDate)"
                                        Label="Ngày Kết Thúc"
                                        Variant="Variant.Outlined"
                                        Style="background-color: white" />
 
                         <MudTimePicker Time="@_endTime"
-                                       TimeChanged="ApplyTime"
+                                       TimeChanged="OnEndTimeChanged"
                                        Label="Giờ Kết Thúc"
                                        Variant="Variant.Outlined"
                                        Style="background-color: white" />
@@ -85,6 +85,15 @@
             </div>
 
             <div class="mx-auto flex w-full max-w-[64.5rem] gap-6 rounded-lg bg-slate-100 px-6 py-4">
+                <span Class="w-44 flex-shrink-0 pt-4 text-base font-medium text-gray-900">Dành cho</span>
+
+                <MudRadioGroup @bind-Value="@_TypeDiscountCode" For="@(() => _TypeDiscountCode)">
+                    <MudRadio Value="1" Color="Color.Primary">Hóa đơn</MudRadio>
+                    <MudRadio Value="2" Color="Color.Primary">Phí vận chuyển</MudRadio>
+                </MudRadioGroup>
+            </div>
+
+            <div class="mx-auto flex w-full max-w-[64.5rem] gap-6 rounded-lg bg-slate-100 px-6 py-4">
                 <span Class="w-44 flex-shrink-0 pt-4 text-base font-medium text-gray-900">Trạng thái</span>
 
                 <MudRadioGroup @bind-Value="@_isActive" For="@(() => _isActive)">
@@ -95,7 +104,7 @@
 
             <div class="flex items-center justify-center gap-4">
                 <MudButton Href="@RouterConst.Admin.Coupon" Color="Color.Surface" Variant="Variant.Filled" ButtonType="ButtonType.Button" Class="w-fit px-10">Quay lại</MudButton>
-                <MudButton Color="Color.Primary" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Class="w-fit px-10">Tạo</MudButton>
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Class="w-fit px-10">Sửa</MudButton>
             </div>
         </EditForm>
     </div>
@@ -106,8 +115,11 @@
     public int id { get; set; }
 
     private DiscountCodeModel _model = new DiscountCodeModel();
-    private int _isActive = 1;
-    private int _discountType = 1;
+    private int _isActive = -1;
+    private int _discountType = -1;
+    private int _TypeDiscountCode = -1;
+    private DateTime? _startDateOnly;
+    private DateTime? _endDateOnly;
     private TimeSpan? _startTime;
     private TimeSpan? _endTime;
     private string _token = "";
@@ -151,14 +163,18 @@
 
             _isActive = data.IsActive ? 1 : 0;
 
+            _TypeDiscountCode = (int)data.Type;
+
             if (data.StartDate.HasValue)
             {
                 _startTime = data.StartDate.Value.TimeOfDay;
+                _startDateOnly = data.StartDate.Value.Date;
             }
 
             if (data.EndDate.HasValue)
             {
                 _endTime = data.EndDate.Value.TimeOfDay;
+                _endDateOnly = data.EndDate.Value.Date;
             }
         }
     }
@@ -181,6 +197,60 @@
         }
     }
 
+    private void OnStartDateChanged(DateTime? date)
+    {
+        _startDateOnly = date?.Date;
+        UpdateStartDateTime();
+    }
+
+    private void OnStartTimeChanged(TimeSpan? time)
+    {
+        _startTime = time;
+        UpdateStartDateTime();
+    }
+
+    private void OnEndDateChanged(DateTime? date)
+    {
+        _endDateOnly = date?.Date;
+        UpdateEndDateTime();
+    }
+
+    private void OnEndTimeChanged(TimeSpan? time)
+    {
+        _endTime = time;
+        UpdateEndDateTime();
+    }
+
+    private void UpdateStartDateTime()
+    {
+        if (_startDateOnly.HasValue && _startTime.HasValue)
+        {
+            _model.StartDate = _startDateOnly.Value.Date.Add(_startTime.Value);
+        }
+        else if (_startDateOnly.HasValue)
+        {
+            _model.StartDate = _startDateOnly.Value.Date;
+        }
+    }
+
+    private void UpdateEndDateTime()
+    {
+        if (_endDateOnly.HasValue && _endTime.HasValue)
+        {
+            _model.EndDate = _endDateOnly.Value.Date.Add(_endTime.Value);
+        }
+        else if (_endDateOnly.HasValue)
+        {
+            _model.EndDate = _endDateOnly.Value.Date;
+        }
+    }
+
+    private void UpdateDateTime()
+    {
+        UpdateStartDateTime();
+        UpdateEndDateTime();
+    }
+
     void OnDiscoutTypeChange(int type)
     {
         _discountType = type;
@@ -201,7 +271,51 @@
 
     async Task OnSubmit()
     {
+        if (_isActive == -1)
+        {
+            _snackbar.Add("Vui lòng chọn trạng thái", Severity.Error);
+            return;
+        }
+        if (_discountType == -1)
+        {
+            _snackbar.Add("Vui lòng chọn loại mã giảm giá", Severity.Error);
+            return;
+        }
+        if (_TypeDiscountCode == -1)
+        {
+            _snackbar.Add("Vui lòng chọn loại áp dụng", Severity.Error);
+            return;
+        }
+
+        if (!_model.StartDate.HasValue || !_model.EndDate.HasValue)
+        {
+            _snackbar.Add("Vui lòng chọn ngày, giờ bắt đầu và kết thúc", Severity.Error);
+            return;
+        }
+
+        if (_model.StartDate.HasValue && _model.EndDate.HasValue)
+        {
+            if (_model.StartDate.Value >= _model.EndDate.Value)
+            {
+                _snackbar.Add("Ngày và giờ bắt đầu phải nhỏ hơn ngày kết thúc.", Severity.Warning);
+                return;
+            }
+        }
+
+        if (_model.StartDate.HasValue && _model.StartDate.Value <= DateTime.Now)
+        {
+            _snackbar.Add("Ngày và giờ bắt đầu phải lớn hơn thời điểm hiện tại.", Severity.Warning);
+            return;
+        }
+
+        if (_model.EndDate.HasValue && _model.EndDate.Value <= DateTime.Now)
+        {
+            _snackbar.Add("Ngày và giờ kết thúc phải lớn hơn thời điểm hiện tại.", Severity.Warning);
+            return;
+        }
+
         _model.IsActive = _isActive == 1 ? true : false;
+        _model.Type = (byte)_TypeDiscountCode;
         var result = await _couponService.Update(_model, _token);
 
         if (result.IsSuccess)

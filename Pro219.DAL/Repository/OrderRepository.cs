@@ -117,6 +117,7 @@ namespace Pro219.DAL.Repository
                 existingOrder.FinalAmount = order.FinalAmount;
                 existingOrder.PaymentStatus = order.PaymentStatus;
                 existingOrder.OrderStatus = order.OrderStatus;
+                existingOrder.Status = order.Status;
                 existingOrder.Notes = order.Notes;
                 existingOrder.LastUpdate = DateTime.Now;
                 if (!string.IsNullOrEmpty(order.UpdateBy))

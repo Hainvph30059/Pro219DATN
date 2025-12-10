@@ -26,9 +26,12 @@
                 <span Class="w-44 flex-shrink-0 pt-4 text-base font-medium text-gray-900">Màu sắc</span>
                 <MudSelect T="int" @bind-Value="@_model.ColorId" For="@(() => _model.ColorId)" Placeholder="Áo polo" Variant="Variant.Outlined" Style="background-color: white" FullWidth>
                     <MudSelectItem Value="0">Vui lòng chọn</MudSelectItem>
-                    @foreach (var item in _colors)
+                    @if (_colors.Any()) 
                     {
-                        <MudSelectItem Value="@item.Id">@item.Name</MudSelectItem>
+                        @foreach (var item in _colors)
+                        {
+                            <MudSelectItem Value="@item.Id">@item.Name</MudSelectItem>
+                        }
                     }
                 </MudSelect>
             </div>
@@ -37,9 +40,12 @@
                 <span Class="w-44 flex-shrink-0 pt-4 text-base font-medium text-gray-900">Kích cỡ</span>
                 <MudSelect T="int" @bind-Value="@_model.SizeId" For="@(() => _model.SizeId)" Placeholder="Nike" Variant="Variant.Outlined" Style="background-color: white" FullWidth>
                     <MudSelectItem Value="0">Vui lòng chọn</MudSelectItem>
-                    @foreach (var item in _sizes)
+                    @if (_sizes.Any())
                     {
-                        <MudSelectItem Value="@item.Id">@item.Name</MudSelectItem>
+                        @foreach (var item in _sizes)
+                        {
+                            <MudSelectItem Value="@item.Id">@item.Name</MudSelectItem>
+                        }
                     }
                 </MudSelect>
             </div>
