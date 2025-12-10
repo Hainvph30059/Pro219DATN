@@ -5,6 +5,20 @@
 <PageTitle>@Constant.PageTitleUser Thanh toán</PageTitle>
 
 <section class="mx-auto w-full max-w-[1032px] pb-10 pt-4">
+    @if (_isCheckoutSuccess)
+    {
+        <div class="flex w-full flex-col items-center justify-center gap-4 p-6 text-center">
+            <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Class="!text-[100px]" />
+            <h2 class="text-2xl font-bold text-green-600">Đặt hàng thành công!</h2>
+            <p>Mã số đơn hàng: @_orderCodeSuccess</p>
+            <div class="flex gap-3">
+                <MudButton Variant="Variant.Filled" Color="Color.Dark" OnClick="@(() => navigation.NavigateTo(RouterConst.User.Home))">Tiếp tục mua sắm</MudButton>
+                <MudButton Variant="Variant.Outlined" OnClick="@(() => navigation.NavigateTo(RouterConst.User.OrderDetail.Replace(":id", _orderIdSuccess.ToString())))">Xem đơn hàng</MudButton>
+            </div>
+        </div>
+    }
+    else
+    {
     <div class="flex w-full flex-col flex-wrap justify-between gap-4 lg:flex-row lg:gap-8">
         <div class="w-full lg:w-[calc(100%-26rem)]">
             <div class="w-full">
@@ -163,6 +177,7 @@
             </div>
         </div>
     </div>
+    }
 </section>
 
 @code {
@@ -176,6 +191,7 @@
     private DAL.Models.Address? _addressDefault;
     private DAL.Models.DiscountCode? _discountDetail;
     private GetMeResponseDTO _me = new();
+    private bool _isCheckoutSuccess = false;
 
     private string _coupon = string.Empty;
     private string _cartId = string.Empty;
@@ -187,7 +203,9 @@
     private decimal _discountShippingFee = 0;
     private int _selectedAddress = 0;
     private int _selectPaymentMethod = Constant.PaymentMethod.CashBack;
-    
+    private int _orderIdSuccess = -1;
+    private string _orderCodeSuccess = string.Empty;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -213,7 +231,7 @@
     {
         _token = await localStorage.GetItemAsStringAsync(Constant.TokenNameLocalStorage, _cts.Token) ?? string.Empty;
         _cartId = await localStorage.GetItemAsStringAsync(Constant.AuthCartIdLocalStorage, _cts.Token) ?? string.Empty;
-        
+
         var resultMe = await localStorage.GetItemAsStringAsync(Constant.UserInfoLocalStorage);
         if (!string.IsNullOrEmpty(resultMe))
         {
@@ -427,24 +445,28 @@
                 discountId: discountId
             );
 
-            if (result.IsSuccess && !string.IsNullOrEmpty(result.Data))
+            if (result.IsSuccess)
             {
                 if (_selectPaymentMethod == Constant.PaymentMethod.Transfer)
                 {
-                    _snackbar.Add("Chuyển hướng đến cổng thanh toán...", Severity.Info);
-                    navigation.NavigateTo(result.Data);
+                    if (!string.IsNullOrEmpty(result.Data))
+                    {
+                        _snackbar.Add("Chuyển hướng đến cổng thanh toán...", Severity.Info);
+                        navigation.NavigateTo(result.Data);
+                    }
+                    else
+                    {
+                        _snackbar.Add("Đặt hàng thành công, nhưng không nhận được URL thanh toán hợp lệ.", Severity.Error);
+                    }
                 }
                 else if (_selectPaymentMethod == Constant.PaymentMethod.CashBack)
                 {
                     await ClearCartAfterCheckout();
+                    _isCheckoutSuccess = true;
                     _snackbar.Add("Đặt hàng thành công! Đơn hàng sẽ được xử lý.", Severity.Success);
                     await _cartStateService.LoadCartDetailsAsync();
-                    navigation.NavigateTo(RouterConst.User.Home);
+                    StateHasChanged();
                 }
-            }
-            else
-            {
-                _snackbar.Add("Đặt hàng thành công, nhưng không nhận được URL thanh toán hợp lệ.", Severity.Error);
             }
         }
         catch (Exception ex)

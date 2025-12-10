@@ -82,9 +82,28 @@
             </div>
         </div>
 
-        <div class="w mt-4 flex items-center justify-center gap-4">
-            <MudButton Variant="Variant.Filled" Color="Color.Primary">Xác nhận</MudButton>
-        </div>
+        @if (_orderDetail != null && ShouldShowButtons())
+        {
+            <div class="w mt-4 flex items-center justify-center gap-4">
+                @if (_orderDetail.Status == Constant.OrderStatus.StatusPending)
+                {
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => HandleStatusUpdate(Constant.OrderStatus.StatusPending))">Xác nhận</MudButton>
+                }
+                else if (_orderDetail.Status == Constant.OrderStatus.StatusConfirm)
+                {
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => HandleStatusUpdate(Constant.OrderStatus.StatusConfirm))">Giao cho đơn vị vận chuyển</MudButton>
+                }
+                else if (_orderDetail.Status == Constant.OrderStatus.StatusShipping)
+                {
+                    <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="@(() => HandleStatusUpdate(Constant.OrderStatus.StatusShipping, "success"))" Class="mr-2">Giao thành công</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="@(() => HandleStatusUpdate(Constant.OrderStatus.StatusShipping, "failed"))">Giao thất bại</MudButton>
+                }
+                else if (_orderDetail.Status == Constant.OrderStatus.StatusShippingDone)
+                {
+                    <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="@(() => HandleStatusUpdate(Constant.OrderStatus.StatusShippingDone))">Hoàn thành</MudButton>
+                }
+            </div>
+        }
 
         <MudDivider Class="my-6" />
 
@@ -186,8 +205,8 @@
     private List<BreadcrumbItem> _items =
     [
         new("Trang Chủ", href: RouterConst.Admin.Home),
-        new("Hóa Đơn", href: RouterConst.Admin.Bill),
-        new("Hóa Đơn Chi Tiết", href: "#", disabled: true),
+    new("Hóa Đơn", href: RouterConst.Admin.Bill),
+    new("Hóa Đơn Chi Tiết", href: "#", disabled: true),
     ];
 
     protected override async Task OnInitializedAsync()
@@ -204,7 +223,7 @@
         {
             _orderDetail = resOrderDetail.Data;
         }
-        
+
         var resAddress = await _addressService.GetAll();
         if (resAddress.IsSuccess && resAddress.Data.Count() > 0)
         {
@@ -248,6 +267,92 @@
         var resBrands = await _brandService.GetAll();
         if (resBrands.IsSuccess && resBrands.Data.Count() > 0) {
             _brands = resBrands.Data;
+        }
+    }
+
+    private bool ShouldShowButtons()
+    {
+        if (_orderDetail == null || !_orderDetail.Status.HasValue)
+            return false;
+
+        var status = _orderDetail.Status.Value;
+        return status == Constant.OrderStatus.StatusPending ||
+               status == Constant.OrderStatus.StatusConfirm ||
+               status == Constant.OrderStatus.StatusShipping ||
+               status == Constant.OrderStatus.StatusShippingDone;
+    }
+
+    private async Task HandleStatusUpdate(byte currentStatus, string? action = null)
+    {
+        if (_orderDetail == null) return;
+
+        byte newStatus;
+        string successMessage;
+        Severity severity = Severity.Success;
+
+        switch (currentStatus)
+        {
+            case Constant.OrderStatus.StatusPending:
+                newStatus = Constant.OrderStatus.StatusConfirm;
+                successMessage = "Đã xác nhận đơn hàng thành công";
+                break;
+
+            case Constant.OrderStatus.StatusConfirm:
+                newStatus = Constant.OrderStatus.StatusShipping;
+                successMessage = "Đã giao đơn hàng cho đơn vị vận chuyển";
+                break;
+
+            case Constant.OrderStatus.StatusShipping:
+                if (action == "success")
+                {
+                    newStatus = Constant.OrderStatus.StatusShippingDone;
+                    successMessage = "Đã cập nhật trạng thái giao hàng thành công";
+                }
+                else if (action == "failed")
+                {
+                    newStatus = Constant.OrderStatus.StatusShippingFailed;
+                    successMessage = "Đã cập nhật trạng thái giao hàng thất bại";
+                    severity = Severity.Warning;
+                }
+                else
+                {
+                    return;
+                }
+                break;
+
+            case Constant.OrderStatus.StatusShippingDone:
+                newStatus = Constant.OrderStatus.StatusDone;
+                successMessage = "Đã hoàn thành đơn hàng";
+                break;
+
+            default:
+                return;
+        }
+
+        try
+        {
+            var newOrderUpdate = _orderDetail;
+            var token = await localStorage.GetItemAsStringAsync(Constant.TokenNameLocalStorage);
+            newOrderUpdate.Status = newStatus;
+            var orderMess = Constant.OrderStatusArray.FirstOrDefault(o => o.id == newStatus);
+            newOrderUpdate.OrderStatus = orderMess != null ? orderMess.label : "Không xác định";
+
+            var result = await _orderService.UpdateStatus(newOrderUpdate, token ?? "");
+            
+            if (result.IsSuccess)
+            {
+                _snackbar.Add(successMessage, severity);
+                await LoadData();
+                StateHasChanged();
+            }
+            else
+            {
+                _snackbar.Add(result.ErrorMessage ?? "Có lỗi xảy ra khi cập nhật trạng thái", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            _snackbar.Add($"Lỗi: {ex.Message}", Severity.Error);
         }
     }
 }

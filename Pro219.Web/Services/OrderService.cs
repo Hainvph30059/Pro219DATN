@@ -149,30 +149,40 @@ namespace Pro219.Web.Services
             }
         }
 
-        public async Task<ServiceResult<Order>> UpdateStatus(Order order, string token) {
-            var request = new HttpRequestMessage(HttpMethod.Put, "/Order/Update");
-
-            if (!string.IsNullOrEmpty(token))
+        public async Task<ServiceResult<Order>> UpdateStatus(Order order, string token)
+        {
+            try
             {
-                var formatToken = token.Trim('"');
-                request.Headers.Authorization =
-                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", formatToken);
+                var request = new HttpRequestMessage(HttpMethod.Post, "/Order/Update");
+
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var formatToken = token.Trim('"');
+                    request.Headers.Authorization =
+                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", formatToken);
+                }
+
+                request.Content = JsonContent.Create(order);
+
+                var response = await _httpClient.SendAsync(request);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadFromJsonAsync<Order>();
+                    return ServiceResult<Order>.Success(result);
+                }
+                else
+                {
+                    var result = await response.Content.ReadAsStringAsync();
+                    var errorMess = Constant.Errors.ContainsKey(result ?? "") 
+                        ? Constant.Errors[result ?? ""] 
+                        : $"Lỗi không xác định: {response.ReasonPhrase} (Status: {response.StatusCode})";
+                    return ServiceResult<Order>.Failure(result, errorMess, response.StatusCode.ToString());
+                }
             }
-
-            request.Content = JsonContent.Create(order);
-
-            var response = await _httpClient.SendAsync(request);
-
-            if (response.IsSuccessStatusCode)
+            catch (Exception ex)
             {
-                var result = await response.Content.ReadFromJsonAsync<Order>();
-                return ServiceResult<Order>.Success(result);
-            }
-            else
-            {
-                var result = await response.Content.ReadAsStringAsync();
-                var errorMess = Constant.Errors[result ?? ""];
-                return ServiceResult<Order>.Failure(result, errorMess, response.StatusCode.ToString());
+                return ServiceResult<Order>.Failure("EXCEPTION", $"Lỗi khi gọi API: {ex.Message}", "500");
             }
         }
     }

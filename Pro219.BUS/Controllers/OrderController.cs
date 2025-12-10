@@ -297,7 +297,7 @@ namespace Pro219.API.Controllers
             }
         }
 
-        [HttpPut("Update")]
+        [HttpPost("Update")]
         public async Task<ActionResult<Order>> UpdateOrder([FromBody] Order order)
         {
             try

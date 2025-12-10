@@ -69,7 +69,7 @@ namespace Pro219.DAL.Models
         public virtual Customer? Customer { get; set; } = null!;
 
         [ForeignKey("ShippingAddressId")]
-        public virtual Address ShippingAddress { get; set; } = null!;
+        public virtual Address? ShippingAddress { get; set; } = null!;
 
         [ForeignKey("DiscountId")]
         public virtual DiscountCode? DiscountCode { get; set; }
