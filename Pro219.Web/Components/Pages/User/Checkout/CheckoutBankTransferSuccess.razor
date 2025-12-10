@@ -1,0 +1,20 @@
+﻿@page "/checkout/{id:int}/success"
+@layout MainLayout
+
+<section class="mx-auto w-full max-w-[1032px] pb-10 pt-4">
+    <div class="flex w-full flex-col items-center justify-center gap-4 rounded-lg border border-solid border-slate-200 p-6 text-center shadow">
+        <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Class="!text-4xl" />
+        <h2 class="text-2xl font-bold text-green-600">Đặt hàng thành công!</h2>
+        <p class="text-base"><span class="font-bold">Mã đơn hàng:</span> @_orderCodeSuccess</p>
+        <p class="text-base text-slate-700">Cảm ơn bạn đã mua hàng. Đơn hàng sẽ được xử lý và giao sớm nhất.</p>
+        <div class="flex justify-center gap-3">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => navigation.NavigateTo(RouterConst.User.Home))">Tiếp tục mua sắm</MudButton>
+            <MudButton Variant="Variant.Outlined" OnClick="@(() => navigation.NavigateTo(RouterConst.User.OrderDetail.Replace(":id", _orderIdSuccess.ToString())))">Xem đơn hàng</MudButton>
+        </div>
+    </div>
+</section>
+
+@code {
+    private int _orderIdSuccess = -1;
+    private string _orderCodeSuccess = string.Empty;
+}
