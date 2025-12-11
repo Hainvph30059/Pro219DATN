@@ -65,7 +65,7 @@ namespace Pro219.API.Controllers
                 order.CreateAt = DateTime.Now;
                 order.LastUpdate = DateTime.Now;
                 order.UpdateBy = "System";
-                order.Status = Constant.OrderStatus.StatusPending;
+                order.Status = Constant.OrderStatus.StatusWaitingForPayment;
                 order.CustomerId = User.FindFirst(ClaimTypes.SerialNumber)?.Value == null ? null : int.Parse(User.FindFirst(ClaimTypes.SerialNumber)?.Value);
                 order.ShippingAddressId = 1;
                 order.DiscountId = discountId == null ? null : (int)discountId;
