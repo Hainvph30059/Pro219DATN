@@ -164,6 +164,7 @@ namespace Pro219.API.Controllers
                 }
                 order.PaymentStatus = Constant.OrderStatus.PaymentCompleted;
                 order.OrderStatus = Constant.OrderStatus.OrderStatusPending;
+                order.Status = Constant.OrderStatus.StatusPending;
                 order.LastUpdate = DateTime.Now;
                 order.UpdateBy = "System";
                 var result = await orderRepository.UpdateOrder(order);
@@ -192,6 +193,7 @@ namespace Pro219.API.Controllers
                 }
                 order.PaymentStatus = Constant.OrderStatus.PaymentCancelled;
                 order.OrderStatus = Constant.OrderStatus.OrderStatusCanceledByUser;
+                order.Status = Constant.OrderStatus.StatusCanceledByUser;
                 order.LastUpdate = DateTime.Now;
                 order.UpdateBy = "System";
                 var result = await orderRepository.UpdateOrder(order);
