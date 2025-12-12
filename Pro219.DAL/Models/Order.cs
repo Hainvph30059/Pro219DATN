@@ -38,15 +38,10 @@ namespace Pro219.DAL.Models
 
         public decimal ShippingFee { get; set; } = 0;
 
-
-        [MaxLength(20)]
         public string PaymentStatus { get; set; } = string.Empty;
-
-
-        [MaxLength(20)]
+        
         public string OrderStatus { get; set; } = string.Empty;
 
-        [MaxLength(200)]
         public string? Notes { get; set; }
 
         public string? StatusHistory { get; set; } = string.Empty;
