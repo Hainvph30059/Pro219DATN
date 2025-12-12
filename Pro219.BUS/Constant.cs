@@ -33,6 +33,7 @@
             public const string PaymentCompleted = "Đã thanh toán";
             public const string PaymentCancelled = "Hủy thanh toán";
 
+            public const string OrderStatusWaitingForPayment = "Đang chờ thanh toán chuyển khoản";
             public const string OrderStatusPending = "Đang chờ xử lý";
             public const string OrderStatusConfirm = "Đã xác nhận";
             public const string OrderStatusCanceledByUser = "Đã hủy bởi người dùng";

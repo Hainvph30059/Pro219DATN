@@ -4,6 +4,7 @@ using Pro219.DAL.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Threading.Tasks;
 
 namespace Pro219.DAL.Repository
@@ -44,6 +45,34 @@ namespace Pro219.DAL.Repository
                 var order = await _context.Orders.FindAsync(id);
                 if (order != null && order.Delete == true)
                     return null;
+                return order;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        public async Task<Order> GetOrderDetailByCode(string code)
+        {
+            try
+            {
+                var order = await _context.Orders
+                    .Include(o => o.ShippingAddress)
+                    .Include(o => o.OrderItems)
+                        .ThenInclude(oi => oi.ProductVariant)
+                            .ThenInclude(pv => pv.Product)
+                    .Include(o => o.OrderItems)
+                        .ThenInclude(oi => oi.ProductVariant)
+                            .ThenInclude(pv => pv.Color)
+                    .Include(o => o.OrderItems)
+                        .ThenInclude(oi => oi.ProductVariant)
+                            .ThenInclude(pv => pv.Size)
+                    .FirstOrDefaultAsync(x => x.OrderCode == code && x.Delete != true);
+
+                if (order != null && order.Delete == true)
+                    return null;
+
                 return order;
             }
             catch (Exception)
@@ -102,6 +131,7 @@ namespace Pro219.DAL.Repository
         {
             try
             {
+                
                 var existingOrder = await _context.Orders.FindAsync(order.OrderId);
 
                 if (existingOrder == null || existingOrder.Delete == true) return null;
@@ -118,6 +148,7 @@ namespace Pro219.DAL.Repository
                 existingOrder.PaymentStatus = order.PaymentStatus;
                 existingOrder.OrderStatus = order.OrderStatus;
                 existingOrder.Status = order.Status;
+                existingOrder.StatusHistory = order.StatusHistory;
                 existingOrder.Notes = order.Notes;
                 existingOrder.LastUpdate = DateTime.Now;
                 if (!string.IsNullOrEmpty(order.UpdateBy))

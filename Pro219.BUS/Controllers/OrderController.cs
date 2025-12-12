@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Text.Json;
 using Net.payOS.Types;
 using Net.payOS;
 
@@ -19,12 +20,124 @@ namespace Pro219.API.Controllers
     [ApiController]
     public class OrderController : ControllerBase
     {
+        private static readonly JsonSerializerOptions _camelCaseJsonOptions = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            WriteIndented = false
+        };
+
         OrderRepository orderRepository;
         DiscountCodeRepository discountCodeRepository;
 
         public OrderController()
         {
             orderRepository = new OrderRepository();
+        }
+
+        [HttpPut("UpdateStatus")]
+        public async Task<ActionResult<Order>> UpdateOrderStatus([FromBody] OrderUpdateStatusDTO updateDto)
+        {
+            try
+            {
+                if (updateDto == null)
+                {
+                    return BadRequest(Constant.ErrorCode.DataRequired);
+                }
+
+                var order = await orderRepository.GetOrderById(updateDto.OrderId);
+                if (order == null)
+                {
+                    return NotFound(Constant.ErrorCode.DataNotFound);
+                }
+
+                var statusHistory = ParseStatusHistory(order.StatusHistory);
+                statusHistory.Add(new StatusHistoryEntry
+                {
+                    Index = statusHistory.Count + 1,
+                    Status = updateDto.Status,
+                    OrderStatus = updateDto.OrderStatus,
+                    PaymentStatus = updateDto.PaymentStatus,
+                    DateTime = DateTime.Now.ToString("HH:mm dd/MM/yyyy")
+                });
+                order.StatusHistory = JsonSerializer.Serialize(statusHistory, _camelCaseJsonOptions);
+
+                order.OrderStatus = updateDto.OrderStatus;
+                order.PaymentStatus = updateDto.PaymentStatus;
+                order.Status = updateDto.Status;
+                order.LastUpdate = DateTime.Now;
+                order.UpdateBy = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var result = await orderRepository.UpdateOrder(order);
+                if (result == null)
+                {
+                    return StatusCode(500, Constant.ErrorCode.DatabaseError);
+                }
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, Constant.ErrorCode.OtherError);
+            }
+        }
+        private List<StatusHistoryEntry> ParseStatusHistory(string? statusHistoryJson)
+        {
+            if (string.IsNullOrWhiteSpace(statusHistoryJson))
+            {
+                return new List<StatusHistoryEntry>();
+            }
+
+            try
+            {
+                var history = JsonSerializer.Deserialize<List<StatusHistoryEntry>>(statusHistoryJson, _camelCaseJsonOptions);
+                return history ?? new List<StatusHistoryEntry>();
+            }
+            catch
+            {
+                return new List<StatusHistoryEntry>();
+            }
+        }
+
+        [HttpGet("CustomerOrerDetail/{orderCode}")]
+        public async Task<ActionResult<OrderDetailDTO>> GetOrderDetail(string orderCode)
+        {
+            try
+            {
+                var order = await orderRepository.GetOrderDetailByCode(orderCode);
+                if (order == null)
+                {
+                    return NotFound(Constant.ErrorCode.DataNotFound);
+                }
+
+                var orderDetailDto = new OrderDetailDTO
+                {
+                    OrderId = order.OrderId,
+                    OrderCode = order.OrderCode,
+                    FinalAmount = order.FinalAmount,
+                    Note = order.Notes,
+                    Address = order.ShippingAddress == null ? null : new OrderDetailAddressDTO
+                    {
+                        Name = order.ShippingAddress.FullName,
+                        Phone = order.ShippingAddress.Phone,
+                        Street = order.ShippingAddress.Street,
+                        City = order.ShippingAddress.City,
+                        District = order.ShippingAddress.District
+                    },                   
+                    Items = order.OrderItems.Select(oi => new OrderDetailItemDTO
+                    {
+                        ProductName = oi.ProductVariant?.Product?.Name ?? string.Empty,
+                        Color = oi.ProductVariant?.Color?.Name,
+                        Size = oi.ProductVariant?.Size?.Name,
+                        Quantity = oi.Quantity,
+                        UnitPrice = oi.UnitPrice
+                    }).ToList()
+                };
+                orderDetailDto.StatusHistory = ParseStatusHistory(order.StatusHistory);
+
+                return Ok(orderDetailDto);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, Constant.ErrorCode.OtherError);
+            }
         }
 
         [HttpPost("Checkout")]
@@ -50,6 +163,35 @@ namespace Pro219.API.Controllers
             Order order = new Order();
             try
             {
+                if(PaymentMethodTypeId == 1)
+                {
+                    var statusHistory = ParseStatusHistory(order.StatusHistory);
+                    statusHistory.Add(new StatusHistoryEntry
+                    {
+                        Index = statusHistory.Count + 1,
+                        Status = Constant.OrderStatus.StatusPending,
+                        OrderStatus = Constant.OrderStatus.OrderStatusPending,
+                        PaymentStatus = Constant.OrderStatus.PaymentPending,
+                        DateTime = DateTime.Now.ToString("HH:mm dd/MM/yyyy")
+                    });
+                    order.StatusHistory = JsonSerializer.Serialize(statusHistory, _camelCaseJsonOptions);
+                } 
+                
+                else
+                {
+                    var statusHistory = ParseStatusHistory(order.StatusHistory);
+                    statusHistory.Add(new StatusHistoryEntry
+                    {
+                        Index = statusHistory.Count + 1,
+                        Status = Constant.OrderStatus.StatusWaitingForPayment,
+                        OrderStatus = Constant.OrderStatus.OrderStatusWaitingForPayment,
+                        PaymentStatus = Constant.OrderStatus.PaymentPending,
+                        DateTime = DateTime.Now.ToString("HH:mm dd/MM/yyyy")
+                    });
+                    order.StatusHistory = JsonSerializer.Serialize(statusHistory, _camelCaseJsonOptions);
+                }    
+
+
                 order.OrderCode = "DH" + ordCode.ToString();
                 order.TotalAmount = totalPrice;
                 order.DiscountAmount = discountAmount;
@@ -59,7 +201,7 @@ namespace Pro219.API.Controllers
                 order.ShippingFee = shippingFee;
                 order.OrderDate = DateTime.Now;
                 order.PaymentStatus = Constant.OrderStatus.PaymentPending;
-                order.OrderStatus = Constant.OrderStatus.OrderStatusPending;
+                order.OrderStatus = "Đặt hàng"; // status = 1;
                 order.DiscountId = discountId;
                 order.Notes = User.FindFirst(ClaimTypes.SerialNumber)?.Value == null ? "Khách hàng không đăng nhập" : "";
                 order.CreateAt = DateTime.Now;
@@ -162,6 +304,16 @@ namespace Pro219.API.Controllers
                 {
                     return NotFound();
                 }
+                var statusHistory = ParseStatusHistory(order.StatusHistory);
+                statusHistory.Add(new StatusHistoryEntry
+                {
+                    Index = statusHistory.Count + 1,
+                    Status = Constant.OrderStatus.StatusPending,
+                    OrderStatus = Constant.OrderStatus.OrderStatusPending,
+                    PaymentStatus = Constant.OrderStatus.PaymentCompleted,
+                    DateTime = DateTime.Now.ToString("HH:mm dd/MM/yyyy")
+                });
+                order.StatusHistory = JsonSerializer.Serialize(statusHistory, _camelCaseJsonOptions);
                 order.PaymentStatus = Constant.OrderStatus.PaymentCompleted;
                 order.OrderStatus = Constant.OrderStatus.OrderStatusPending;
                 order.Status = Constant.OrderStatus.StatusPending;
@@ -191,6 +343,16 @@ namespace Pro219.API.Controllers
                 {
                     return NotFound();
                 }
+                var statusHistory = ParseStatusHistory(order.StatusHistory);
+                statusHistory.Add(new StatusHistoryEntry
+                {
+                    Index = statusHistory.Count + 1,
+                    Status = Constant.OrderStatus.StatusCanceledByUser,
+                    OrderStatus = Constant.OrderStatus.OrderStatusCanceledByUser,
+                    PaymentStatus = Constant.OrderStatus.PaymentCancelled,
+                    DateTime = DateTime.Now.ToString("HH:mm dd/MM/yyyy")
+                });
+                order.StatusHistory = JsonSerializer.Serialize(statusHistory, _camelCaseJsonOptions);
                 order.PaymentStatus = Constant.OrderStatus.PaymentCancelled;
                 order.OrderStatus = Constant.OrderStatus.OrderStatusCanceledByUser;
                 order.Status = Constant.OrderStatus.StatusCanceledByUser;
