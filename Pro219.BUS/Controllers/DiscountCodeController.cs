@@ -190,7 +190,7 @@ namespace Pro219.API.Controllers
 
                 var hasCode = await discountCodeRepository.GetDiscountCodeByCode(discountCode.Code);
 
-                if (discountCode != null)
+                if (hasCode != null)
                 {
                     return BadRequest("Đã có mã giảm giá này");
                 }

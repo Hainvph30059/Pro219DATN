@@ -632,6 +632,8 @@
 
     private string FormatCurrency(decimal amount)
     {
+        if (amount < 0) return 0.ToString("C", _vietnameseCulture);
+
         return amount.ToString("C", _vietnameseCulture);
     }
 

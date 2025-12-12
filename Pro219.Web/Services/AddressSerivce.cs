@@ -29,7 +29,11 @@ namespace Pro219.Web.Services
             else
             {
                 var result = await response.Content.ReadAsStringAsync();
-                var errorMess = Constant.Errors[result];
+                var errorCode = result;
+
+                var errorMess = Constant.Errors.ContainsKey(errorCode ?? "")
+                                    ? Constant.Errors[errorCode ?? ""]
+                                    : result; 
                 return ServiceResult<List<Address>>.Failure(result, errorMess, response.StatusCode.ToString());
             }
         }
@@ -48,7 +52,11 @@ namespace Pro219.Web.Services
             else
             {
                 var result = await response.Content.ReadAsStringAsync();
-                var errorMess = Constant.Errors.ContainsKey(result ?? "") ? Constant.Errors[result ?? ""] : "Đã có lỗi xảy ra.";
+                var errorCode = result;
+
+                var errorMess = Constant.Errors.ContainsKey(errorCode ?? "")
+                                    ? Constant.Errors[errorCode ?? ""]
+                                    : "Đã có lỗi xảy ra. Vui lòng thử lại."; 
                 return ServiceResult<Address>.Failure(result, errorMess, response.StatusCode.ToString());
             }
         }
@@ -67,7 +75,11 @@ namespace Pro219.Web.Services
             else
             {
                 var result = await response.Content.ReadAsStringAsync();
-                var errorMess = Constant.Errors[result];
+                var errorCode = result;
+
+                var errorMess = Constant.Errors.ContainsKey(errorCode ?? "")
+                                    ? Constant.Errors[errorCode ?? ""]
+                                    : "Đã có lỗi xảy ra. Vui lòng thử lại."; 
                 return ServiceResult<List<Address>>.Failure(result, errorMess, response.StatusCode.ToString());
             }
         }
@@ -86,7 +98,11 @@ namespace Pro219.Web.Services
             else
             {
                 var result = await response.Content.ReadAsStringAsync();
-                var errorMess = Constant.Errors[result];
+                var errorCode = result;
+
+                var errorMess = Constant.Errors.ContainsKey(errorCode ?? "")
+                                    ? Constant.Errors[errorCode ?? ""]
+                                    : "Đã có lỗi xảy ra. Vui lòng thử lại."; 
                 return ServiceResult<List<ProvinceDTO>>.Failure(result, errorMess, response.StatusCode.ToString());
             }
         }
@@ -105,7 +121,11 @@ namespace Pro219.Web.Services
             else
             {
                 var result = await response.Content.ReadAsStringAsync();
-                var errorMess = Constant.Errors[result];
+                var errorCode = result;
+
+                var errorMess = Constant.Errors.ContainsKey(errorCode ?? "")
+                                    ? Constant.Errors[errorCode ?? ""]
+                                    : "Đã có lỗi xảy ra. Vui lòng thử lại."; 
                 return ServiceResult<List<DistrictDTO>>.Failure(result, errorMess, response.StatusCode.ToString());
             }
         }
@@ -124,7 +144,11 @@ namespace Pro219.Web.Services
             else
             {
                 var result = await response.Content.ReadAsStringAsync();
-                var errorMess = Constant.Errors[result];
+                var errorCode = result;
+
+                var errorMess = Constant.Errors.ContainsKey(errorCode ?? "")
+                                    ? Constant.Errors[errorCode ?? ""]
+                                    : "Đã có lỗi xảy ra. Vui lòng thử lại."; 
                 return ServiceResult<List<WardDTO>>.Failure(result, errorMess, response.StatusCode.ToString());
             }
         }
@@ -145,7 +169,11 @@ namespace Pro219.Web.Services
             else
             {
                 var result = await response.Content.ReadAsStringAsync();
-                var errorMess = Constant.Errors[result ?? ""];
+                var errorCode = result;
+
+                var errorMess = Constant.Errors.ContainsKey(errorCode ?? "")
+                                    ? Constant.Errors[errorCode ?? ""]
+                                    : "Đã có lỗi xảy ra. Vui lòng thử lại."; 
                 return ServiceResult<Address>.Failure(result, errorMess, response.StatusCode.ToString());
             }
         }
@@ -173,7 +201,11 @@ namespace Pro219.Web.Services
             else
             {
                 var result = await response.Content.ReadAsStringAsync();
-                var errorMess = Constant.Errors[result ?? ""];
+                var errorCode = result;
+
+                var errorMess = Constant.Errors.ContainsKey(errorCode ?? "")
+                                    ? Constant.Errors[errorCode ?? ""]
+                                    : "Đã có lỗi xảy ra. Vui lòng thử lại."; 
                 return ServiceResult<Address>.Failure(result, errorMess, response.StatusCode.ToString());
             }
         }
@@ -217,7 +249,11 @@ namespace Pro219.Web.Services
             else
             {
                 var result = await response.Content.ReadAsStringAsync();
-                var errorMess = Constant.Errors[result ?? ""];
+                var errorCode = result;
+
+                var errorMess = Constant.Errors.ContainsKey(errorCode ?? "")
+                                    ? Constant.Errors[errorCode ?? ""]
+                                    : "Đã có lỗi xảy ra. Vui lòng thử lại."; 
                 return ServiceResult<ShippingFeeDTO>.Failure(result, errorMess, response.StatusCode.ToString());
             }
         }

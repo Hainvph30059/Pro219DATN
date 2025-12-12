@@ -150,12 +150,12 @@
 
             _model = data;
 
-            if (data.DiscountType == Constant.DiscountTypePercent)
+            if (data.Status == 1)
             {
                 _discountType = 1;
                 _isDisableMaxValue = false;
             }
-            else if (data.DiscountType == Constant.DiscountTypeFixed)
+            else if (data.Status == 2)
             {
                 _discountType = 0;
                 _isDisableMaxValue = true;
@@ -176,24 +176,6 @@
                 _endTime = data.EndDate.Value.TimeOfDay;
                 _endDateOnly = data.EndDate.Value.Date;
             }
-        }
-    }
-
-    private void ApplyTime()
-    {
-        if (_model.StartDate.HasValue && _startTime.HasValue)
-        {
-            var date = _model.StartDate.Value.Date;
-            _isDisableMaxValue = false;
-            _model.StartDate = date.Add(_startTime.Value);
-        }
-
-        if (_model.EndDate.HasValue && _endTime.HasValue)
-        {
-            var date = _model.EndDate.Value.Date;
-            _model.EndDate = date.Add(_endTime.Value);
-            _isDisableMaxValue = true;
-            _model.MaxDiscountAmount = 0;
         }
     }
 
@@ -258,10 +240,15 @@
         if (type == 1)
         {
             _model.DiscountType = Constant.DiscountTypePercent;
+            _model.Status = 1;
+            _isDisableMaxValue = false;
         }
         else
         {
             _model.DiscountType = Constant.DiscountTypeFixed;
+            _model.Status = 2;
+            _isDisableMaxValue = true;
+            _model.MaxDiscountAmount = null;
         }
 
         _model.Value = 0;
