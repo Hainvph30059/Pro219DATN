@@ -41,6 +41,8 @@ namespace Pro219.Web.DTOs
         public byte Type { get; set; }
 
         public bool IsActive { get; set; } = true;
+
+        public byte Status { get; set; }
     }
 
     public class ConditionalMinValueAttribute : ValidationAttribute

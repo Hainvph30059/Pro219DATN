@@ -211,11 +211,13 @@
         if (type == 1)
         {
             _model.DiscountType = Constant.DiscountTypePercent;
+            _model.Status = 1;
             _isDisableMaxValue = false;
         }
         else
         {
             _model.DiscountType = Constant.DiscountTypeFixed;
+            _model.Status = 2;
             _isDisableMaxValue = true;
             _model.MaxDiscountAmount = null;
         }
@@ -259,7 +261,13 @@
         }
         else
         {
-            _snackbar.Add("Tạo thất bại", Severity.Warning);
+            if (result.ErrorMessage != null || result.ErrorMessage != "")
+            {
+                _snackbar.Add(result.ErrorMessage, Severity.Warning);
+            } else
+            {
+                _snackbar.Add("Tạo thất bại", Severity.Warning);
+            }
         }
     }
 }

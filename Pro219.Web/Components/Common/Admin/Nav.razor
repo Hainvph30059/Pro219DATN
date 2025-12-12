@@ -26,10 +26,8 @@
 
         <div class="max-h-[calc(100lvh-15.5rem)] flex flex-col gap-2 overflow-y-auto px-3">
             <MudNavLink OnClick="@(() => HandleRedirect(RouterConst.Admin.Home))" Class="@IsActiveMenu(RouterConst.Admin.Home)" Icon="@Icons.Material.Filled.Home">Trang chủ</MudNavLink>
-            <MudNavGroup Title="Sản phẩm" Expanded="false">
-                <MudNavLink OnClick="@(() => HandleRedirect(RouterConst.Admin.Product))" Class="@IsActiveMenu(RouterConst.Admin.Product)" Icon="@Icons.Material.Filled.AllInbox">Sản phẩm</MudNavLink>
-                <MudNavLink OnClick="@(() => HandleRedirect(RouterConst.Admin.ProductVariant))" Class="@IsActiveMenu(RouterConst.Admin.ProductVariant)" Icon="@Icons.Material.Filled.AllInbox">Sản phẩm chi tiết</MudNavLink>
-            </MudNavGroup>
+            <MudNavLink OnClick="@(() => HandleRedirect(RouterConst.Admin.Product))" Class="@IsActiveMenu(RouterConst.Admin.Product)" Icon="@Icons.Material.Filled.AllInbox">Sản phẩm</MudNavLink>
+            @*<MudNavLink OnClick="@(() => HandleRedirect(RouterConst.Admin.ProductVariant))" Class="@IsActiveMenu(RouterConst.Admin.ProductVariant)" Icon="@Icons.Material.Filled.AllInbox">Sản phẩm chi tiết</MudNavLink>*@
             <MudNavGroup Title="Thuộc tính" Expanded="false">
                 <MudNavLink OnClick="@(() => HandleRedirect(RouterConst.Admin.Category))" Class="@IsActiveMenu(RouterConst.Admin.Category)" Icon="@Icons.Material.Filled.Category">Danh mục</MudNavLink>
                 <MudNavLink OnClick="@(() => HandleRedirect(RouterConst.Admin.Brand))" Class="@IsActiveMenu(RouterConst.Admin.Brand)" Icon="@Icons.Material.Filled.AutoAwesome">Thương hiệu</MudNavLink>

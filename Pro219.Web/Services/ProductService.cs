@@ -130,7 +130,7 @@ namespace Pro219.Web.Services
 
                 var errorMess = Constant.Errors.ContainsKey(errorCode ?? "")
                                      ? Constant.Errors[errorCode ?? ""]
-                                     : $"Lỗi không xác định: {response.ReasonPhrase}";
+                                     : errorCode; 
 
                 return ServiceResult<List<DAL.Repository.ProductRepository.ProductDetailDto>>.Failure(
                     errorCode,
@@ -206,7 +206,11 @@ namespace Pro219.Web.Services
             else
             {
                 var result = await response.Content.ReadAsStringAsync();
-                var errorMess = Constant.Errors[result];
+                var errorCode = result;
+
+                var errorMess = Constant.Errors.ContainsKey(errorCode ?? "")
+                                    ? Constant.Errors[errorCode ?? ""]
+                                    : result; 
                 return ServiceResult<Product>.Failure(result, errorMess, response.StatusCode.ToString());
             }
         }
@@ -225,7 +229,11 @@ namespace Pro219.Web.Services
             else
             {
                 var result = await response.Content.ReadAsStringAsync();
-                var errorMess = Constant.Errors[result];
+                var errorCode = result;
+
+                var errorMess = Constant.Errors.ContainsKey(errorCode ?? "")
+                                    ? Constant.Errors[errorCode ?? ""]
+                                    : result; 
                 return ServiceResult<DAL.Repository.ProductRepository.ProductDetailDto>.Failure(result, errorMess, response.StatusCode.ToString());
             }
         }
@@ -246,7 +254,11 @@ namespace Pro219.Web.Services
             else
             {
                 var result = await response.Content.ReadAsStringAsync();
-                var errorMess = Constant.Errors[result ?? ""];
+                var errorCode = result;
+
+                var errorMess = Constant.Errors.ContainsKey(errorCode ?? "")
+                                    ? Constant.Errors[errorCode ?? ""]
+                                    : result; 
                 return ServiceResult<Product>.Failure(result, errorMess, response.StatusCode.ToString());
             }
         }
@@ -274,7 +286,11 @@ namespace Pro219.Web.Services
             else
             {
                 var result = await response.Content.ReadAsStringAsync();
-                var errorMess = Constant.Errors[result ?? ""];
+                var errorCode = result;
+
+                var errorMess = Constant.Errors.ContainsKey(errorCode ?? "")
+                                    ? Constant.Errors[errorCode ?? ""]
+                                    : result; 
                 return ServiceResult<Product>.Failure(result, errorMess, response.StatusCode.ToString());
             }
         }
@@ -330,7 +346,11 @@ namespace Pro219.Web.Services
             else
             {
                 var result = await response.Content.ReadAsStringAsync();
-                var errorMess = Constant.Errors[result];
+                var errorCode = result;
+
+                var errorMess = Constant.Errors.ContainsKey(errorCode ?? "")
+                                    ? Constant.Errors[errorCode ?? ""]
+                                    : result; 
                 return ServiceResult<List<DAL.Repository.ProductRepository.ProductDetailDto>>.Failure(result, errorMess, response.StatusCode.ToString());
             }
 
@@ -349,7 +369,11 @@ namespace Pro219.Web.Services
             else
             {
                 var result = await response.Content.ReadAsStringAsync();
-                var errorMess = Constant.Errors[result];
+                var errorCode = result;
+
+                var errorMess = Constant.Errors.ContainsKey(errorCode ?? "")
+                                    ? Constant.Errors[errorCode ?? ""]
+                                    : result; 
                 return ServiceResult<List<DAL.Repository.ProductRepository.ProductDetailDto>>.Failure(result, errorMess, response.StatusCode.ToString());
             }
 
@@ -398,7 +422,11 @@ namespace Pro219.Web.Services
             else
             {
                 var result = await response.Content.ReadAsStringAsync();
-                var errorMess = Constant.Errors[result];
+                var errorCode = result;
+
+                var errorMess = Constant.Errors.ContainsKey(errorCode ?? "")
+                                    ? Constant.Errors[errorCode ?? ""]
+                                    : result; 
                 return ServiceResult<ProductDetailDto>.Failure(result, errorMess, response.StatusCode.ToString());
             }
         }

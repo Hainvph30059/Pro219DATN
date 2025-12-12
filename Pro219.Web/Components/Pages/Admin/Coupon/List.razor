@@ -27,7 +27,7 @@
             </HeaderContent>
             <RowTemplate>
                 <MudTd DataLabel="Code">@context.Code</MudTd>
-                <MudTd DataLabel="DiscountType">@FormatDiscountType(@context.DiscountType)</MudTd>
+                <MudTd DataLabel="DiscountType">@(context.Status == 1 ? "Phần trăm (%)" : "Giá cố định")</MudTd>
                 <MudTd DataLabel="Value">@(FormatDiscountValue(context))</MudTd>
                 <MudTd DataLabel="MinOrderValue">@(context.MinOrderValue?.ToString("C", vietnameseCulture) ?? "0")</MudTd>
                 <MudTd DataLabel="MaxDiscountAmount">@(context.MaxDiscountAmount?.ToString("C", vietnameseCulture) ?? "0")</MudTd>
@@ -146,16 +146,6 @@
         var now = DateTime.Now;
 
         return discount.IsActive && (now >= discount.StartDate && now <= discount.EndDate);
-    }
-
-    private string FormatDiscountType(string type)
-    {
-        return type switch
-        {
-            Constant.DiscountTypePercent => "Phần Trăm (%)",
-            Constant.DiscountTypeFixed => "Số Tiền Cố Định",
-            _ => type,
-        };
     }
 
     private string FormatDiscountValue(DAL.Models.DiscountCode discount)

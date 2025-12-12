@@ -27,7 +27,11 @@ namespace Pro219.Web.Services
             else
             {
                 var result = await response.Content.ReadAsStringAsync();
-                var errorMess = Constant.Errors[result];
+                var errorCode = result;
+
+                var errorMess = Constant.Errors.ContainsKey(errorCode ?? "")
+                                    ? Constant.Errors[errorCode ?? ""]
+                                    : "Đã có lỗi xảy ra. Vui lòng thử lại."; 
                 return ServiceResult<List<Brand>>.Failure(result, errorMess, response.StatusCode.ToString());
             }
         }
@@ -46,7 +50,11 @@ namespace Pro219.Web.Services
             else
             {
                 var result = await response.Content.ReadAsStringAsync();
-                var errorMess = Constant.Errors[result];
+                var errorCode = result;
+
+                var errorMess = Constant.Errors.ContainsKey(errorCode ?? "")
+                                    ? Constant.Errors[errorCode ?? ""]
+                                    : "Đã có lỗi xảy ra. Vui lòng thử lại."; 
                 return ServiceResult<Brand>.Failure(result, errorMess, response.StatusCode.ToString());
             }
         }
@@ -67,7 +75,11 @@ namespace Pro219.Web.Services
             else
             {
                 var result = await response.Content.ReadAsStringAsync();
-                var errorMess = Constant.Errors[result];
+                var errorCode = result;
+
+                var errorMess = Constant.Errors.ContainsKey(errorCode ?? "")
+                                    ? Constant.Errors[errorCode ?? ""]
+                                    : "Đã có lỗi xảy ra. Vui lòng thử lại."; 
                 return ServiceResult<Brand>.Failure(result, errorMess, response.StatusCode.ToString());
             }
         }
@@ -95,7 +107,11 @@ namespace Pro219.Web.Services
             else
             {
                 var result = await response.Content.ReadAsStringAsync();
-                var errorMess = Constant.Errors[result];
+                var errorCode = result;
+
+                var errorMess = Constant.Errors.ContainsKey(errorCode ?? "")
+                                    ? Constant.Errors[errorCode ?? ""]
+                                    : "Đã có lỗi xảy ra. Vui lòng thử lại."; 
                 return ServiceResult<Brand>.Failure(result, errorMess, response.StatusCode.ToString());
             }
         }

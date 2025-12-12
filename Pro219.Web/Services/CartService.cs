@@ -27,7 +27,11 @@ namespace Pro219.Web.Services
             else
             {
                 var result = await response.Content.ReadAsStringAsync();
-                var errorMess = Constant.Errors[result];
+                var errorCode = result;
+
+                var errorMess = Constant.Errors.ContainsKey(errorCode ?? "")
+                                    ? Constant.Errors[errorCode ?? ""]
+                                    : result; 
                 return ServiceResult<List<Cart>>.Failure(result, errorMess, response.StatusCode.ToString());
             }
         }
@@ -46,7 +50,11 @@ namespace Pro219.Web.Services
             else
             {
                 var result = await response.Content.ReadAsStringAsync();
-                var errorMess = Constant.Errors[result];
+                var errorCode = result;
+
+                var errorMess = Constant.Errors.ContainsKey(errorCode ?? "")
+                                    ? Constant.Errors[errorCode ?? ""]
+                                    : result; 
                 return ServiceResult<Cart>.Failure(result, errorMess, response.StatusCode.ToString());
             }
         }
@@ -65,7 +73,11 @@ namespace Pro219.Web.Services
             else
             {
                 var result = await response.Content.ReadAsStringAsync();
-                var errorMess = Constant.Errors[result];
+                var errorCode = result;
+
+                var errorMess = Constant.Errors.ContainsKey(errorCode ?? "")
+                                    ? Constant.Errors[errorCode ?? ""]
+                                    : result; 
                 return ServiceResult<Cart>.Failure(result, errorMess, response.StatusCode.ToString());
             }
         }
@@ -86,7 +98,11 @@ namespace Pro219.Web.Services
             else
             {
                 var result = await response.Content.ReadAsStringAsync();
-                var errorMess = Constant.Errors[result ?? ""];
+                var errorCode = result;
+
+                var errorMess = Constant.Errors.ContainsKey(errorCode ?? "")
+                                    ? Constant.Errors[errorCode ?? ""]
+                                    : result; 
                 return ServiceResult<Cart>.Failure(result, errorMess, response.StatusCode.ToString());
             }
         }
@@ -114,7 +130,11 @@ namespace Pro219.Web.Services
             else
             {
                 var result = await response.Content.ReadAsStringAsync();
-                var errorMess = Constant.Errors[result ?? ""];
+                var errorCode = result;
+
+                var errorMess = Constant.Errors.ContainsKey(errorCode ?? "")
+                                    ? Constant.Errors[errorCode ?? ""]
+                                    : result; 
                 return ServiceResult<CartItem>.Failure(result, errorMess, response.StatusCode.ToString());
             }
         }
