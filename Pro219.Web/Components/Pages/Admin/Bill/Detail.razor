@@ -337,6 +337,11 @@
             var orderMess = Constant.OrderStatusArray.FirstOrDefault(o => o.id == newStatus);
             newOrderUpdate.OrderStatus = orderMess != null ? orderMess.label : "Không xác định";
 
+            if (_orderDetail.PaymentMethodId == Constant.PaymentMethod.CashBack 
+                && currentStatus == Constant.OrderStatus.StatusShipping) {
+                newOrderUpdate.PaymentStatus = "Đã thanh toán";
+            }
+
             var result = await _orderService.UpdateStatus(newOrderUpdate, token ?? "");
             
             if (result.IsSuccess)

@@ -33,6 +33,8 @@
             // Order
             public const string Orders = "/orders";
             public const string OrderDetail = "/orders/:id/detail";
+            public const string PaymentSuccess = "/order/payment-success";
+            public const string PaymentCancelled = "/order/payment-cancelled";
         }
 
         public static class Admin

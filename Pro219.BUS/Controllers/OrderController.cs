@@ -125,7 +125,7 @@ namespace Pro219.API.Controllers
 
             if (PaymentMethodTypeId == 2)
             {
-                PaymentData paymentData = new PaymentData(ordCode, (int)finalAmount, "Adam Store Thanh toán", items, "https://localhost:7179/Order/PaymentCanceled?orderId=" + order.OrderId + "&errorMessage=" + "Đã hủy thanh toán", "https://localhost:7179/Order/PaymentSuccess?orderId=" + order.OrderId);
+                PaymentData paymentData = new PaymentData(ordCode, (int)finalAmount, "Adam Store Thanh toán", items, "http://localhost:5001/order/payment-cancelled?order-id=" + order.OrderId, "http://localhost:5001/order/payment-success?order-id=" + order.OrderId);
 
                 CreatePaymentResult createPayment = await payOS.createPaymentLink(paymentData);
 

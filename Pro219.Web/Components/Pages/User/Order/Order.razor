@@ -46,9 +46,11 @@
                         <MudTd DataLabel="Phương thức thanh toán">@(context.PaymentMethodId == Constant.PaymentMethod.CashBack ? "Tiền mặt" : "Chuyển khoản")</MudTd>
                         <MudTd DataLabel="Trạng thái thanh toán">@context.PaymentStatus</MudTd>
                         <MudTd DataLabel="Trạng thái hóa đơn">
-                            <MudBadge Variant="Variant.Filled" Color="@(GetOrderStatusColor(context.Status))" Content="@context.OrderStatus" />
+                            <span class="@GetOrderStatusClass(context.Status) rounded-full px-3 py-1 text-xs font-medium text-white">
+                                @GetOrderStatusMessage(context.Status)
+                            </span>
                         </MudTd>
-                        <MudTd DataLabel="Trạng thái hóa đơn"><MudIconButton OnClick=@(() => navigation.NavigateTo(RouterConst.User.OrderDetail.Replace(":id", context.OrderId.ToString()))) Icon="@Icons.Material.Filled.Menu" /></MudTd>
+                        <MudTd DataLabel="Chi tiết"><MudIconButton OnClick=@(() => navigation.NavigateTo(RouterConst.User.OrderDetail.Replace(":id", context.OrderId.ToString()))) Icon="@Icons.Material.Filled.Menu" /></MudTd>
                     </RowTemplate>
                     <NoRecordsContent>
                         <MudText>Không có dữ liệu.</MudText>
@@ -121,16 +123,25 @@
         }
     }
 
-    private Color GetOrderStatusColor(byte? Status) =>
-    Status switch
+    private string GetOrderStatusMessage(byte? status)
     {
-        Constant.OrderStatus.StatusPending => Color.Primary, // Đang chờ xử lý (1) - Xanh dương
-        Constant.OrderStatus.StatusConfirm => Color.Info,    // Đã xác nhận (2) - Xanh nhạt
-        Constant.OrderStatus.StatusCanceledByUser => Color.Error, // Đã hủy bởi người dùng (3) - Đỏ
-        Constant.OrderStatus.StatusShipping => Color.Secondary, // Đang giao hàng (4) - Tím
-        Constant.OrderStatus.StatusShippingDone => Color.Success, // Đã giao hàng (5) - Xanh lá
-        Constant.OrderStatus.StatusShippingFailed => Color.Error, // Giao hàng thất bại (6) - Đỏ
-        Constant.OrderStatus.StatusDone => Color.Dark, // Hoàn thành (7) - Xám/Đen
-        _ => Color.Dark
-    };
+        if (!status.HasValue)
+            return "Không xác định";
+
+        var statusItem = Constant.OrderStatusArray.FirstOrDefault(s => s.id == status.Value);
+        return statusItem?.label ?? "Không xác định";
+    }
+
+    private string GetOrderStatusClass(byte? status) =>
+        status switch
+        {
+            Constant.OrderStatus.StatusPending => "bg-gray-400", // Chờ xác nhận (1) - Màu xám
+            Constant.OrderStatus.StatusConfirm => "bg-blue-500", // Xác nhận (2) - Màu xanh dương
+            Constant.OrderStatus.StatusCanceledByUser => "bg-red-500", // Đã hủy bởi người dùng (3) - Màu đỏ
+            Constant.OrderStatus.StatusShipping => "bg-gray-700", // Đang giao hàng (4) - Màu xám đậm
+            Constant.OrderStatus.StatusShippingDone => "bg-green-500", // Đã giao hàng (5) - Màu xanh lá
+            Constant.OrderStatus.StatusShippingFailed => "bg-red-500", // Giao hàng thất bại (6) - Màu đỏ
+            Constant.OrderStatus.StatusDone => "bg-green-500", // Hoàn thành (7) - Màu xanh lá
+            _ => "bg-gray-400"
+        };
 }

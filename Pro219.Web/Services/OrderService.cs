@@ -15,7 +15,7 @@ namespace Pro219.Web.Services
             _httpClient = httpClient;
         }
 
-        public async Task<ServiceResult<string>> GetCheckoutUrl(
+        public async Task<ServiceResult<Pro219.Web.DTOs.CheckoutDTO>> GetCheckoutUrl(
             string token,
             List<CheckoutModel> listProduct,
             decimal discountAmount = 0,
@@ -58,22 +58,16 @@ namespace Pro219.Web.Services
 
             if (response.IsSuccessStatusCode)
             {
-                var resultUrl = await response.Content.ReadAsStringAsync();
-                return ServiceResult<string>.Success(resultUrl);
+                var result = await response.Content.ReadFromJsonAsync<Pro219.Web.DTOs.CheckoutDTO>();
+                return ServiceResult<Pro219.Web.DTOs.CheckoutDTO>.Success(result);
             }
             else
             {
-                var errorCode = await response.Content.ReadAsStringAsync();
-
-                var errorMess = Constant.Errors.ContainsKey(errorCode ?? "")
-                                    ? Constant.Errors[errorCode ?? ""]
-                                    : $"Lỗi không xác định: {response.ReasonPhrase}";
-
-                return ServiceResult<string>.Failure(
-                    errorCode,
-                    errorMess,
-                    response.StatusCode.ToString()
-                );
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                var errorMess = Constant.Errors.ContainsKey(errorMessage ?? "")
+                    ? Constant.Errors[errorMessage ?? ""]
+                    : $"Lỗi không xác định: {response.ReasonPhrase}";
+                return ServiceResult<Pro219.Web.DTOs.CheckoutDTO>.Failure(errorMessage, errorMess, response.StatusCode.ToString());
             }
         }
 
@@ -183,6 +177,40 @@ namespace Pro219.Web.Services
             catch (Exception ex)
             {
                 return ServiceResult<Order>.Failure("EXCEPTION", $"Lỗi khi gọi API: {ex.Message}", "500");
+            }
+        }
+
+        public async Task<ServiceResult<Order>> PaymentSuccess(int orderId)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/Order/PaymentSuccess?orderId={orderId}");
+            var response = await _httpClient.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<Order>();
+                return ServiceResult<Order>.Success(result);
+            }
+            else
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                var errorMess = Constant.Errors[result];
+                return ServiceResult<Order>.Failure(result, errorMess, response.StatusCode.ToString());
+            }
+        }
+
+        public async Task<ServiceResult<Order>> PaymentCanceled(int orderId)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/Order/PaymentCanceled?orderId={orderId}");
+            var response = await _httpClient.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<Order>();
+                return ServiceResult<Order>.Success(result);
+            }
+            else
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                var errorMess = Constant.Errors[result];
+                return ServiceResult<Order>.Failure(result, errorMess, response.StatusCode.ToString());
             }
         }
     }

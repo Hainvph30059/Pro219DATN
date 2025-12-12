@@ -1,4 +1,4 @@
-﻿@page "/checkout/{id:int}/success"
+﻿@page "/order/payment-success"
 @layout MainLayout
 
 <section class="mx-auto w-full max-w-[1032px] pb-10 pt-4">
@@ -15,6 +15,30 @@
 </section>
 
 @code {
+    [SupplyParameterFromQuery(Name = "order-id")]
+    public int _orderId { get; set; } = 0;
+
     private int _orderIdSuccess = -1;
     private string _orderCodeSuccess = string.Empty;
+    private bool _loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+        _loading = false;
+        StateHasChanged();
+    }
+
+    async Task LoadData()
+    {
+        if (_orderId > 0)
+        {
+            _orderIdSuccess = _orderId;
+            var result = await _orderService.PaymentSuccess(_orderId);
+            if (result.IsSuccess)
+            {
+                _orderCodeSuccess = result.Data.OrderCode;
+            }
+        }
+    }
 }

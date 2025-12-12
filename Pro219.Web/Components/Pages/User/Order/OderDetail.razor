@@ -66,7 +66,7 @@
                 <span class="text-sm">@_orderDetail?.FinalAmount.ToString("C", vietnameseCulture)</span>
             </div>
         </div>
-        <MudButton Class="mt-6" Variant="Variant.Filled" Color="Color.Error" hidden="@(_orderDetail?.Status != Constant.OrderStatus.StatusPending)">Hủy đơn hàng</MudButton>
+        <MudButton Class="mt-6" Variant="Variant.Filled" Color="Color.Error" OnClick="CancelOrder" hidden="@(_orderDetail?.Status != Constant.OrderStatus.StatusPending)">Hủy đơn hàng</MudButton>
     </div>
 
         <div class="mt-6 px-6">
@@ -192,7 +192,7 @@
         {
             _orderDetail = resOrderDetail.Data;
         }
-        
+
         var resAddress = await _addressService.GetAll();
         if (resAddress.IsSuccess && resAddress.Data.Count() > 0)
         {
@@ -236,6 +236,34 @@
         var resBrands = await _brandService.GetAll();
         if (resBrands.IsSuccess && resBrands.Data.Count() > 0) {
             _brands = resBrands.Data;
+        }
+    }
+
+    async Task CancelOrder()
+    {
+        if (_orderDetail == null)
+        {
+            _snackbar.Add("Đơn hàng không tồn tại", Severity.Error);
+            return;
+        }
+        var newOrderUpdate = _orderDetail;
+        var token = await localStorage.GetItemAsStringAsync(Constant.TokenNameLocalStorage);
+        newOrderUpdate.Status = Constant.OrderStatus.StatusCanceledByUser;
+        newOrderUpdate.PaymentStatus = "Đã hủy";
+        var orderMess = Constant.OrderStatusArray.FirstOrDefault(o => o.id == Constant.OrderStatus.StatusCanceledByUser);
+        newOrderUpdate.OrderStatus = orderMess != null ? orderMess.label : "Không xác định";
+
+        var result = await _orderService.UpdateStatus(newOrderUpdate, token ?? "");
+            
+        if (result.IsSuccess)
+        {
+            _snackbar.Add("Đã hủy đơn hàng", Severity.Warning);
+            await LoadData();
+            StateHasChanged();
+        }
+        else
+        {
+            _snackbar.Add(result.ErrorMessage ?? "Có lỗi xảy ra khi cập nhật trạng thái", Severity.Error);
         }
     }
 }
