@@ -18,17 +18,15 @@
                 <span class="w-full max-w-[200px] flex-shrink-0 text-sm font-bold">Địa chỉ nhận hàng:</span>
                 <div class="text-sm">
                 @{
-                    var address = _addresses.FirstOrDefault(a => a.Id == _orderDetail?.ShippingAddressId);
-
-                    if (address != null)
+                    @if (_orderDetail != null && _orderDetail.Address != null)
                     {   
                         <span class="text-sm font-medium">
-                            @address?.OtherInfo@((!string.IsNullOrEmpty(address?.OtherInfo) && (!string.IsNullOrEmpty(address?.StreetName) || !string.IsNullOrEmpty(address?.DistrictName) || !string.IsNullOrEmpty(address?.CityName)) ? ", " : ""))
-                            @address?.StreetName@((!string.IsNullOrEmpty(address?.StreetName) && (!string.IsNullOrEmpty(address?.DistrictName) || !string.IsNullOrEmpty(address?.CityName)) ? ", " : ""))
-                            @address?.DistrictName@((!string.IsNullOrEmpty(address?.DistrictName) && !string.IsNullOrEmpty(address?.CityName) ? ", " : ""))
-                            @address?.CityName
+                            @_orderDetail.Address.OtherInfo@((!string.IsNullOrEmpty(_orderDetail.Address.OtherInfo) && (!string.IsNullOrEmpty(_orderDetail.Address.Street) || !string.IsNullOrEmpty(_orderDetail.Address.District) || !string.IsNullOrEmpty(_orderDetail.Address.City)) ? ", " : ""))
+                                @_orderDetail.Address.Street@((!string.IsNullOrEmpty(_orderDetail.Address.Street) && (!string.IsNullOrEmpty(_orderDetail.Address.District) || !string.IsNullOrEmpty(_orderDetail.Address.City)) ? ", " : ""))
+                            @_orderDetail.Address.District@((!string.IsNullOrEmpty(_orderDetail.Address.District) && !string.IsNullOrEmpty(_orderDetail.Address.City) ? ", " : ""))
+                            @_orderDetail.Address.City
                         </span>
-                        <span class="text-sm font-medium">(@address?.FullName <span class="text-slate-500">@((!string.IsNullOrEmpty(address?.Phone) ? " - " : ""))@address?.Phone</span>)</span>
+                            <span class="text-sm font-medium">(@_orderDetail.Address?.Name <span class="text-slate-500">@((!string.IsNullOrEmpty(_orderDetail.Address?.Phone) ? " - " : ""))@_orderDetail.Address?.Phone</span>)</span>
                     }
                 }
                 </div>
@@ -47,33 +45,37 @@
             </div>
             <div class="flex items-center gap-4">
                 <span class="w-full max-w-[200px] flex-shrink-0 text-sm font-bold">Chi tiết:</span>
-                <span class="text-sm">@_orderDetail?.Notes</span>
+                <span class="text-sm">@_orderDetail?.Note</span>
             </div>
             <div class="flex items-center gap-4">
                 <span class="w-full max-w-[200px] flex-shrink-0 text-sm font-bold">Tổng tiền sản phẩm:</span>
                 <span class="text-sm">@_orderDetail?.TotalAmount.ToString("C", vietnameseCulture)</span>
             </div>
             <div class="flex items-center gap-4">
-                <span class="w-full max-w-[200px] flex-shrink-0 text-sm font-bold">Giảm giá:</span>
-                <span class="text-sm">@_orderDetail?.DiscountAmount.ToString("C", vietnameseCulture)</span>
-            </div>
-            <div class="flex items-center gap-4">
                 <span class="w-full max-w-[200px] flex-shrink-0 text-sm font-bold">Phí giao hàng:</span>
                 <span class="text-sm">@_orderDetail?.ShippingFee.ToString("C", vietnameseCulture)</span>
             </div>
             <div class="flex items-center gap-4">
+                <span class="w-full max-w-[200px] flex-shrink-0 text-sm font-bold">Giảm giá:</span>
+                <span class="text-sm">@_orderDetail?.DiscountAmount.ToString("C", vietnameseCulture)</span>
+            </div>
+            <div class="flex items-center gap-4">
                 <span class="w-full max-w-[200px] flex-shrink-0 text-sm font-bold">Tổng tiền thanh toán:</span>
                 <span class="text-sm">@_orderDetail?.FinalAmount.ToString("C", vietnameseCulture)</span>
+            </div
+            <div class="flex gap-4">
+                <span class="w-full max-w-[200px] flex-shrink-0 text-sm font-bold">Lịch sử đơn hàng:</span>
+                <span class="whitespace-pre-wrap text-sm">@GetHistoryOrder(_orderDetail?.StatusHistory)</span>
             </div>
         </div>
         <MudButton Class="mt-6" Variant="Variant.Filled" Color="Color.Error" OnClick="CancelOrder" hidden="@(_orderDetail?.Status != Constant.OrderStatus.StatusPending)">Hủy đơn hàng</MudButton>
     </div>
 
         <div class="mt-6 px-6">
-        @if (_orderItems.Any())
+        @if (_orderDetail != null && _orderDetail.Items.Any())
         {
             <div>
-                <MudTable Bordered Items="@_orderItems" Loading="@_loading" Class="w-full" Dense="true" Hover="true" Virtualize="true" FixedHeader="true" HorizontalScrollbar="true">
+                <MudTable Bordered Items="@_orderDetail.Items" Loading="@_loading" Class="w-full" Dense="true" Hover="true" Virtualize="true" FixedHeader="true" HorizontalScrollbar="true">
                     <HeaderContent>
                         <MudTh hidden><MudTableSortLabel SortLabel="OrderItemId" T="string" hidden>OrderItemId</MudTableSortLabel></MudTh>
                         <MudTh><MudTableSortLabel SortLabel="Ảnh" T="string">Ảnh</MudTableSortLabel></MudTh>
@@ -109,11 +111,9 @@
                                     var product = _products.FirstOrDefault(p => p.Id == productVariant.ProductId);
                                     if (product != null)
                                     {
-                                        var color = _colors.FirstOrDefault(c => c.Id == productVariant.ColorId);
-                                        var size = _sizes.FirstOrDefault(s => s.Id == productVariant.SizeId);
                                         var brand = _brands.FirstOrDefault(b => b.Id == product.BrandId);
 
-                                        <span>@product.Name @(brand != null ? $"- {brand.Name}" : "") @(color != null ? $"- {color.Name}" : "") @(size != null ? $"- {size.Name}" : "")</span>
+                                        <button @onclick="@(() => navigation.NavigateTo(RouterConst.User.ProductDetail + $"/{product.Id}"))">@context.ProductName @(brand != null ? $"- {brand.Name}" : "") @(context.Color != null ? $"- {context.Color}" : "") @(context.Size != null ? $"- {context.Size}" : "")</button>
                                        
                                     }
                                 }
@@ -121,7 +121,7 @@
                         </MudTd>
                         <MudTd DataLabel="Số lượng">@context.Quantity</MudTd>
                         <MudTd DataLabel="Đơn giá">@context.UnitPrice.ToString("C", vietnameseCulture)</MudTd>
-                        <MudTd DataLabel="Thành tiền">@context.Subtotal.ToString("C", vietnameseCulture)</MudTd>
+                        <MudTd DataLabel="Thành tiền">@((context.Quantity * context.UnitPrice).ToString("C", vietnameseCulture))</MudTd>
                         @if ((_orderDetail?.Status == Constant.OrderStatus.StatusDone))
                         {
                             <MudTd DataLabel="Thao tác">
@@ -166,14 +166,10 @@
     public int id { get; set; }
 
 
-    private DAL.Models.Order _orderDetail = null;
-    private List<DAL.Models.OrderItem> _orderItems = [];
+    private Pro219.Web.DTOs.OrderDetailDTO _orderDetail = null;
     private List<DAL.Models.ProductVariant> _productVariants = [];
     private List<DAL.Models.ProductImage> _productImages = [];
     private List<DAL.Models.Product> _products = [];
-    private List<DAL.Models.Address> _addresses = [];
-    private List<DAL.Models.Color> _colors = [];
-    private List<DAL.Models.Size> _sizes = [];
     private List<DAL.Models.Brand> _brands = [];
     private bool _loading = true;
     CultureInfo vietnameseCulture = new CultureInfo("vi-VN");
@@ -190,19 +186,12 @@
         var resOrderDetail = await _orderService.GetById(id);
         if (resOrderDetail.IsSuccess && resOrderDetail.Data != null)
         {
-            _orderDetail = resOrderDetail.Data;
-        }
+            var resOrderDetailWithAny = await _orderService.GetOrderDetailByUserId(resOrderDetail.Data.OrderCode);
 
-        var resAddress = await _addressService.GetAll();
-        if (resAddress.IsSuccess && resAddress.Data.Count() > 0)
-        {
-            _addresses = resAddress.Data;
-        }
-
-        var resOrderItems = await _orderService.GetAllOrderItemByOrderId(id);
-        if (resOrderItems.IsSuccess && resOrderItems.Data.Count() > 0)
-        {
-            _orderItems = resOrderItems.Data;
+            if (resOrderDetailWithAny.IsSuccess && resOrderDetailWithAny.Data != null)
+            {
+                _orderDetail = resOrderDetailWithAny.Data;
+            }
         }
 
         var resProductVariants = await _productVariantService.GetAll();
@@ -223,16 +212,6 @@
             _products = resProducts.Data;
         }
 
-        var resColors = await _colorService.GetAll();
-        if (resColors.IsSuccess && resColors.Data.Count() > 0) {
-            _colors = resColors.Data;
-        }
-
-        var resSizes = await _sizeService.GetAll();
-        if (resSizes.IsSuccess && resSizes.Data.Count() > 0) {
-            _sizes = resSizes.Data;
-        }
-
         var resBrands = await _brandService.GetAll();
         if (resBrands.IsSuccess && resBrands.Data.Count() > 0) {
             _brands = resBrands.Data;
@@ -246,15 +225,17 @@
             _snackbar.Add("Đơn hàng không tồn tại", Severity.Error);
             return;
         }
-        var newOrderUpdate = _orderDetail;
         var token = await localStorage.GetItemAsStringAsync(Constant.TokenNameLocalStorage);
+
+        var newOrderUpdate = new OrderUpdateSatusModel();
+        newOrderUpdate.OrderId = _orderDetail.OrderId;
         newOrderUpdate.Status = Constant.OrderStatus.StatusCanceledByUser;
         newOrderUpdate.PaymentStatus = "Đã hủy";
         var orderMess = Constant.OrderStatusArray.FirstOrDefault(o => o.id == Constant.OrderStatus.StatusCanceledByUser);
         newOrderUpdate.OrderStatus = orderMess != null ? orderMess.label : "Không xác định";
 
         var result = await _orderService.UpdateStatus(newOrderUpdate, token ?? "");
-            
+
         if (result.IsSuccess)
         {
             _snackbar.Add("Đã hủy đơn hàng", Severity.Warning);
@@ -263,7 +244,27 @@
         }
         else
         {
-            _snackbar.Add(result.ErrorMessage ?? "Có lỗi xảy ra khi cập nhật trạng thái", Severity.Error);
+            if (!string.IsNullOrEmpty(result.ErrorMessage))
+            {
+                _snackbar.Add(result.ErrorMessage, Severity.Warning);
+            } else
+            {
+                _snackbar.Add(result.ErrorMessage ?? "Có lỗi xảy ra khi cập nhật trạng thái", Severity.Error);
+            }
         }
+    }
+
+    string GetHistoryOrder(List<StatusHistoryEntry> histories)
+    {
+        if (histories == null || histories.Count == 0) return "";
+
+        var result = "";
+
+        foreach(var i in histories)
+        {
+            result += i.OrderStatus.ToString() + " vào lúc: " + i.DateTime.ToString();
+            result += "\n";
+        }
+        return result;
     }
 }

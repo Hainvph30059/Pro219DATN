@@ -1,14 +1,14 @@
-using System.Collections.Generic;
+﻿using Pro219.API.DTOs;
 
-namespace Pro219.API.DTOs
+namespace Pro219.Web.DTOs
 {
     public class OrderDetailDTO
     {
         public int OrderId { get; set; }
         public DateTime OrderDate { get; set; }
         public string OrderCode { get; set; } = string.Empty;
-        public int? PaymentMethodId {  get; set; }
-        public string PaymentStatus {  get; set; }
+        public int? PaymentMethodId { get; set; }
+        public string PaymentStatus { get; set; }
         public string OrderStatus { get; set; }
         public decimal TotalAmount { get; set; }
         public decimal FinalAmount { get; set; }
@@ -28,7 +28,7 @@ namespace Pro219.API.DTOs
         public string Street { get; set; } = string.Empty;
         public string City { get; set; } = string.Empty;
         public string District { get; set; } = string.Empty;
-        public string OtherInfo { get; set; } = string.Empty;
+        public string OtherInfo {  get; set; } = string.Empty;
     }
 
     public class OrderDetailItemDTO
@@ -41,5 +41,13 @@ namespace Pro219.API.DTOs
         public int Quantity { get; set; }
         public decimal UnitPrice { get; set; }
     }
-}
 
+    public class StatusHistoryEntry
+    {
+        public int Index { get; set; }
+        public byte Status { get; set; }
+        public string OrderStatus { get; set; } = string.Empty;
+        public string PaymentStatus { get; set; } = string.Empty;
+        public string DateTime { get; set; } = string.Empty;
+    }
+}

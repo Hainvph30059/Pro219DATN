@@ -96,7 +96,7 @@ namespace Pro219.API.Controllers
             }
         }
 
-        [HttpGet("CustomerOrerDetail/{orderCode}")]
+        [HttpGet("CustomerOrderDetail/{orderCode}")]
         public async Task<ActionResult<OrderDetailDTO>> GetOrderDetail(string orderCode)
         {
             try
@@ -110,19 +110,30 @@ namespace Pro219.API.Controllers
                 var orderDetailDto = new OrderDetailDTO
                 {
                     OrderId = order.OrderId,
+                    OrderDate = order.OrderDate,
                     OrderCode = order.OrderCode,
                     FinalAmount = order.FinalAmount,
+                    TotalAmount = order.TotalAmount,
+                    ShippingFee = order.ShippingFee,
+                    PaymentMethodId = order.PaymentMethodId,
+                    OrderStatus = order.OrderStatus,
+                    PaymentStatus = order.PaymentStatus,
+                    DiscountAmount = order.DiscountAmount,
+                    Status = order.Status,
                     Note = order.Notes,
                     Address = order.ShippingAddress == null ? null : new OrderDetailAddressDTO
                     {
                         Name = order.ShippingAddress.FullName,
                         Phone = order.ShippingAddress.Phone,
-                        Street = order.ShippingAddress.Street,
-                        City = order.ShippingAddress.City,
-                        District = order.ShippingAddress.District
+                        Street = order.ShippingAddress.StreetName,
+                        City = order.ShippingAddress.CityName,
+                        District = order.ShippingAddress.DistrictName,
+                        OtherInfo = order.ShippingAddress.OtherInfo ?? ""
                     },                   
                     Items = order.OrderItems.Select(oi => new OrderDetailItemDTO
                     {
+                        OrderItemId = oi.OrderItemId,
+                        ProductVariantId = oi.ProductVariantId,
                         ProductName = oi.ProductVariant?.Product?.Name ?? string.Empty,
                         Color = oi.ProductVariant?.Color?.Name,
                         Size = oi.ProductVariant?.Size?.Name,

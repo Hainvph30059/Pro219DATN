@@ -106,12 +106,14 @@ namespace Pro219.API.Controllers
 
                     if (applyDiscountCodeDTO.Type == 1)
                     {
-                        applyDiscountCodeDTO.DiscountAmount = totalAmount * (discountCode.Value / 100);
+                        var discount = totalAmount * (discountCode.Value / 100);
+                        applyDiscountCodeDTO.DiscountAmount = discount > totalAmount ? totalAmount : discount;
                     }
                     else
                     if (applyDiscountCodeDTO.Type == 2)
                     {
-                        applyDiscountCodeDTO.ShippingDiscount = shippingFee * (discountCode.Value / 100);
+                        var discount = shippingFee * (discountCode.Value / 100);
+                        applyDiscountCodeDTO.ShippingDiscount = discount > shippingFee ? shippingFee : discount;
                     }
 
                     return Ok(applyDiscountCodeDTO);
@@ -121,12 +123,12 @@ namespace Pro219.API.Controllers
 
                     if (applyDiscountCodeDTO.Type == 1)
                     {
-                        applyDiscountCodeDTO.DiscountAmount = discountCode.Value;
+                        applyDiscountCodeDTO.DiscountAmount = discountCode.Value > totalAmount ? totalAmount : discountCode.Value;
                     }
                     else
                    if (applyDiscountCodeDTO.Type == 2)
                     {
-                        applyDiscountCodeDTO.ShippingDiscount = discountCode.Value;
+                        applyDiscountCodeDTO.ShippingDiscount = discountCode.Value > shippingFee ? shippingFee : discountCode.Value;
                     }
 
                     return Ok(applyDiscountCodeDTO);
