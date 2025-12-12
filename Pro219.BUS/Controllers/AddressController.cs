@@ -51,6 +51,8 @@ namespace Pro219.API.Controllers
                     StreetName = addressDTO.StreetName,
                     OtherInfo = addressDTO.OtherInfo,
                     IsDefault = addressDTO.IsDefault,
+                    CreateAt = DateTime.Now,
+                    Delete = false,
                     Status = 1
                 };
 
@@ -69,7 +71,7 @@ namespace Pro219.API.Controllers
         }
 
         [HttpPut("Update")]
-        [Authorize(Roles = "Admin,Manager,Staff")]
+        [Authorize(Roles = "Admin,Manager,Staff,Customer")]
         public async Task<ActionResult<Address>> UpdateAddress([FromBody] AddressUpdateDTO addressDTO)
         {
             try
@@ -171,7 +173,7 @@ namespace Pro219.API.Controllers
         }
 
         [HttpDelete("Delete/{id}")]
-        [Authorize(Roles = "Admin,Manager,Staff")]
+        [Authorize(Roles = "Admin,Manager,Staff,Customer")]
         public async Task<ActionResult<Address>> DeleteAddress(int id)
         {
             try

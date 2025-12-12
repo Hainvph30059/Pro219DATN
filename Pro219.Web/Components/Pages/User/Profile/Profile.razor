@@ -1,0 +1,203 @@
+﻿@page "/profile"
+@layout MainLayout
+
+<section class="mx-auto max-w-[1032px] py-8">
+    <MudPaper Class="flex w-full items-center justify-center !rounded-lg !bg-black py-14" Elevation="0">
+        <h1 class="text-xl font-bold uppercase !text-white md:text-2xl lg:text-3xl">Thông tin tài khoản</h1>
+    </MudPaper>
+
+    @if(_me != null)
+    {   
+        <div class="-mt-16 flex items-end gap-2 px-6">
+            <MudAvatar Color="Color.Surface" Class="!h-32 !w-32">@_me.FullName?.Split(' ', StringSplitOptions.RemoveEmptyEntries)[^1][0].ToString().ToUpper()</MudAvatar>
+            <div class="flex flex-col gap-1">
+                <span class="text-base font-medium">@_me.FullName</span>
+                <span class="text-sm font-medium">@_me.Email</span>
+            </div>
+        </div>
+
+        <MudDivider Class="mt-6 px-6" />
+
+        <div class="mt-6 px-6">
+            <h2 class="text-lg font-bold">Thông tin cá nhân</h2>
+
+            <div class="mt-4 flex flex-col gap-1 px-1">
+                <div class="flex w-full items-center gap-2">
+                    <span class="w-40 flex-shrink-0 font-medium">Họ và tên:</span>
+                    <span class="max-w-[calc(100%-168px)] whitespace-pre-wrap">@_me.FullName</span>
+                </div>
+                <div class="flex w-full items-center gap-2">
+                    <span class="w-40 flex-shrink-0 font-medium">Email:</span>
+                    <span class="max-w-[calc(100%-168px)] whitespace-pre-wrap">@_me.Email</span>
+                </div>
+                <div class="flex w-full items-center gap-2">
+                    <span class="w-40 flex-shrink-0 font-medium">Số điện thoại:</span>
+                    <span class="max-w-[calc(100%-168px)] whitespace-pre-wrap">@_me.PhoneNumber</span>
+                </div>
+                <div class="flex w-full items-center gap-2">
+                    <span class="w-40 flex-shrink-0 font-medium">Ngày sinh:</span>
+                    <span class="max-w-[calc(100%-168px)] whitespace-pre-wrap">01/01/2000</span>
+                </div>
+            </div>
+        </div>
+
+        <MudDivider Class="mt-6 px-6" />
+
+        <div class="mt-6 px-6">
+            <div class="flex w-full items-center justify-between gap-2">
+                <h2 class="text-lg font-bold">Địa chỉ</h2>
+                <MudButton Class="flex-shrink-0" Variant="Variant.Filled" Color="Color.Dark" OnClick="OpenDialogCreateAddress"><MudIcon Icon="@Icons.Material.Filled.AddLocation" /> Thêm địa chỉ mới</MudButton>
+            </div>
+
+            @if(_addressDefault != null)
+            {
+                <div class="mt-4 w-full space-y-2 px-2">
+                    <h3 class="text-base font-medium">Địa chỉ mặc định</h3>
+                    <p class="px-1 text-sm">@_addressDefault.FullName - @_addressDefault.Phone</p>
+                    <p class="px-1 text-sm">@FormatAddress(_addressDefault)</p>
+                </div>
+            }
+
+            @if (_address.Any())
+            {
+                <h3 class="mt-4 px-2 text-base font-medium">Địa chỉ khác</h3>
+                <div class="mt-2 flex max-h-[500px] w-full flex-col gap-2 overflow-y-auto px-3">
+                    @foreach(var item in _address)
+                    {
+                        <div class="flex items-center justify-between gap-2 space-y-2 rounded-lg border border-solid border-slate-200 p-4">
+                            <div class="max-w-[calc(100%-112px)] w-full">
+                                <p class="text-sm text-gray-500">@item.FullName - @item.Phone</p>
+                                <p class="text-sm text-gray-500">@FormatAddress(item)</p>
+                            </div>
+
+                            <div class="flex w-[104px] flex-shrink-0 items-center gap-2">
+                                <MudIconButton Icon="@Icons.Material.Filled.BorderColor" aria-label="update" OnClick="@(() => OpenDialogUpdateAddress(item.Id))"></MudIconButton>
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete" aria-label="delete" OnClick="@(() => OpenDialogDeleteAddress(item.Id))"></MudIconButton>
+                            </div>
+                        </div>
+                    }
+                </div>
+            } else
+            {
+                <p class="mt-4">Chưa có địa chỉ.</p>
+            }
+        </div>
+    }
+</section>
+
+@code {
+    private readonly DialogOptions _maxWidth = new() { MaxWidth = MaxWidth.Small, FullWidth = true };
+
+    private GetMeResponseDTO _me = new GetMeResponseDTO();
+    private List<DAL.Models.Address> _address = [];
+    private DAL.Models.Address _addressDefault = null;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {   
+            await LoadData();
+            await LoadAddressAsync();
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadData()
+    {
+        var token = await localStorage.GetItemAsStringAsync(Constant.TokenNameLocalStorage);
+        if (!string.IsNullOrEmpty(token)) 
+        {
+            var me = await _authService.AccessCheck(token);
+
+            if (me != null)
+            {
+                _me = me;
+            }
+        }
+    }
+
+    private async Task LoadAddressAsync()
+    {
+        if (_me != null && _me.Id > 0)
+        {
+            var address = await _addressService.GetAllByCustomerId(_me.Id);
+            if (address.IsSuccess && address.Data != null)
+            {
+                _address = address.Data;
+
+                if (_address.Any() && _address.Any(x => x.IsDefault == true))
+                {
+                    _addressDefault = _address.FirstOrDefault(x => x.IsDefault == true);
+                }
+            }
+        }
+    }
+
+    private async Task OpenDialogCreateAddress()
+    {
+        var dialog = await _dialogService.ShowAsync<Common.User.CreateAddressDialog>("Options Dialog", _maxWidth);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await LoadAddressAsync();
+            StateHasChanged();
+        }
+    }
+
+    private async Task OpenDialogUpdateAddress(int id)
+    {
+        var updateParaeters = new DialogParameters<Common.User.UpdateAddressDialog>
+        {
+            {x => x.AddressId, id}
+        };
+
+        var dialog = await _dialogService.ShowAsync<Common.User.UpdateAddressDialog>("Options Dialog", updateParaeters, _maxWidth);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await LoadAddressAsync();
+            StateHasChanged();
+        }
+    }
+
+    private async Task OpenDialogDeleteAddress(int id)
+    {
+        var deleteParaeters = new DialogParameters<Common.User.DeleteAddressDialog>
+        {
+            {x => x.addressId, id}
+        };
+
+        var dialog = await _dialogService.ShowAsync<Common.User.DeleteAddressDialog>("Options Dialog", deleteParaeters, _maxWidth);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await LoadAddressAsync();
+            StateHasChanged();
+        }
+    }
+
+    private string FormatAddress(DAL.Models.Address address)
+    {
+        if (address == null)
+            return string.Empty;
+
+        var parts = new List<string>();
+
+        if (!string.IsNullOrEmpty(address.OtherInfo))
+            parts.Add(address.OtherInfo);
+
+        if (!string.IsNullOrEmpty(address.StreetName))
+            parts.Add(address.StreetName);
+
+        if (!string.IsNullOrEmpty(address.DistrictName))
+            parts.Add(address.DistrictName);
+
+        if (!string.IsNullOrEmpty(address.CityName))
+            parts.Add(address.CityName);
+
+        return string.Join(", ", parts);
+    }
+}
