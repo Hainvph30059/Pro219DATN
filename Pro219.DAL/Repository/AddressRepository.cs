@@ -71,6 +71,9 @@ namespace Pro219.DAL.Repository
                 existingAddress.Street = address.Street;
                 existingAddress.City = address.City;
                 existingAddress.District = address.District;
+                existingAddress.DistrictName = address.DistrictName;
+                existingAddress.CityName = address.CityName;
+                existingAddress.StreetName = address.StreetName;
                 existingAddress.OtherInfo = address.OtherInfo;
                 existingAddress.IsDefault = address.IsDefault;
                 existingAddress.Status = address.Status;
@@ -103,6 +106,14 @@ namespace Pro219.DAL.Repository
                     if (allAddressByCustomer == null || (allAddressByCustomer != null && !allAddressByCustomer.Any()))
                     {
                         existingAddress.IsDefault = true;
+                    } else
+                    {
+                        var hasDefault = allAddressByCustomer.Any(x => x.IsDefault);
+
+                        if(!hasDefault)
+                        {
+                            existingAddress.IsDefault = true;
+                        }
                     }
                 }
 
@@ -169,6 +180,21 @@ namespace Pro219.DAL.Repository
                 var address = await _context.Addresses.FindAsync(id);
 
                 if (address == null) return null;
+
+                if(address.IsDefault)
+                {
+                    var addresses = await _context.Addresses.Where(x => x.CustomerId == address.CustomerId).ToListAsync();
+
+                    if (addresses != null && addresses.Any())
+                    {
+                        var addressNewDefault = addresses.OrderByDescending(x => x.CreateAt).FirstOrDefault();
+
+                        if (addressNewDefault != null) {
+                            addressNewDefault.IsDefault = true;
+                            _context.Addresses.Update(address);
+                        }
+                    }
+                }
 
                 address.Delete = true;
                 address.DeleteAt = DateTime.Now;

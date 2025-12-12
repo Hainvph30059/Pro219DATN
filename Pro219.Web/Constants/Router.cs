@@ -15,6 +15,9 @@
             public const string ForgotPassword = "/forgot-password";
             public const string ChangePassword = "/change-password";
 
+            // Profile
+            public const string Profile = "/profile";
+
             // Cart
             public const string CartDetail = "/cart/detail";
 

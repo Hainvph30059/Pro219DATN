@@ -34,6 +34,25 @@ namespace Pro219.Web.Services
             }
         }
 
+        public async Task<ServiceResult<Address>> GetById(int id)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/Address/GetById/{id}");
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<Address>();
+                return ServiceResult<Address>.Success(result);
+            }
+            else
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                var errorMess = Constant.Errors.ContainsKey(result ?? "") ? Constant.Errors[result ?? ""] : "Đã có lỗi xảy ra.";
+                return ServiceResult<Address>.Failure(result, errorMess, response.StatusCode.ToString());
+            }
+        }
+
         public async Task<ServiceResult<List<Address>>> GetAllByCustomerId(int customerId)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, $"/Address/GetByCustomerId/{customerId}");
@@ -128,6 +147,57 @@ namespace Pro219.Web.Services
                 var result = await response.Content.ReadAsStringAsync();
                 var errorMess = Constant.Errors[result ?? ""];
                 return ServiceResult<Address>.Failure(result, errorMess, response.StatusCode.ToString());
+            }
+        }
+
+        public async Task<ServiceResult<Address>> Update(AddressModel address, string token)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Put, "/Address/Update");
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                var formatToken = token.Trim('"');
+                request.Headers.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", formatToken);
+            }
+
+            request.Content = JsonContent.Create(address);
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<Address>();
+                return ServiceResult<Address>.Success(result);
+            }
+            else
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                var errorMess = Constant.Errors[result ?? ""];
+                return ServiceResult<Address>.Failure(result, errorMess, response.StatusCode.ToString());
+            }
+        }
+
+        public async Task<bool> Delete(int id, string token)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Delete, $"/Address/Delete/{id}");
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                var formatToken = token.Trim('"');
+                request.Headers.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", formatToken);
+            }
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
 

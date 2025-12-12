@@ -1,0 +1,208 @@
+﻿<MudDialog>
+    <TitleContent>
+        <MudText Style="font-size: 24px; font-weight: bold; text-transform: uppercase">Sửa địa chỉ</MudText>
+    </TitleContent>
+    <DialogContent>
+        <EditForm Model="_model" OnValidSubmit="Onsubmit" class="flex flex-col !gap-4">
+            <DataAnnotationsValidator />
+
+            <MudTextField @bind-Value="@_model.FullName" For="@(() => _model.FullName)" Variant="Variant.Outlined" Placeholder="Họ và tên" FullWidth="true" />
+            <MudTextField @bind-Value="@_model.Phone" For="@(() => _model.Phone)" Class="mt-4 w-full" Variant="Variant.Outlined" Placeholder="Số điện thoại" FullWidth="true" />
+
+            <MudSelect T="string" Value="@_selectedProvince" ValueChanged="OnProvinceChanged" Label="Tỉnh/Thành phố" Variant="Variant.Outlined">
+                <MudSelectItem T="string" Value="0.ToString()">Vui lòng chọn</MudSelectItem>
+                @if (_provinces.Any())
+                {
+
+                    @foreach (var city in _provinces)
+                    {
+                        <MudSelectItem T="string" Value="@city.ProvinceID.ToString()">@city.ProvinceName</MudSelectItem>
+                    }
+                }
+            </MudSelect>
+
+            <MudSelect T="string" Value="@_selectedDistrict" ValueChanged="OnDistrictChanged" Label="Quận/Huyện" Variant="Variant.Outlined" Disabled="@(!_districts.Any())">
+                <MudSelectItem T="string" Value="0.ToString()">Vui lòng chọn</MudSelectItem>
+                @if (_districts.Any())
+                {
+                    @foreach (var city in _districts)
+                    {
+                        <MudSelectItem T="string" Value="@city.DistrictID.ToString()">@city.DistrictName</MudSelectItem>
+                    }
+                }
+            </MudSelect>
+
+            <MudSelect T="string" @bind-Value="@_selectedWard" Label="Phường/Xã" Variant="Variant.Outlined" Disabled="@(!_wards.Any())">
+                <MudSelectItem T="string" Value="0.ToString()">Vui lòng chọn</MudSelectItem>
+                @if (_wards.Any())
+                {
+                    foreach (var city in _wards)
+                    {
+                        <MudSelectItem T="string" Value="@(city.WardCode.ToString())">@city.WardName</MudSelectItem>
+                    }
+                }
+            </MudSelect>
+
+            <MudTextField @bind-Value="@_model.OtherInfo" For="@(() => _model.OtherInfo)" Class="mt-4 w-full" Variant="Variant.Outlined" Placeholder="Địa chỉ chi tiết" FullWidth="true" />
+            <MudCheckBox @bind-Value="@_model.IsDefault" For="@(() => _model.IsDefault)" Color="Color.Primary">Mặc Định</MudCheckBox>
+
+            <div class="flex w-full items-center justify-end gap-2">
+                <MudButton Color="MudBlazor.Color.Surface" ButtonType="ButtonType.Button" Variant="Variant.Outlined" OnClick="Cancel">Đóng</MudButton>
+                <MudButton Color="MudBlazor.Color.Dark" ButtonType="ButtonType.Submit" Variant="Variant.Filled">Sửa</MudButton>
+            </div>
+        </EditForm>
+    </DialogContent>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public int AddressId { get; set; }
+
+    List<ProvinceDTO> _provinces = [];
+    List<DistrictDTO> _districts = [];
+    List<WardDTO> _wards = [];
+    private string _token = string.Empty;
+    private string _selectedProvince = "0";
+    private string _selectedDistrict = "0";
+    private string _selectedWard = string.Empty;
+    private AddressModel _model = new AddressModel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _token = await localStorage.GetItemAsStringAsync(Constant.TokenNameLocalStorage);
+        var resProvince = await _addressService.GetAllProvince();
+
+        if (resProvince.IsSuccess && resProvince.Data != null)
+        {
+            _provinces = resProvince.Data;
+        }
+
+        await PrefillAddressAsync();
+    }
+
+    private async Task OnProvinceChanged(string provinceId)
+    {
+        try
+        {
+            _selectedProvince = provinceId;
+            _selectedDistrict = "0";
+            _selectedWard = string.Empty;
+            await LoadDistrictsAsync(provinceId, keepCurrentSelection: false);
+        }
+        catch (Exception e) { }
+    }
+
+    private async Task OnDistrictChanged(string districtId)
+    {
+        try
+        {
+            _selectedDistrict = districtId;
+            _selectedWard = string.Empty;
+            await LoadWardsAsync(districtId, keepCurrentSelection: false);
+        }
+        catch (Exception e) { }
+    }
+
+    private async Task Onsubmit()
+    {
+        if (_selectedProvince == "0" || _selectedDistrict == "0" || string.IsNullOrEmpty(_selectedWard))
+        {
+            _snackbar.Add("Vui lòng nhập và chọn đầy đủ thông tin", Severity.Warning);
+            return;
+        }
+
+        _model.City = _selectedProvince.ToString();
+        _model.District = _selectedDistrict.ToString();
+        _model.Street = _selectedWard.ToString();
+        _model.CityName = _provinces.FirstOrDefault(p => p.ProvinceID.ToString() == _selectedProvince)?.ProvinceName ?? "";
+        _model.DistrictName = _districts.FirstOrDefault(p => p.DistrictID.ToString() == _selectedDistrict)?.DistrictName ?? "";
+        _model.StreetName = _wards.FirstOrDefault(p => p.WardCode == _selectedWard.ToString())?.WardName ?? "";
+
+        var result = await _addressService.Update(_model, _token);
+
+        if (result.IsSuccess)
+        {
+            _snackbar.Add("Cập nhật địa chỉ thành công", Severity.Success);
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+        else
+        {
+
+            _snackbar.Add("Cập nhật địa chỉ thất bại", Severity.Error);
+        }
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private async Task PrefillAddressAsync()
+    {
+        if (AddressId <= 0) return;
+
+        var resAddress = await _addressService.GetById(AddressId);
+        if (!resAddress.IsSuccess || resAddress.Data == null) return;
+        var addr = resAddress.Data;
+
+        _model = new AddressModel
+        {
+            Id = addr.Id,
+            CustomerId = addr.CustomerId,
+            FullName = addr.FullName,
+            Phone = addr.Phone,
+            OtherInfo = addr.OtherInfo,
+            City = addr.City,
+            District = addr.District,
+            Street = addr.Street,
+            CityName = addr.CityName,
+            DistrictName = addr.DistrictName,
+            StreetName = addr.StreetName,
+            IsDefault = addr.IsDefault
+        };
+
+        _selectedProvince = string.IsNullOrWhiteSpace(addr.City) ? "0" : addr.City;
+        _selectedDistrict = string.IsNullOrWhiteSpace(addr.District) ? "0" : addr.District;
+        _selectedWard = addr.Street ?? string.Empty;
+
+        if (int.TryParse(_selectedProvince, out var provinceId) && provinceId > 0)
+        {
+            await LoadDistrictsAsync(_selectedProvince, keepCurrentSelection: true);
+        }
+
+        if (int.TryParse(_selectedDistrict, out var districtId) && districtId > 0)
+        {
+            await LoadWardsAsync(_selectedDistrict, keepCurrentSelection: true);
+        }
+    }
+
+    private async Task LoadDistrictsAsync(string provinceId, bool keepCurrentSelection)
+    {
+        var resDistrict = await _addressService.GetAllDistrictByProvinceId(int.Parse(provinceId));
+        if (resDistrict.IsSuccess && resDistrict.Data != null)
+        {
+            _districts = resDistrict.Data;
+        }
+
+        if (!keepCurrentSelection)
+        {
+            _selectedDistrict = "0";
+            _selectedWard = string.Empty;
+            _wards.Clear();
+        }
+    }
+
+    private async Task LoadWardsAsync(string districtId, bool keepCurrentSelection)
+    {
+        var resWard = await _addressService.GetAllWardByDistrictCode(int.Parse(districtId));
+        if (resWard.IsSuccess && resWard.Data != null)
+        {
+            _wards = resWard.Data;
+        }
+
+        if (!keepCurrentSelection)
+        {
+            _selectedWard = string.Empty;
+        }
+    }
+}
