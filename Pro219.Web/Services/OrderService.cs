@@ -159,11 +159,30 @@ namespace Pro219.Web.Services
             }
         }
 
-        public async Task<ServiceResult<Order>> UpdateStatus(Order order, string token)
+        public async Task<ServiceResult<Pro219.Web.DTOs.OrderDetailDTO>> GetOrderDetailByUserId(string orderCode)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/Order/CustomerOrderDetail/{orderCode}");
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<Pro219.Web.DTOs.OrderDetailDTO>();
+                return ServiceResult<Pro219.Web.DTOs.OrderDetailDTO>.Success(result);
+            }
+            else
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                var errorMess = Constant.Errors[result];
+                return ServiceResult<Pro219.Web.DTOs.OrderDetailDTO>.Failure(result, errorMess, response.StatusCode.ToString());
+            }
+        }
+
+        public async Task<ServiceResult<Order>> UpdateStatus(OrderUpdateSatusModel order, string token)
         {
             try
             {
-                var request = new HttpRequestMessage(HttpMethod.Post, "/Order/Update");
+                var request = new HttpRequestMessage(HttpMethod.Put, "/Order/UpdateStatus");
 
                 if (!string.IsNullOrEmpty(token))
                 {

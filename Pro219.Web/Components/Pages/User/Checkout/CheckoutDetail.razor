@@ -487,7 +487,7 @@
             var result = await _orderService.GetCheckoutUrl(
                 _token,
                 listProduct: listProductForCheckout,
-                discountAmount: _discountAmount,
+                discountAmount: _discountAmount + _discountShippingFee,
                 shippingFee: _shippingPrice,
                 note: _note ?? string.Empty,
                 shippingAddressId: _addressDefault.Id,

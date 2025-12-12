@@ -331,9 +331,11 @@
 
         try
         {
-            var newOrderUpdate = _orderDetail;
+            var newOrderUpdate = new OrderUpdateSatusModel();
             var token = await localStorage.GetItemAsStringAsync(Constant.TokenNameLocalStorage);
+            newOrderUpdate.OrderId = _orderDetail.OrderId;
             newOrderUpdate.Status = newStatus;
+            newOrderUpdate.PaymentStatus = _orderDetail.PaymentStatus;
             var orderMess = Constant.OrderStatusArray.FirstOrDefault(o => o.id == newStatus);
             newOrderUpdate.OrderStatus = orderMess != null ? orderMess.label : "Không xác định";
 
