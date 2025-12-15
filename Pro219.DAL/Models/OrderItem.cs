@@ -36,6 +36,8 @@ namespace Pro219.DAL.Models
 
         public byte? Status { get; set; }
 
+        public bool? IsReviewed { get; set; } = false;
+
         [MaxLength(255)]
         public string? UpdateBy { get; set; }
 

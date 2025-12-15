@@ -97,12 +97,13 @@ namespace Pro219.DAL.Repository
         {
             try
             {
-                var existingReview = await _context.Reviews.FindAsync(review.UniqueID);
+                var existingReview = await _context.Reviews.FindAsync(review.Id);
 
                 if (existingReview == null || existingReview.Delete == true) return null;
 
                 existingReview.ProductId = review.ProductId;
                 existingReview.CustomerId = review.CustomerId;
+                existingReview.OrderItemId = review.OrderItemId;
                 existingReview.Title = review.Title;
                 existingReview.Content = review.Content;
                 existingReview.Overall = review.Overall;
