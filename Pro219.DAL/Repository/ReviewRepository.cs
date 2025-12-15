@@ -84,6 +84,18 @@ namespace Pro219.DAL.Repository
                 review.CreatedAt = DateTime.Now;
                 review.Delete = false;
                 var addedReview = _context.Reviews.Add(review).Entity;
+
+                var orderItem = await _context.OrderItems.FindAsync(review.OrderItemId);
+                if (orderItem != null)
+                {
+                    orderItem.IsReviewed = true;
+                    orderItem.UpdateAt = DateTime.Now;
+                    if (!string.IsNullOrEmpty(review.UpdateBy))
+                    {
+                        orderItem.UpdateBy = review.UpdateBy;
+                    }
+                }
+
                 await _context.SaveChangesAsync();
                 return addedReview;
             }
@@ -103,6 +115,7 @@ namespace Pro219.DAL.Repository
 
                 existingReview.ProductId = review.ProductId;
                 existingReview.CustomerId = review.CustomerId;
+                var previousOrderItemId = existingReview.OrderItemId;
                 existingReview.OrderItemId = review.OrderItemId;
                 existingReview.Title = review.Title;
                 existingReview.Content = review.Content;
@@ -110,6 +123,30 @@ namespace Pro219.DAL.Repository
                 existingReview.Status = review.Status;
                 existingReview.UpdateBy = review.UpdateBy;
                 existingReview.UpdateAt = DateTime.Now;
+                var newOrderItem = await _context.OrderItems.FindAsync(review.OrderItemId);
+                if (newOrderItem != null)
+                {
+                    newOrderItem.IsReviewed = true;
+                    newOrderItem.UpdateAt = DateTime.Now;
+                    if (!string.IsNullOrEmpty(review.UpdateBy))
+                    {
+                        newOrderItem.UpdateBy = review.UpdateBy;
+                    }
+                }
+
+                if (previousOrderItemId != review.OrderItemId)
+                {
+                    var previousOrderItem = await _context.OrderItems.FindAsync(previousOrderItemId);
+                    if (previousOrderItem != null)
+                    {
+                        previousOrderItem.IsReviewed = false;
+                        previousOrderItem.UpdateAt = DateTime.Now;
+                        if (!string.IsNullOrEmpty(review.UpdateBy))
+                        {
+                            previousOrderItem.UpdateBy = review.UpdateBy;
+                        }
+                    }
+                }
 
                 var updatedReview = _context.Reviews.Update(existingReview).Entity;
                 await _context.SaveChangesAsync();
@@ -135,6 +172,17 @@ namespace Pro219.DAL.Repository
                 if (!string.IsNullOrEmpty(updateBy))
                 {
                     review.UpdateBy = updateBy;
+                }
+
+                var orderItem = await _context.OrderItems.FindAsync(review.OrderItemId);
+                if (orderItem != null)
+                {
+                    orderItem.IsReviewed = false;
+                    orderItem.UpdateAt = DateTime.Now;
+                    if (!string.IsNullOrEmpty(updateBy))
+                    {
+                        orderItem.UpdateBy = updateBy;
+                    }
                 }
 
                 var updatedReview = _context.Reviews.Update(review).Entity;
