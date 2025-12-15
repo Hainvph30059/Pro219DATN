@@ -2,11 +2,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Pro219.API.DTOs
 {
-    public class ReviewUpdateDTO
+    public class ReviewCreateDTO
     {
-        [Required]
-        public int Id { get; set; }
-
         [Required]
         public int ProductId { get; set; }
 
@@ -29,5 +26,4 @@ namespace Pro219.API.DTOs
         public byte? Status { get; set; }
     }
 }
-
 

@@ -94,14 +94,31 @@ namespace Pro219.API.Controllers
         }
 
         [HttpPost("Add")]
-        public async Task<ActionResult<Review>> AddReview([FromBody] Review review)
+        public async Task<ActionResult<Review>> AddReview([FromBody] ReviewCreateDTO reviewDTO)
         {
             try
             {
-                if (review == null)
+                if (reviewDTO == null)
                 {
                     return BadRequest(Constant.ErrorCode.DataRequired);
                 }
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var review = new Review
+                {
+                    ProductId = reviewDTO.ProductId,
+                    CustomerId = reviewDTO.CustomerId,
+                    OrderItemId = reviewDTO.OrderItemId,
+                    Title = reviewDTO.Title,
+                    Content = reviewDTO.Content,
+                    Overall = reviewDTO.Overall,
+                    Status = reviewDTO.Status,
+                    UpdateBy = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                };
 
                 var result = await reviewRepository.AddReview(review);
                 if (result == null)
@@ -128,19 +145,24 @@ namespace Pro219.API.Controllers
                     return BadRequest(Constant.ErrorCode.DataRequired);
                 }
 
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var updateBy = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 var review = new Review
                 {
-                    UniqueID = reviewDTO.UniqueID,
+                    Id = reviewDTO.Id,
                     ProductId = reviewDTO.ProductId,
                     CustomerId = reviewDTO.CustomerId,
+                    OrderItemId = reviewDTO.OrderItemId,
                     Title = reviewDTO.Title,
                     Content = reviewDTO.Content,
                     Overall = reviewDTO.Overall,
                     Status = reviewDTO.Status,
-                    UpdateBy = User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
-                    UpdateAt = DateTime.Now,
-                    Delete = reviewDTO.Delete,
-                    DeleteAt = reviewDTO.Delete == true ? DateTime.Now : null
+                    UpdateBy = updateBy,
+                    UpdateAt = DateTime.Now
                 };
 
                 var result = await reviewRepository.UpdateReview(review);

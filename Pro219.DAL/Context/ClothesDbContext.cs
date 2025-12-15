@@ -379,9 +379,9 @@ namespace Pro219.DAL.Context
 
             // Reviews
             modelBuilder.Entity<Review>().HasData(
-                new Review { UniqueID = 1, ProductId = 1, CustomerId = 1, Title = "Chất lượng tốt", Content = "Áo rất mềm mại và thoáng mát, chất lượng đúng như mô tả. Tôi rất hài lòng với sản phẩm này!", Overall = 5, CreatedAt = seedDate, Delete = false, Status = 1 },
-                new Review { UniqueID = 2, ProductId = 2, CustomerId = 2, Title = "Vừa vặn hoàn hảo", Content = "Quần jean vừa vặn, chất liệu tốt, mặc rất đẹp. Sẽ mua thêm màu khác!", Overall = 5, CreatedAt = seedDate.AddDays(2), Delete = false, Status = 1 },
-                new Review { UniqueID = 3, ProductId = 3, CustomerId = 1, Title = "Phù hợp tập thể thao", Content = "Áo thấm hút mồ hôi tốt, mặc tập gym rất thoải mái. Đáng giá tiền!", Overall = 4, CreatedAt = seedDate.AddDays(3), Delete = false, Status = 1 }
+                new Review { Id = 1, OrderItemId=1, ProductId = 1, CustomerId = 1, Title = "Chất lượng tốt", Content = "Áo rất mềm mại và thoáng mát, chất lượng đúng như mô tả. Tôi rất hài lòng với sản phẩm này!", Overall = 5, CreatedAt = seedDate, Delete = false, Status = 1 },
+                new Review { Id = 2, OrderItemId=1, ProductId = 2, CustomerId = 2, Title = "Vừa vặn hoàn hảo", Content = "Quần jean vừa vặn, chất liệu tốt, mặc rất đẹp. Sẽ mua thêm màu khác!", Overall = 5, CreatedAt = seedDate.AddDays(2), Delete = false, Status = 1 },
+                new Review { Id = 3, OrderItemId=1, ProductId = 3, CustomerId = 1, Title = "Phù hợp tập thể thao", Content = "Áo thấm hút mồ hôi tốt, mặc tập gym rất thoải mái. Đáng giá tiền!", Overall = 4, CreatedAt = seedDate.AddDays(3), Delete = false, Status = 1 }
             );
 
             // InventoryLogs
