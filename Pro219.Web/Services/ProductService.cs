@@ -32,7 +32,10 @@ namespace Pro219.Web.Services
             else
             {
                 var result = await response.Content.ReadAsStringAsync();
-                var errorMess = Constant.Errors[result];
+                var errorCode = result;
+                var errorMess = Constant.Errors.ContainsKey(errorCode ?? "")
+                                    ? Constant.Errors[errorCode ?? ""]
+                                    : result;
                 return ServiceResult<List<Product>>.Failure(result, errorMess, response.StatusCode.ToString());
             }
         }

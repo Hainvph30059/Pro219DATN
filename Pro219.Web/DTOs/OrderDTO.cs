@@ -33,6 +33,7 @@ namespace Pro219.Web.DTOs
 
     public class OrderDetailItemDTO
     {
+        public int CustomerId { get; set; }
         public int OrderItemId { get; set; }
         public int ProductVariantId { get; set; }
         public string ProductName { get; set; } = string.Empty;
@@ -40,6 +41,7 @@ namespace Pro219.Web.DTOs
         public string? Size { get; set; }
         public int Quantity { get; set; }
         public decimal UnitPrice { get; set; }
+        public bool IsReviewed { get; set; } = false;
     }
 
     public class StatusHistoryEntry

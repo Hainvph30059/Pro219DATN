@@ -83,10 +83,6 @@
                         <MudTh><MudTableSortLabel SortLabel="Số lượng" T="string">Số lượng</MudTableSortLabel></MudTh>
                         <MudTh><MudTableSortLabel SortLabel="Đơn giá" T="string">Đơn giá</MudTableSortLabel></MudTh>
                         <MudTh><MudTableSortLabel SortLabel="Thành tiền" T="string">Thành tiền</MudTableSortLabel></MudTh>
-                        @if ((_orderDetail?.Status == Constant.OrderStatus.StatusDone))
-                        {
-                            <MudTh><MudTableSortLabel SortLabel="Thao tác" T="string">Thao tác</MudTableSortLabel></MudTh>
-                        }
                     </HeaderContent>
                     <RowTemplate>
                         <MudTd DataLabel="OrderItemId" hidden>@context.OrderItemId</MudTd>
@@ -122,11 +118,19 @@
                         <MudTd DataLabel="Số lượng">@context.Quantity</MudTd>
                         <MudTd DataLabel="Đơn giá">@context.UnitPrice.ToString("C", vietnameseCulture)</MudTd>
                         <MudTd DataLabel="Thành tiền">@((context.Quantity * context.UnitPrice).ToString("C", vietnameseCulture))</MudTd>
-                        @if ((_orderDetail?.Status == Constant.OrderStatus.StatusDone))
-                        {
-                            <MudTd DataLabel="Thao tác">
-                                <MudButton Variant="Variant.Filled" Color="Color.Primary">Đánh giá</MudButton>
-                            </MudTd>
+                        @{
+                            var productVariant = _productVariants.FirstOrDefault(pv => pv.Id == context.ProductVariantId);
+                            if (productVariant != null)
+                            {
+                                var product = _products.FirstOrDefault(p => p.Id == productVariant.ProductId);
+
+                                @if ((_orderDetail?.Status == Constant.OrderStatus.StatusDone) && !context.IsReviewed && product != null)
+                                {
+                                    <MudTd DataLabel="Thao tác">
+                                        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => HandleOpenReviewDialog(context.OrderItemId, product.Id, context.CustomerId))">Đánh giá</MudButton>
+                                    </MudTd>
+                                }
+                            }
                         }
                     </RowTemplate>
                     <NoRecordsContent>
@@ -165,6 +169,7 @@
     [Parameter]
     public int id { get; set; }
 
+    readonly DialogOptions _maxWidth = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
 
     private Pro219.Web.DTOs.OrderDetailDTO _orderDetail = null;
     private List<DAL.Models.ProductVariant> _productVariants = [];
@@ -251,6 +256,25 @@
             {
                 _snackbar.Add(result.ErrorMessage ?? "Có lỗi xảy ra khi cập nhật trạng thái", Severity.Error);
             }
+        }
+    }
+
+    async Task HandleOpenReviewDialog(int orderItemId, int productId, int customerId)
+    {
+        var createReviewParameter = new DialogParameters<Common.User.ReviewDialog>
+        {
+            {x => x.productId, productId},
+            {x => x.orderItemId, orderItemId},
+            {x => x.customerId, customerId},
+        };
+
+        var dialog = await _dialogService.ShowAsync<Common.User.ReviewDialog>("Options Dialog", createReviewParameter, _maxWidth);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await LoadData();
+            StateHasChanged();
         }
     }
 

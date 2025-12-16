@@ -1,0 +1,73 @@
+﻿<MudDialog>
+    <TitleContent>
+        <MudText Style="font-size: 24px; font-weight: bold; text-transform: uppercase">Đánh giá sản phẩm</MudText>
+    </TitleContent>
+    <DialogContent>
+        <EditForm Model="_model" OnValidSubmit="OnSubmit" class="flex flex-col !gap-4">
+            <DataAnnotationsValidator />
+
+            <div>
+                <MudRating @bind-SelectedValue="@_model.Overall" MaxValue="5" Size="Size.Large" />
+            </div>
+
+            <MudTextField @bind-Value="@_model.Title" For="@(() => _model.Title)" Variant="Variant.Outlined" Placeholder="Tiêu đề" FullWidth="true" />
+
+            <MudTextField @bind-Value="@_model.Content" For="@(() => _model.Content)" Variant="Variant.Outlined" Placeholder="Mô tả" FullWidth="true" Lines="7" />
+
+            <MudRadioGroup @bind-Value="@_isActive" For="@(() => _isActive)">
+                <MudRadio Value="1" Color="Color.Primary">Công khai</MudRadio>
+                <MudRadio Value="2" Color="Color.Primary">Ẩn danh</MudRadio>
+            </MudRadioGroup>
+
+            <div class="flex w-full items-center justify-end gap-2">
+                <MudButton Color="MudBlazor.Color.Surface" ButtonType="ButtonType.Button" Variant="Variant.Outlined" OnClick="Cancel">Đóng</MudButton>
+                <MudButton Color="MudBlazor.Color.Dark" ButtonType="ButtonType.Submit" Variant="Variant.Filled">Gửi</MudButton>
+            </div>
+        </EditForm>
+    </DialogContent>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public int orderItemId { get; set; }
+
+    [Parameter]
+    public int productId { get; set; }
+
+    [Parameter]
+    public int customerId { get; set; }
+
+    private ReviewModel _model = new ReviewModel();
+
+    private int _isActive = 1;
+
+    async Task OnSubmit()
+    {
+        if(_model.Overall <= 0)
+        {
+            _snackbar.Add("Vui lòng chọn số sao đánh giá.", Severity.Warning);
+            return;
+        }
+
+        _model.Status = (byte)_isActive;
+        _model.CustomerId = customerId;
+        _model.OrderItemId = orderItemId;
+        _model.ProductId = productId;
+
+        var result = await _reviewService.Create(_model);
+
+        if (result.IsSuccess)
+        {
+            _snackbar.Add("Cảm ơn bạn đã đánh giá", Severity.Success);
+            MudDialog.Close(DialogResult.Ok(true));
+        } else
+        {
+            _snackbar.Add("Đã có lỗi xảy ra, vui lòng thử lại", Severity.Warning);
+        }
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+}

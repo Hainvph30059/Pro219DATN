@@ -14,8 +14,8 @@
         {
             @foreach (var item in _productNews)
             {
-                <div accesskey="@item.Id" class="w-full">
-                    <div data-animation="1" class="group relative mb-10 lg:p-2.5">
+                <div accesskey="@item.Id" class="group relative mb-10 w-full">
+                    <div data-animation="1" class="flex h-full flex-col justify-between lg:p-2.5">
                         <div class="group relative overflow-hidden px-2.5 text-center">
                             <a href="@RouterConst.User.Home" class="block transition">
                                 @if (item.ImageUrls.Any())
@@ -49,32 +49,34 @@
                             </a>
                         </div>
 
-                        @if (item?.AvailableColors != null && item.AvailableColors.Any())
-                        {
-                            <div class="my-2.5 flex w-full justify-center gap-1">
-                                @foreach (var c in item.AvailableColors)
-                                {
-                                    <MudTooltip Text="@c.Name" Arrow="true" Placement="Placement.Top">
-                                        <div class="h-6 w-6 cursor-pointer rounded-full border border-gray-300 shadow-sm"
-                                             style="background-color: @c.HexCode">
-                                        </div>
-                                    </MudTooltip>
-                                }
+                        <div class="w-full">
+                            @if (item?.AvailableColors != null && item.AvailableColors.Any())
+                            {
+                                <div class="my-2.5 flex w-full flex-nowrap justify-center gap-1 overflow-x-auto">
+                                    @foreach (var c in item.AvailableColors)
+                                    {
+                                        <MudTooltip Text="@c.Name" Arrow="true" Placement="Placement.Top">
+                                            <div class="h-6 w-6 flex-shrink-0 cursor-pointer rounded-full border border-gray-300 shadow-sm"
+                                                 style="background-color: @c.HexCode">
+                                            </div>
+                                        </MudTooltip>
+                                    }
+                                </div>
+                            }
+
+                            <div class="w-full">
+                                <p class="line-clamp-1 text-center text-sm">@item?.Name</p>
                             </div>
-                        }
 
-                        <div class="w-full">
-                            <p class="line-clamp-1 text-center text-sm">@item?.Name</p>
-                        </div>
+                            <div class="w-full">
+                                <p class="line-clamp-1 text-center text-sm font-bold">@item?.BasePrice.ToString("C", vietnameseCulture)</p>
+                            </div>
 
-                        <div class="w-full">
-                            <p class="line-clamp-1 text-center text-sm font-bold">@item?.BasePrice.ToString("C", vietnameseCulture)</p>
-                        </div>
-
-                        <div class="invisible absolute -bottom-10 left-0 z-10 flex w-full items-center justify-between gap-4 bg-black py-2.5 opacity-0 group-hover:visible group-hover:opacity-100">
-                            <button class="flex w-[49%] justify-center text-white" @onclick="@(() => OpenDialog(item.Id))"><MudIcon Icon="@Icons.Material.Filled.ShoppingCart" Size="Size.Small" Class="!mr-1" /> Thêm giỏ hàng</button>
-                            <div class="h-5 w-[2%] border-r border-white" />
-                            <button @onclick="@(() => navigation.NavigateTo(RouterConst.User.ProductDetail + $"/{item.Id}"))" class="flex w-[49%] justify-center text-white"><MudIcon Icon="@Icons.Material.Filled.RemoveRedEye" Size="Size.Small" Class="!mr-1" /> Xem chi tiết</button>
+                            <div class="invisible absolute -bottom-10 left-0 z-10 flex w-full items-center justify-between gap-4 bg-black py-2.5 opacity-0 group-hover:visible group-hover:opacity-100">
+                                <button class="flex w-[49%] justify-center text-white" @onclick="@(() => OpenDialog(item.Id))"><MudIcon Icon="@Icons.Material.Filled.ShoppingCart" Size="Size.Small" Class="!mr-1" /> Thêm giỏ hàng</button>
+                                <div class="h-5 w-[2%] border-r border-white" />
+                                <button @onclick="@(() => navigation.NavigateTo(RouterConst.User.ProductDetail + $"/{item.Id}"))" class="flex w-[49%] justify-center text-white"><MudIcon Icon="@Icons.Material.Filled.RemoveRedEye" Size="Size.Small" Class="!mr-1" /> Xem chi tiết</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -117,8 +119,8 @@
         {   
             @foreach (var item in _productFavourites)
             {
-                <div accesskey="@item.Id" class="w-full">
-                    <div data-animation="1" class="group relative mb-10 lg:p-2.5">
+                <div accesskey="@item.Id" class="group relative mb-10 w-full">
+                    <div data-animation="1" class="flex h-full flex-col justify-between lg:p-2.5">
                         <div class="group relative overflow-hidden px-2.5 text-center">
                             <a href="@RouterConst.User.Home" class="block transition">
                                 @if (item.ImageUrls.Any())
@@ -152,32 +154,34 @@
                             </a>
                         </div>
 
-                        @if (item?.AvailableColors != null && item.AvailableColors.Any())
-                        {
-                            <div class="my-2.5 flex w-full justify-center gap-1">
-                                @foreach (var c in item.AvailableColors)
-                                {
-                                    <MudTooltip Text="@c.Name" Arrow="true" Placement="Placement.Top">
-                                        <div class="h-6 w-6 cursor-pointer rounded-full border border-gray-300 shadow-sm"
-                                             style="background-color: @c.HexCode">
-                                        </div>
-                                    </MudTooltip>
-                                }
+                        <div class="w-full">
+                            @if (item?.AvailableColors != null && item.AvailableColors.Any())
+                            {
+                                <div class="my-2.5 flex w-full justify-center gap-1">
+                                    @foreach (var c in item.AvailableColors)
+                                    {
+                                        <MudTooltip Text="@c.Name" Arrow="true" Placement="Placement.Top">
+                                            <div class="h-6 w-6 cursor-pointer rounded-full border border-gray-300 shadow-sm"
+                                                 style="background-color: @c.HexCode">
+                                            </div>
+                                        </MudTooltip>
+                                    }
+                                </div>
+                            }
+
+                            <div class="w-full">
+                                <p class="line-clamp-1 text-center text-sm">@item?.Name</p>
                             </div>
-                        }
 
-                        <div class="w-full">
-                            <p class="line-clamp-1 text-center text-sm">@item?.Name</p>
-                        </div>
+                            <div class="w-full">
+                                <p class="line-clamp-1 text-center text-sm font-bold">@item?.BasePrice.ToString("C", vietnameseCulture)</p>
+                            </div>
 
-                        <div class="w-full">
-                            <p class="line-clamp-1 text-center text-sm font-bold">@item?.BasePrice.ToString("C", vietnameseCulture)</p>
-                        </div>
-
-                        <div class="invisible absolute -bottom-10 left-0 z-10 flex w-full items-center justify-between gap-4 bg-black py-2.5 opacity-0 group-hover:visible group-hover:opacity-100">
-                            <button class="flex w-[49%] justify-center text-white" @onclick="@(() => OpenDialog(item.Id))"><MudIcon Icon="@Icons.Material.Filled.ShoppingCart" Size="Size.Small" Class="!mr-1" /> Thêm giỏ hàng</button>
-                            <div class="h-5 w-[2%] border-r border-white" />
-                            <button @onclick="@(() => navigation.NavigateTo(RouterConst.User.ProductDetail + $"/{@item.Id}"))" class="flex w-[49%] justify-center text-white"><MudIcon Icon="@Icons.Material.Filled.RemoveRedEye" Size="Size.Small" Class="!mr-1" /> Xem chi tiết</button>
+                            <div class="invisible absolute -bottom-10 left-0 z-10 flex w-full items-center justify-between gap-4 bg-black py-2.5 opacity-0 group-hover:visible group-hover:opacity-100">
+                                <button class="flex w-[49%] justify-center text-white" @onclick="@(() => OpenDialog(item.Id))"><MudIcon Icon="@Icons.Material.Filled.ShoppingCart" Size="Size.Small" Class="!mr-1" /> Thêm giỏ hàng</button>
+                                <div class="h-5 w-[2%] border-r border-white" />
+                                <button @onclick="@(() => navigation.NavigateTo(RouterConst.User.ProductDetail + $"/{@item.Id}"))" class="flex w-[49%] justify-center text-white"><MudIcon Icon="@Icons.Material.Filled.RemoveRedEye" Size="Size.Small" Class="!mr-1" /> Xem chi tiết</button>
+                            </div>
                         </div>
                     </div>
                 </div>
