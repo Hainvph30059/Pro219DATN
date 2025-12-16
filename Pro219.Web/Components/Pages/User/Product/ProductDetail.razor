@@ -109,6 +109,52 @@ else
 
     
 }
+
+<section class="mx-auto my-10 w-full max-w-screen-xl">
+    <h2 class="w-fit border-b-4 border-solid border-black text-2xl font-bold uppercase">Đánh giá sản phẩm</h2>
+
+    <div class="relative mt-4 flex items-center gap-10 sm:flex-col sm:gap-4">
+        <div class="absolute bottom-0 left-0 right-0 top-0 z-10"></div>
+        <div class="flex w-fit flex-col items-center">
+            <span class="text-xl"><span class="text-4xl">@_averageRating</span> Trên 5</span>
+            <MudRating SelectedValue="@((int)_averageRating)" MaxValue="5" Size="Size.Large" />
+        </div>
+        <div class="flex flex-wrap gap-6 sm:gap-2">
+            <div class="rounded-lg border border-solid border-yellow-500 px-4 py-2 text-base text-yellow-500">5 sao (@_reviews.Count(x => x.Overall == 5))</div>
+            <div class="rounded-lg border border-solid border-yellow-500 px-4 py-2 text-base text-yellow-500">4 sao (@_reviews.Count(x => x.Overall == 4))</div>
+            <div class="rounded-lg border border-solid border-yellow-500 px-4 py-2 text-base text-yellow-500">3 sao (@_reviews.Count(x => x.Overall == 3))</div>
+            <div class="rounded-lg border border-solid border-yellow-500 px-4 py-2 text-base text-yellow-500">2 sao (@_reviews.Count(x => x.Overall == 2))</div>
+            <div class="rounded-lg border border-solid border-yellow-500 px-4 py-2 text-base text-yellow-500">1 sao (@_reviews.Count(x => x.Overall == 1))</div>
+        </div>
+    </div>
+
+
+    @if(_reviews.Any())
+    {
+        <MudDivider Class="my-6"/>
+
+        <div class="mt-4 flex max-h-[1000px] w-full flex-col gap-6 overflow-y-auto">
+           @foreach(var review in _reviews)
+           {
+                <div class="flex w-full gap-4">
+                    <div>
+
+                    </div>
+                    <div class="flex-1">
+                        <MudRating SelectedValue="@review.Overall" MaxValue="5" Size="Size.Small" />
+                        <h4 class="text-base font-medium">@review.Title</h4>
+                        <p class="whitespace-pre-wrap text-sm">@review.Content</p>
+                    </div>
+                </div>
+           }
+        </div>
+    } else {
+        <div class="mt-4">
+
+        </div>
+        <p class="text-center text-base font-medium text-gray-500">Chưa có đánh giá nào!</p>
+    }
+</section>
 @* // best seller*@
 @*<section class="mx-auto mb-10 max-w-screen-xl pt-10">
     <h2 class="w-fit border-b-4 border-solid border-black text-base font-bold uppercase">Sản phẩm bán chạy</h2>
@@ -159,8 +205,10 @@ else
     private DAL.Repository.ProductRepository.ProductVariantDto? _foundVariant;
 
     private List<string> _images = [];
+    private List<DAL.Models.Review> _reviews = [];
     CultureInfo vietnameseCulture = new CultureInfo("vi-VN");
 
+    private decimal _averageRating = 0;
     private string _token = "";
     private int _selectedColorId = 0;
     private string _selectedColorName = "";
@@ -199,6 +247,15 @@ else
                 }
             }
             _currentPrice = _product.BasePrice;
+            var _resReview = await _reviewService.GetByProductId(_product.Id);
+            if (_resReview.IsSuccess && _resReview.Data.Count > 0)
+            {
+                _reviews = _resReview.Data;
+                var reviewCount = _reviews.Count();
+                var sumOverall = _reviews.Sum(x => x.Overall);
+                decimal powerOfTen = (decimal)Math.Pow(10, 2);
+                _averageRating = Decimal.Truncate((sumOverall / reviewCount) * powerOfTen) / 100;
+            }
         } else
         {
             _snackbar.Add(res.ErrorMessage, Severity.Error);

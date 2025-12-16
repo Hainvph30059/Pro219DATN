@@ -34,12 +34,14 @@ namespace Pro219.API.DTOs
     public class OrderDetailItemDTO
     {
         public int OrderItemId { get; set; }
+        public int? CustomerId { get; set; }
         public int ProductVariantId { get; set; }
         public string ProductName { get; set; } = string.Empty;
         public string? Color { get; set; }
         public string? Size { get; set; }
         public int Quantity { get; set; }
         public decimal UnitPrice { get; set; }
+        public bool? IsReviewed { get; set; } = false;
     }
 }
 

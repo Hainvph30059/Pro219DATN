@@ -132,13 +132,15 @@ namespace Pro219.API.Controllers
                     },                   
                     Items = order.OrderItems.Select(oi => new OrderDetailItemDTO
                     {
+                        CustomerId = order.CustomerId,
                         OrderItemId = oi.OrderItemId,
                         ProductVariantId = oi.ProductVariantId,
                         ProductName = oi.ProductVariant?.Product?.Name ?? string.Empty,
                         Color = oi.ProductVariant?.Color?.Name,
                         Size = oi.ProductVariant?.Size?.Name,
                         Quantity = oi.Quantity,
-                        UnitPrice = oi.UnitPrice
+                        UnitPrice = oi.UnitPrice,
+                        IsReviewed = oi.IsReviewed,
                     }).ToList()
                 };
                 orderDetailDto.StatusHistory = ParseStatusHistory(order.StatusHistory);

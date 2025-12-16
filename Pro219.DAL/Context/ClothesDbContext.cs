@@ -328,10 +328,10 @@ namespace Pro219.DAL.Context
 
             // Addresses
             modelBuilder.Entity<Address>().HasData(
-                new Address { Id = 1, CustomerId = 1, FullName = "Nguyễn Văn An", Phone = "0912345678", Street = "123 Đường Nguyễn Huệ", City = "Hồ Chí Minh", District = "Quận 1", OtherInfo = "Chung cư ABC, căn hộ 4B", IsDefault = true, Status = 1, Delete = false, CreateAt = seedDate },
-                new Address { Id = 2, CustomerId = 2, FullName = "Trần Thị Bình", Phone = "0987654321", Street = "456 Đường Lê Lợi", City = "Hà Nội", District = "Quận Ba Đình", IsDefault = true, Status = 1, Delete = false, CreateAt = seedDate },
-                new Address { Id = 3, CustomerId = 1, FullName = "Nguyễn Văn An", Phone = "0912345678", Street = "789 Đường Trần Hưng Đạo", City = "Hồ Chí Minh", District = "Quận 5", OtherInfo = "Nhà riêng", IsDefault = false, Status = 1, Delete = false, CreateAt = seedDate },
-                new Address { Id = 4, CustomerId = 3, FullName = "Lê Minh Cường", Phone = "0901234567", Street = "321 Đường Hoàng Diệu", City = "Đà Nẵng", District = "Quận Hải Châu", IsDefault = true, Status = 1, Delete = false, CreateAt = seedDate }
+                new Address { Id = 1, CustomerId = 1, FullName = "Nguyễn Văn An", Phone = "0912345678", Street = "13007", City = "201", District = "3440", StreetName="Phương Canh", CityName="Hà Nội", DistrictName="Nam Từ Liêm", OtherInfo = "Chung cư ABC, căn hộ 4B", IsDefault = true, Status = 1, Delete = false, CreateAt = seedDate },
+                new Address { Id = 2, CustomerId = 2, FullName = "Trần Thị Bình", Phone = "0987654321", Street = "13007", City = "201", District = "3440", StreetName="Phương Canh", CityName="Hà Nội", DistrictName="Nam Từ Liêm",  IsDefault = true, Status = 1, Delete = false, CreateAt = seedDate },
+                new Address { Id = 3, CustomerId = 1, FullName = "Nguyễn Văn An", Phone = "0912345678", Street = "13007", City = "201", District = "3440", StreetName="Phương Canh", CityName="Hà Nội", DistrictName="Nam Từ Liêm",  OtherInfo = "Nhà riêng", IsDefault = false, Status = 1, Delete = false, CreateAt = seedDate },
+                new Address { Id = 4, CustomerId = 3, FullName = "Lê Minh Cường", Phone = "0901234567", Street = "13007", City = "201", District = "3440", StreetName = "Phương Canh", CityName = "Hà Nội", DistrictName = "Nam Từ Liêm", IsDefault = true, Status = 1, Delete = false, CreateAt = seedDate }
             );
 
             // Carts
