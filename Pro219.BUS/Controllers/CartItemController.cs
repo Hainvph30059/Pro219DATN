@@ -230,6 +230,58 @@ namespace Pro219.API.Controllers
                 return StatusCode(500, "Internal server error.");
             }
         }
+
+        [HttpGet("get-all-cart-item-by-guest")]
+        public async Task<ActionResult<IEnumerable<CartItemWithProductDTO>>> GetAllCartItemByGuest([FromBody] List<AddCartModel> addCarts)
+        {
+            try
+            {
+                var allProductVariants = await productVariantRepository.GetAllProductVariants();
+                var allProducts = await productRepository.GetAllProducts();
+                var allProductImages = await productImageRepository.GetAllProductImages();
+                var allSizes = await sizeRepository.GetAllSizes();
+                var allColors = await colorRepository.GetAllColors();
+
+                var variantMap = allProductVariants.ToDictionary(pv => pv.Id);
+                var productMap = allProducts.ToDictionary(p => p.Id);
+                var colorMap = allColors.ToDictionary(p => p.Id);
+                var sizeMap = allSizes.ToDictionary(p => p.Id);
+
+                var resultDtoList = addCarts.Select(cartItem =>
+                {
+                    variantMap.TryGetValue(cartItem.VariantId, out var productVariant);
+
+                    Product product = null;
+                    Size size = null;
+                    Color color = null;
+                    if (productVariant != null)
+                    {
+                        productMap.TryGetValue(productVariant.ProductId, out product);
+                        colorMap.TryGetValue(productVariant.ColorId ?? -1, out color);
+                        sizeMap.TryGetValue(productVariant.SizeId ?? -1, out size);
+                    }
+
+                    var image = allProductImages.Where(pi => pi.ProductVariantId == productVariant?.Id && pi.ProductId == product?.Id).FirstOrDefault();
+                    return new CartItemWithProductDTO
+                    {
+                        VariantId = cartItem.VariantId,
+                        CartId = -1,
+                        productName = product?.Name ?? "",
+                        Quantity = cartItem.Quantity,
+                        ColorName = color?.Name ?? "",
+                        SizeName = size?.Name ?? "",
+                        ImageUrl = image != null ? image.ImageUrl : "/Assets/Images/default-image.png",
+                        UnitPrice = productVariant?.Price ?? product?.BasePrice ?? 0,
+                    };
+                }).ToList();
+
+                return Ok(resultDtoList);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error.");
+            }
+        }
     }
 }
 

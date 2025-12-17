@@ -22,7 +22,7 @@
                         </div>
                         <div class="flex max-w-none flex-shrink-0 flex-col lg:max-w-[calc(100%-26.5rem)]">
                             <a>@item.productName - @item.ColorName - @item.SizeName</a>
-                            <button class="w-fit p-2 text-xs text-slate-500 hover:text-red-500" @onclick="@(() => Delete(item.Id))">Xóa</button>
+                            <button class="w-fit p-2 text-xs text-slate-500 hover:text-red-500" @onclick="@(() => Delete(item.Id, item.VariantId))">Xóa</button>
                         </div>
                         <div class="flex w-28">
                             <div class="flex h-[1.875rem] w-[1.875rem] cursor-pointer items-center justify-center border-y border-l">
@@ -54,7 +54,7 @@
 
             <MudDivider Class="my-4 !border-black" />
 
-            <button class="mb-2 w-full bg-black py-3 text-sm text-white shadow" disabled="@(!_data.Any())" @onclick="@(() => navigation.NavigateTo(RouterConst.User.CheckoutDetail))">Tiến Hành Đặt Hàng</button>
+            <button class="mb-2 w-full bg-black py-3 text-sm text-white shadow" disabled="@(!_data.Any())" @onclick="HandleRedirect">Tiến Hành Đặt Hàng</button>
 
             <button class="w-full border-2 border-solid border-black bg-white py-3 text-sm shadow hover:bg-black hover:text-white" @onclick="@(() => navigation.NavigateTo(RouterConst.User.Home))">Mua thêm sản phẩm</button>
         </div>
@@ -63,6 +63,7 @@
 
 @code {
     private List<CartItemWithProductDTO> _data = [];
+    private List<AddCartModel> _cartItemLocal = new List<AddCartModel>();
     private string _cartId = "";
     private string _token = "";
     private int _parsedCartId = 0;
@@ -77,11 +78,36 @@
 
             if(string.IsNullOrEmpty(_token))
             {
-
+                await LoadDataGuest();
+                StateHasChanged();
             } else
             {
                 await LoadData();
                 StateHasChanged();
+            }
+        }
+    }
+
+    async Task LoadDataGuest()
+    {
+        var cartItems = await localStorage.GetItemAsStringAsync(Constant.CartItemKey) ?? string.Empty;
+
+        if (string.IsNullOrEmpty(cartItems))
+            return;
+
+        var deserializedData = JsonSerializer.Deserialize<List<AddCartModel>>(cartItems);
+        if (deserializedData != null)
+        {
+            _cartItemLocal = deserializedData;
+            var resCartItem = await _cartItemService.GetAllCartItemWithDetailOfGuest(deserializedData);
+
+            if (resCartItem.IsSuccess && resCartItem.Data.Count() > 0)
+            {
+                _data = resCartItem.Data;
+            }
+            else
+            {
+                _data = [];
             }
         }
     }
@@ -108,51 +134,133 @@
     {
         if (item == null) return;
 
-        if(isIncrease)
+        if (string.IsNullOrEmpty(_token))
         {
-            var newItem = new CartItemUpdateDTO()
-            {
-                Id = item.Id,
-                CartId = item.CartId,
-                VariantId = item.VariantId,
-                Quantity = item.Quantity + 1,
-                IsSelectedForCheckout = false,
-                UnitPrice = item.UnitPrice,
-                Status = item.Status,
-                Delete = item.Delete
-            };
 
-            var result = await _cartItemService.Update(newItem, _token);
+            if (item.Quantity <= 1 && !isIncrease) return;
+            var hasProductCurrent = _cartItemLocal.FirstOrDefault(x => x.VariantId == item.VariantId);
 
-            if (result.IsSuccess)
+            if (hasProductCurrent != null)
             {
-                await LoadData();
-                await _cartStateService.LoadCartDetailsAsync();
-                StateHasChanged();
-            } else
-            {
-                _snackbar.Add("Đã có lỗi xảy ra", Severity.Error);
+                hasProductCurrent.Quantity = isIncrease ? item.Quantity + 1 : item.Quantity - 1;
+                await localStorage.SetItemAsStringAsync(Constant.CartItemKey, JsonSerializer.Serialize(_cartItemLocal));
             }
+            else
+            {
+                _cartItemLocal.Add(new AddCartModel
+                {
+                    VariantId = item.VariantId,
+                    Quantity = item.Quantity,
+                });
+                await localStorage.SetItemAsStringAsync(Constant.CartItemKey, JsonSerializer.Serialize(_cartItemLocal));
+            }
+
+            await LoadDataGuest();
+            await _cartStateService.LoadCartDetailsAsync();
+            StateHasChanged();
         } else
-        {
-            if (item.Quantity <= 1) return;
-            var newItem = new CartItemUpdateDTO()
+        {   
+            if(isIncrease)
+            {
+                var newItem = new CartItemUpdateDTO()
                 {
                     Id = item.Id,
                     CartId = item.CartId,
                     VariantId = item.VariantId,
-                    Quantity = item.Quantity - 1,
+                    Quantity = item.Quantity + 1,
                     IsSelectedForCheckout = false,
                     UnitPrice = item.UnitPrice,
                     Status = item.Status,
                     Delete = item.Delete
                 };
 
-            var result = await _cartItemService.Update(newItem, _token);
+                var result = await _cartItemService.Update(newItem, _token);
 
-            if (result.IsSuccess)
+                if (result.IsSuccess)
+                {
+                    await LoadData();
+                    await _cartStateService.LoadCartDetailsAsync();
+                    StateHasChanged();
+                } else
+                {
+                    _snackbar.Add("Đã có lỗi xảy ra", Severity.Error);
+                }
+            } else
             {
-                await LoadData();
+                if (item.Quantity <= 1) return;
+                var newItem = new CartItemUpdateDTO()
+                    {
+                        Id = item.Id,
+                        CartId = item.CartId,
+                        VariantId = item.VariantId,
+                        Quantity = item.Quantity - 1,
+                        IsSelectedForCheckout = false,
+                        UnitPrice = item.UnitPrice,
+                        Status = item.Status,
+                        Delete = item.Delete
+                    };
+
+                var result = await _cartItemService.Update(newItem, _token);
+
+                if (result.IsSuccess)
+                {
+                    await LoadData();
+                    await _cartStateService.LoadCartDetailsAsync();
+                    StateHasChanged();
+                }
+                else
+                {
+                    _snackbar.Add("Đã có lỗi xảy ra", Severity.Error);
+                }
+            }
+        }
+    }
+
+    void HandleRedirect()
+    {
+        if(string.IsNullOrEmpty(_token))
+        {
+            navigation.NavigateTo(RouterConst.User.GusestCheckoutDetail);
+        } else
+        {
+            navigation.NavigateTo(RouterConst.User.CheckoutDetail);
+        }
+    }
+
+    private async Task Delete(int id, int variantId)
+    {
+        if (string.IsNullOrEmpty(_token))
+        {
+            var cartItemLocal = await localStorage.GetItemAsStringAsync(Constant.CartItemKey);
+
+            if (string.IsNullOrEmpty(cartItemLocal)) return;
+
+            var deserializedData = JsonSerializer.Deserialize<List<AddCartModel>>(cartItemLocal);
+
+            if (deserializedData == null || deserializedData.Count() == 0) return;
+
+            var obj = deserializedData.FirstOrDefault(x => x.VariantId == variantId);
+            if (obj != null)
+            {
+                await localStorage.RemoveItemAsync(Constant.CartItemKey);
+                deserializedData.Remove(obj);
+                if (deserializedData.Count() > 0)
+                {
+                    await localStorage.SetItemAsStringAsync(Constant.CartItemKey, JsonSerializer.Serialize(deserializedData));
+                }
+
+                _snackbar.Add("Xóa thành công", Severity.Success);
+                await _cartStateService.LoadCartDetailsAsync();
+                StateHasChanged();
+            }
+        }
+        else
+        {   
+            var result = await _cartItemService.Delete(id, _token);
+
+            if (result)
+            {
+                _snackbar.Add("Xóa thành công", Severity.Success);
                 await _cartStateService.LoadCartDetailsAsync();
                 StateHasChanged();
             }
@@ -160,22 +268,6 @@
             {
                 _snackbar.Add("Đã có lỗi xảy ra", Severity.Error);
             }
-        }
-    }
-
-    private async Task Delete(int id)
-    {
-        var result = await _cartItemService.Delete(id, _token);
-
-        if (result)
-        {
-            _snackbar.Add("Xóa thành công", Severity.Success);
-            await _cartStateService.LoadCartDetailsAsync();
-            StateHasChanged();
-        }
-        else
-        {
-            _snackbar.Add("Đã có lỗi xảy ra", Severity.Error);
         }
     }
 }

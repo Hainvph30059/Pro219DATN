@@ -36,6 +36,13 @@ namespace Pro219.API.DTOs
 
         public string ImageUrl {  get; set; } = string.Empty;
     }
+
+    public class AddCartModel
+    {
+        public int VariantId { get; set; }
+
+        public int Quantity { get; set; }
+    }
 }
 
 
