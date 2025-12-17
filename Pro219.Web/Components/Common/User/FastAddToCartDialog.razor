@@ -279,11 +279,6 @@
 
     private async Task AddToCart()
     {
-        if (string.IsNullOrEmpty(_token))
-        {
-            _snackbar.Add("Chức năng thêm giỏ hàng khi chưa đăng nhập đang phát triển. Vui lòng đăng nhập.", Severity.Warning);
-            return;
-        }
         if (_foundVariant == null)
         {
             _snackbar.Add("Vui lòng chọn Màu sắc và Kích thước", Severity.Info);
@@ -298,25 +293,60 @@
 
         var result = await _cartService.AddToCart(item, _token);
 
-        if (result.IsSuccess)
+        if (string.IsNullOrEmpty(_token)) 
         {
+            var cartCurrent = await localStorage.GetItemAsStringAsync(Constant.CartItemKey);
+            var items = new List<AddCartModel>();
+            items.Add(item);
+            if (string.IsNullOrEmpty(cartCurrent))
+            {
+                var cartStringJson = JsonSerializer.Serialize(items);
+                await localStorage.SetItemAsStringAsync(Constant.CartItemKey, cartStringJson);
+            } else
+            {
+                var cartCurrentJson = JsonSerializer.Deserialize<List<AddCartModel>>(cartCurrent);
+
+                if (cartCurrentJson != null)
+                {
+                    var hasProductCurrent = cartCurrentJson.FirstOrDefault(x => x.VariantId == _foundVariant.Id);
+
+                    if (hasProductCurrent != null) {
+                        hasProductCurrent.Quantity += _quantity;
+                        await localStorage.SetItemAsStringAsync(Constant.CartItemKey, JsonSerializer.Serialize(cartCurrentJson));
+                    }
+                    else
+                    {
+                        cartCurrentJson.Add(item);
+                        await localStorage.SetItemAsStringAsync(Constant.CartItemKey, JsonSerializer.Serialize(cartCurrentJson));
+                    }
+                } 
+                else 
+                {
+                    await localStorage.SetItemAsStringAsync(Constant.CartItemKey, JsonSerializer.Serialize(items));
+                }
+            }
+
             _snackbar.Add("Thêm vào giỏ hàng thành công", Severity.Success);
             await _cartStateService.LoadCartDetailsAsync();
             MudDialog.Close();
-        }
-        else
+        } 
+        else 
         {
-            _snackbar.Add("Thêm vào giỏ hàng thất bại", Severity.Error);
+            if (result.IsSuccess)
+            {
+                _snackbar.Add("Thêm vào giỏ hàng thành công", Severity.Success);
+                await _cartStateService.LoadCartDetailsAsync();
+                MudDialog.Close();
+            }
+            else
+            {
+                _snackbar.Add("Thêm vào giỏ hàng thất bại", Severity.Error);
+            }
         }
     }
 
     private async Task ToCheckout()
     {
-        if (string.IsNullOrEmpty(_token))
-        {
-            _snackbar.Add("Chức năng thêm giỏ hàng khi chưa đăng nhập đang phát triển. Vui lòng đăng nhập.", Severity.Warning);
-            return;
-        }
 
         if (_foundVariant == null)
         {
@@ -330,16 +360,57 @@
                 Quantity = _quantity
             };
 
-        var result = await _cartService.AddToCart(item, _token);
+        if (string.IsNullOrEmpty(_token))
+        {
+            var cartCurrent = await localStorage.GetItemAsStringAsync(Constant.CartItemKey);
+            var items = new List<AddCartModel>();
+            items.Add(item);
+            if (string.IsNullOrEmpty(cartCurrent))
+            {
+                var cartStringJson = JsonSerializer.Serialize(items);
+                await localStorage.SetItemAsStringAsync(Constant.CartItemKey, cartStringJson);
+            }
+            else
+            {
+                var cartCurrentJson = JsonSerializer.Deserialize<List<AddCartModel>>(cartCurrent);
 
-        if (result.IsSuccess)
-        {
+                if (cartCurrentJson != null)
+                {
+                    var hasProductCurrent = cartCurrentJson.FirstOrDefault(x => x.VariantId == _foundVariant.Id);
+
+                    if (hasProductCurrent != null)
+                    {
+                        hasProductCurrent.Quantity += _quantity;
+                        await localStorage.SetItemAsStringAsync(Constant.CartItemKey, JsonSerializer.Serialize(cartCurrentJson));
+                    }
+                    else
+                    {
+                        cartCurrentJson.Add(item);
+                        await localStorage.SetItemAsStringAsync(Constant.CartItemKey, JsonSerializer.Serialize(cartCurrentJson));
+                    }
+                }
+                else
+                {
+                    await localStorage.SetItemAsStringAsync(Constant.CartItemKey, JsonSerializer.Serialize(items));
+                }
+            }
+
             await _cartStateService.LoadCartDetailsAsync();
-            navigation.NavigateTo(RouterConst.User.CheckoutDetail);
-        }
-        else
+            navigation.NavigateTo(RouterConst.User.GusestCheckoutDetail);
+            MudDialog.Close();
+        } else
         {
-            _snackbar.Add("Có lỗi xảy ra", Severity.Error);
+            var result = await _cartService.AddToCart(item, _token);
+
+            if (result.IsSuccess)
+            {
+                await _cartStateService.LoadCartDetailsAsync();
+                navigation.NavigateTo(RouterConst.User.CheckoutDetail);
+            }
+            else
+            {
+                _snackbar.Add("Có lỗi xảy ra", Severity.Error);
+            }
         }
     }
 

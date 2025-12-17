@@ -1,4 +1,5 @@
 ﻿using Pro219.DAL.Models;
+using Pro219.Web.Components.Pages.User.Cart;
 using Pro219.Web.Constants;
 using Pro219.Web.DTOs;
 
@@ -32,6 +33,28 @@ namespace Pro219.Web.Services
                 var errorMess = Constant.Errors.ContainsKey(errorCode ?? "")
                                     ? Constant.Errors[errorCode ?? ""]
                                     : result; 
+                return ServiceResult<List<CartItemWithProductDTO>>.Failure(result, errorMess, response.StatusCode.ToString());
+            }
+        }
+
+        public async Task<ServiceResult<List<CartItemWithProductDTO>>> GetAllCartItemWithDetailOfGuest(List<AddCartModel> cartId)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/CartItem/get-all-cart-item-by-guest");
+            request.Content = JsonContent.Create(cartId);
+            var response = await _httpClient.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<List<CartItemWithProductDTO>>();
+                return ServiceResult<List<CartItemWithProductDTO>>.Success(result);
+            }
+            else
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                var errorCode = result;
+
+                var errorMess = Constant.Errors.ContainsKey(errorCode ?? "")
+                                    ? Constant.Errors[errorCode ?? ""]
+                                    : result;
                 return ServiceResult<List<CartItemWithProductDTO>>.Failure(result, errorMess, response.StatusCode.ToString());
             }
         }

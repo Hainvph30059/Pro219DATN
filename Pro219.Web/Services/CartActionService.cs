@@ -128,13 +128,26 @@ namespace Pro219.Web.Services
             {
                 try
                 {
-                    var dataJson = await _localStorage.GetItemAsStringAsync(GuestCartDataKey);
-                    if (!string.IsNullOrEmpty(dataJson))
+                    var cartItemLocalStorage = await _localStorage.GetItemAsStringAsync(Constant.CartItemKey);
+                    if (!string.IsNullOrEmpty(cartItemLocalStorage))
                     {
-                        var deserializedData = JsonSerializer.Deserialize<CartDetailDTO>(dataJson);
-                        CartDetails.CartItems = deserializedData?.CartItems ?? new List<CartItemWithProductDTO>();
-                    }
-                    else
+                        var deserializedData = JsonSerializer.Deserialize<List<AddCartModel>>(cartItemLocalStorage);
+                        if (deserializedData != null)
+                        {
+                            var request = new HttpRequestMessage(HttpMethod.Get, $"/CartItem/get-all-cart-item-by-guest");
+                            request.Content = JsonContent.Create(deserializedData);
+                            var response = await _httpClient.SendAsync(request);
+                            if (response.IsSuccessStatusCode)
+                            {
+                                var result = await response.Content.ReadFromJsonAsync<List<CartItemWithProductDTO>>();
+                                CartDetails.CartItems = result ?? new List<CartItemWithProductDTO>();
+                            }
+                            else
+                            {
+                                CartDetails = new CartDetailDTO();
+                            }
+                        }
+                    } else
                     {
                         CartDetails = new CartDetailDTO();
                     }
