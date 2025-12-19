@@ -18,17 +18,16 @@ namespace Pro219.Web.DTOs
 
         [Required(ErrorMessage = Constant.MessageValid.Required)]
         [Range(1.0, (double)decimal.MaxValue, ErrorMessage = "Giá trị tối thiểu là 1.")]
-        public decimal Value { get; set; } = 0;
+        public decimal Value { get; set; } = 100000;
 
         [ConditionalMinValue(ErrorMessage = "Giá trị tối thiểu là 1.")]
         public decimal? MinOrderValue { get; set; }
 
-        [ConditionalMinValue(ErrorMessage = "Giá trị tối thiểu là 1.")]
         public decimal? MaxDiscountAmount { get; set; }
 
         [Required(ErrorMessage = Constant.MessageValid.Required)]
         [Range(1, int.MaxValue, ErrorMessage = "Số lần sử dụng tối thiểu là 1.")]
-        public int? MaxUsage { get; set; } = 1;
+        public int? MaxUsage { get; set; } = 10;
 
         public int? UsageCount { get; set; } = 0;
 

@@ -21,7 +21,11 @@
             <RowTemplate>
                 <MudTd DataLabel="Id" hidden>@context.Id</MudTd>
                 <MudTd DataLabel="Tên">@context.Name</MudTd>
-                <MudTd DataLabel="Mã Màu">@context.HexCode</MudTd>
+                <MudTd DataLabel="Mã Màu" Class="flex items-center gap-2">
+                    <span>@context.HexCode</span>
+                    <MudAvatar Size="Size.Small" Class="rounded-lg border border-solid border-slate-300" Style=@($"background-color: {context.HexCode};")>
+                    </MudAvatar>
+                </MudTd>
                 <MudTd DataLabel="Trạng thái">@(context.Status == Convert.ToByte(Constant.StatusDefault.Active) ? "Hoạt Động" : "Không Hoạt Động")</MudTd>
                 <MudTd DataLabel="Thao tác">
                     <MudIconButton Icon="@Icons.Material.Filled.BorderColor" aria-label="update" Href="@($"{RouterConst.Admin.EditColor}/{context.Id}")"></MudIconButton>

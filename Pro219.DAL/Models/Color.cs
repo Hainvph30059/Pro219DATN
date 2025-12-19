@@ -13,7 +13,7 @@ namespace Pro219.DAL.Models
         [MaxLength(100)]
         public string Name { get; set; } = string.Empty;
 
-        [MaxLength(7)]
+        [MaxLength(10)]
         public string? HexCode { get; set; } // #RRGGBB format
 
         public bool? Delete { get; set; }

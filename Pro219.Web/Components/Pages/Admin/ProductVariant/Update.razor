@@ -315,7 +315,7 @@
                 }
 
                 _snackbar.Add("Cập nhật sản phẩm chi tiết thành công", Severity.Success);
-                navigation.NavigateTo(RouterConst.Admin.ProductVariant);
+                navigation.NavigateTo(RouterConst.Admin.ProductDetail.Replace(":id", _model.ProductId.ToString()));
             }
             catch (Exception ex)
             {

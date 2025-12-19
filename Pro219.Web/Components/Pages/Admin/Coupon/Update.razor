@@ -25,8 +25,8 @@
             </div>
 
             <div class="mx-auto flex w-full max-w-[64.5rem] gap-6 rounded-lg bg-slate-100 px-6 py-4">
-                <span Class="w-44 flex-shrink-0 pt-4 text-base font-medium text-gray-900">Giá trị</span>
-                <MudNumericField @bind-Value="@_model.Value" For="@(() => _model.Value)" Placeholder="179000" Variant="Variant.Outlined" Style="background-color: white" FullWidth />
+                <span Class="w-44 flex-shrink-0 pt-4 text-base font-medium text-gray-900">Giá trị (@(_discountType == 1 ? "%" : "VND"))</span>
+                <MudNumericField @bind-Value="@_model.Value" For="@(() => _model.Value)" Placeholder="@(_discountType == 1 ? "10" : "179000")" Variant="Variant.Outlined" Style="background-color: white" FullWidth />
             </div>
 
             <div class="mx-auto flex w-full max-w-[64.5rem] gap-6 rounded-lg bg-slate-100 px-6 py-4">
