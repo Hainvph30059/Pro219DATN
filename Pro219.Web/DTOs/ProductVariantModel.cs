@@ -21,11 +21,11 @@ namespace Pro219.Web.DTOs
         public string SKU { get; set; } = string.Empty;
 
         [Range(1, int.MaxValue, ErrorMessage = Constant.MessageValid.Required)]
-        public int StockQuantity { get; set; }
+        public int StockQuantity { get; set; } = 10;
 
 
         [Range(1000, int.MaxValue, ErrorMessage = Constant.MessageValid.Required)]
-        public decimal Price { get; set; }
+        public decimal Price { get; set; } = 100000;
 
         public int? ArrivalTime { get; set; }
 

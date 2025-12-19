@@ -12,12 +12,13 @@
 
             <div class="mx-auto flex w-full max-w-[64.5rem] gap-6 rounded-lg bg-slate-100 px-6 py-4">
                 <span Class="w-44 flex-shrink-0 pt-4 text-base font-medium text-gray-900">Tên</span>
-                <MudTextField @bind-Value="@_model.Name" For="@(() => _model.Name)" Placeholder="Đen" Variant="Variant.Outlined" FullWidth Style="background-color: white" />
+                <MudTextField ReadOnly @bind-Value="@_model.Name" For="@(() => _model.Name)" Placeholder="Đen" Variant="Variant.Outlined" FullWidth Style="background-color: white" />
             </div>
 
             <div class="mx-auto flex w-full max-w-[64.5rem] gap-6 rounded-lg bg-slate-100 px-6 py-4">
                 <span Class="w-44 flex-shrink-0 pt-4 text-base font-medium text-gray-900">Mã màu</span>
-                <MudTextField @bind-Value="@_model.HexCode" For="@(() => _model.HexCode)" Placeholder="#000000" Variant="Variant.Outlined" FullWidth Style="background-color: white" />
+                <MudColorPicker @bind-Text="@_model.HexCode" ShowToolbar="true" ShowAlpha="true" ShowColorField="true" ShowPreview="true" ShowSliders="true" ShowInputs="true" ShowModeSwitch="false"
+                                ColorPickerMode="ColorPickerMode.HEX" Placeholder="#000000" Variant="Variant.Outlined" Style="background-color: white" />
             </div>
 
             <div class="mx-auto flex w-full max-w-[64.5rem] gap-6 rounded-lg bg-slate-100 px-6 py-4">
